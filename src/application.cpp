@@ -25,7 +25,7 @@ class Application {
 public:
     Application()
         : m_window("Final Project", glm::ivec2(1024, 1024), OpenGLVersion::GL45)
-        , m_mesh("resources/ape.obj")
+        , m_mesh("resources/dragon.obj")
         , m_texture("resources/checkerboard.png")
     {
         m_window.registerKeyCallback([this](int key, int scancode, int action, int mods) {
@@ -76,12 +76,17 @@ public:
             ImGui::Text("Value is: %i", dummyInteger); // Use C printf formatting rules (%i is a signed integer)
             ImGui::End();
 
+            //Adjust size of window
+            glViewport(0,0,m_window.getWindowSize().x, m_window.getWindowSize().y);
             // Clear the screen
             glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             // ...
             glEnable(GL_DEPTH_TEST);
+
+            //Update projection matrix
+            m_projectionMatrix = glm::perspective(glm::radians(80.0f), m_window.getAspectRatio(), 0.1f, 30.0f);
 
             const glm::mat4 mvpMatrix = m_projectionMatrix * m_viewMatrix * m_modelMatrix;
             // Normals should be transformed differently than positions (ignoring translations + dealing with scaling):
