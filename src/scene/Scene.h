@@ -13,12 +13,6 @@ public:
 
     Entity createEntity(const std::string &name);
 
-    //TODO: TEMPORARY HACK SHOULD BE REMOVED
-    entt::registry& getRegistry() {
-       return this->m_Registy;
-    };
-
-
 private:
     entt::registry m_Registy;
 

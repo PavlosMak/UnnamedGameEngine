@@ -70,10 +70,10 @@ public:
 
     void setup() {
         //TODO: The next lines are all a dirty hack to quickly demonstrate the ECS.
-
-        Entity firstDragon = scene.createEntity("Smaug");
-        firstDragon.addComponent<MeshComponent>("resources/dragon.obj");
-        firstDragon.addComponent<TransformComponent>(glm::mat4{1.0f});
+//
+//        Entity firstDragon = scene.createEntity("Smaug");
+//        firstDragon.addComponent<MeshComponent>("resources/dragon.obj");
+//        firstDragon.addComponent<TransformComponent>(glm::mat4{1.0f});
 
         Entity secondDragon = scene.createEntity("Syrax");
         secondDragon.addComponent<MeshComponent>("resources/dragon.obj");
@@ -83,9 +83,19 @@ public:
         thirdDragon.addComponent<MeshComponent>("resources/dragon.obj");
         thirdDragon.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(0.0, 0.0, -1.0)));
 
-        entities.push_back(firstDragon);
+        Entity ape = scene.createEntity("Ape");
+        ape.addComponent<MeshComponent>("resources/ape.obj");
+        ape.addComponent<TransformComponent>(glm::scale(
+                glm::rotate(glm::mat4{1.0f},
+                            glm::radians(-45.f),
+                            glm::vec3(0.0,1.0,0.0)),
+                glm::vec3(0.1, 0.1, 0.1))
+        );
+
+//        entities.push_back(firstDragon);
         entities.push_back(secondDragon);
         entities.push_back(thirdDragon);
+        entities.push_back(ape);
     }
 
     void update() {
