@@ -26,12 +26,14 @@ DISABLE_WARNINGS_POP()
 #include <vector>
 
 #include "camera.h"
+#include "scene/Scene.h"
+#include "scene/Entity.h"
+#include "scene/Components.h"
 
 class Application {
 public:
     Application()
-            : m_window("Final Project", glm::ivec2(1024, 1024), OpenGLVersion::GL45), m_mesh("resources/dragon.obj"),
-              m_texture("resources/checkerboard.png") {
+            : m_window("Final Project", glm::ivec2(1024, 1024), OpenGLVersion::GL45) {
         m_window.registerKeyCallback([this](int key, int scancode, int action, int mods) {
             if (action == GLFW_PRESS)
                 onKeyPressed(key, mods);
@@ -66,15 +68,36 @@ public:
         }
     }
 
+    void setup() {
+        //TODO: The next lines are all a dirty hack to quickly demonstrate the ECS.
+
+        Entity firstDragon = scene.createEntity("Smaug");
+        firstDragon.addComponent<MeshComponent>("resources/dragon.obj");
+        firstDragon.addComponent<TransformComponent>(glm::mat4{1.0f});
+
+        Entity secondDragon = scene.createEntity("Syrax");
+        secondDragon.addComponent<MeshComponent>("resources/dragon.obj");
+        secondDragon.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(0.0, 0.0, 1.0)));
+
+        Entity thirdDragon = scene.createEntity("Mushu");
+        thirdDragon.addComponent<MeshComponent>("resources/dragon.obj");
+        thirdDragon.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(0.0, 0.0, -1.0)));
+
+        entities.push_back(firstDragon);
+        entities.push_back(secondDragon);
+        entities.push_back(thirdDragon);
+    }
+
     void update() {
         //Save current time for profiling
         int dummyInteger = 0; // Initialized to 0
 
         //Create our camera
-        Camera camera = Camera(glm::vec3(-1,1,-1),glm::vec3(0),glm::vec3(0,1,0));
+        Camera camera = Camera(glm::vec3(-1, 1, -1), glm::vec3(0), glm::vec3(0, 1, 0));
 
         //Init a viewProjectionMatrix that we are going to update
         glm::mat4 viewProjectionMatrix;
+
 
         while (!m_window.shouldClose()) {
 
@@ -98,27 +121,35 @@ public:
             glEnable(GL_DEPTH_TEST);
 
             //Get new view projection matrix based on camera position
-            camera.getViewProjectionMatrix(viewProjectionMatrix,m_window.getAspectRatio());
-
-            const glm::mat4 mvpMatrix = viewProjectionMatrix * m_modelMatrix;
-            // Normals should be transformed differently than positions (ignoring translations + dealing with scaling):
-            // https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
-            const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(m_modelMatrix));
+            camera.getViewProjectionMatrix(viewProjectionMatrix, m_window.getAspectRatio());
 
             m_defaultShader.bind();
-            glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
-            glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
-            glUniformMatrix3fv(2, 1, GL_FALSE, glm::value_ptr(normalModelMatrix));
-            if (m_mesh.hasTextureCoords()) {
-                m_texture.bind(GL_TEXTURE0);
-                glUniform1i(3, 0);
-                glUniform1i(4, GL_TRUE);
-            } else {
+
+            for (Entity entity: entities) {
+                //Below needs
+//                auto m_mesh =
+
+                glm::mat4 &m_modelMatrix = entity.getComponent<TransformComponent>().transform;
+
+                const glm::mat4 mvpMatrix = viewProjectionMatrix * m_modelMatrix;
+                // Normals should be transformed differently than positions (ignoring translations + dealing with scaling):
+                // https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
+                const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(m_modelMatrix));
+
+                glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
+                glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
+                glUniformMatrix3fv(2, 1, GL_FALSE, glm::value_ptr(normalModelMatrix));
+//                if (m_mesh.hasTextureCoords()) {
+//                    m_texture.bind(GL_TEXTURE0);
+//                    glUniform1i(3, 0);
+//                    glUniform1i(4, GL_TRUE);
+//                } else {
+//                    glUniform1i(4, GL_FALSE);
+//                }
                 glUniform1i(4, GL_FALSE);
+                entity.getComponent<MeshComponent>().mesh.draw();
+//            m_mesh.draw();
             }
-
-            m_mesh.draw();
-
             // Processes input and swaps the window buffer
             m_window.swapBuffers();
         }
@@ -128,7 +159,7 @@ public:
     // key - Integer that corresponds to numbers in https://www.glfw.org/docs/latest/group__keys.html
     // mods - Any modifier keys pressed, like shift or control
     void onKeyPressed(int key, int mods) {
-        switch(key) {
+        switch (key) {
             case GLFW_KEY_A:
                 break;
             case GLFW_KEY_W:
@@ -174,17 +205,19 @@ private:
     Shader m_defaultShader;
     Shader m_shadowShader;
 
-    GPUMesh m_mesh;
-    Texture m_texture;
+    //TODO: HACK FOR DEMO BE SURE TO REMOVE
+    std::vector<Entity> entities;
 
-    // Projection and view matrices for you to fill in and use
-//    glm::mat4 m_projectionMatrix = glm::perspective(glm::radians(80.0f), 1.0f, 0.1f, 30.0f);
-//    glm::mat4 m_viewMatrix = glm::lookAt(glm::vec3(-1, 1, -1), glm::vec3(0), glm::vec3(0, 1, 0));
-    glm::mat4 m_modelMatrix{1.0f};
+    Scene scene;
+
+//    GPUMesh m_mesh;
+//    Texture m_texture;
 };
 
 int main() {
     Application app;
+
+    app.setup();
     app.update();
 
     return 0;
