@@ -31,14 +31,34 @@ struct TransformComponent {
     explicit operator glm::mat4 &() { return transform; }
 };
 
-struct MeshComponent {
+struct MeshRendererComponent {
     GPUMesh mesh;
 
-    //Todo: for now we load the mesh every time, but we might be able to do
-    //something smarter when we want the same mesh to be rendered multiple times
-    explicit MeshComponent(std::filesystem::path filePath) : mesh(std::move(filePath)) {};
+    //Todo: for now we load the mesh every time, but we might be able to do something smarter when we want the same mesh to be rendered multiple times
+    explicit MeshRendererComponent(std::filesystem::path filePath) : mesh(std::move(filePath)) {};
 
     explicit operator GPUMesh &() { return mesh; }
+};
+
+struct CameraComponent {
+    Camera &camera;
+    float fov = 80.0f;
+
+    glm::vec3 lookTarget;
+
+    CameraComponent() = delete;
+
+    CameraComponent(const CameraComponent &) = default;
+
+    explicit CameraComponent(Camera &camera, glm::vec3 lookTarget) : camera(camera), lookTarget(lookTarget) {};
+
+    void getViewProjectionMatrix(glm::mat4 &vpMatrix, glm::mat4 &transform) const {
+        glm::mat4 pMatrix;
+        camera.getProjectionMatrix(pMatrix, fov);
+        auto position = glm::vec3(transform[3]);
+        //TODO: We ideally want to support the up vector changing, for that get the rotation out of the transform and apply it to (0,1,0)
+        vpMatrix = pMatrix * glm::lookAt(position, lookTarget, glm::vec3(0, 1, 0));
+    }
 };
 
 

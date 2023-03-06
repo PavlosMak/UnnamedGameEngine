@@ -68,101 +68,42 @@ public:
         }
     }
 
-    void setup() {
-        //TODO: The next lines are all a dirty hack to quickly demonstrate the ECS.
-//
-//        Entity firstDragon = scene.createEntity("Smaug");
-//        firstDragon.addComponent<MeshComponent>("resources/dragon.obj");
-//        firstDragon.addComponent<TransformComponent>(glm::mat4{1.0f});
-
-        Entity secondDragon = scene.createEntity("Syrax");
-        secondDragon.addComponent<MeshComponent>("resources/dragon.obj");
-        secondDragon.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(0.0, 0.0, 1.0)));
-
-        Entity thirdDragon = scene.createEntity("Mushu");
-        thirdDragon.addComponent<MeshComponent>("resources/dragon.obj");
-        thirdDragon.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(0.0, 0.0, -1.0)));
-
-        Entity ape = scene.createEntity("Ape");
-        ape.addComponent<MeshComponent>("resources/ape.obj");
-        ape.addComponent<TransformComponent>(glm::scale(
-                glm::rotate(glm::mat4{1.0f},
-                            glm::radians(-45.f),
-                            glm::vec3(0.0,1.0,0.0)),
-                glm::vec3(0.1, 0.1, 0.1))
-        );
-
-//        entities.push_back(firstDragon);
-        entities.push_back(secondDragon);
-        entities.push_back(thirdDragon);
-        entities.push_back(ape);
+    float static getAspectRatio() {
+        return 0.0f;
     }
 
     void update() {
-        //Save current time for profiling
-        int dummyInteger = 0; // Initialized to 0
-
         //Create our camera
-        Camera camera = Camera(glm::vec3(-1, 1, -1), glm::vec3(0), glm::vec3(0, 1, 0));
-
-        //Init a viewProjectionMatrix that we are going to update
-        glm::mat4 viewProjectionMatrix;
-
-
+        Camera camera = Camera();
+        scene.setup(camera);
+        long long timeStep = 0l;
         while (!m_window.shouldClose()) {
-
             // This is your game loop
             // Put your real-time logic and rendering in here
             m_window.updateInput();
             // Use ImGui for easy input/output of ints, floats, strings, etc...
             ImGui::Begin("Debug Window");
-            ImGui::InputInt("This is an integer input",
-                            &dummyInteger); // Use ImGui::DragInt or ImGui::DragFloat for larger range of numbers.
-            ImGui::Text("Value is: %i", dummyInteger); // Use C printf formatting rules (%i is a signed integer)
-            ImGui::Text("Application average: %.3f ms/frame (%.3f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::Text("Application average: %.3f ms/frame (%.3f FPS)", 1000.0f / ImGui::GetIO().Framerate,
+                        ImGui::GetIO().Framerate);
             ImGui::End();
 
             //Adjust size of window
             glViewport(0, 0, m_window.getWindowSize().x, m_window.getWindowSize().y);
+            camera.updateAspectRatio(m_window.getAspectRatio());
+
             // Clear the screen
             glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             // ...
-            glEnable(GL_DEPTH_TEST);
-
-            //Get new view projection matrix based on camera position
-            camera.getViewProjectionMatrix(viewProjectionMatrix, m_window.getAspectRatio());
 
             m_defaultShader.bind();
 
-            for (Entity entity: entities) {
-                //Below needs
-//                auto m_mesh =
+            scene.update();
 
-                glm::mat4 &m_modelMatrix = entity.getComponent<TransformComponent>().transform;
-
-                const glm::mat4 mvpMatrix = viewProjectionMatrix * m_modelMatrix;
-                // Normals should be transformed differently than positions (ignoring translations + dealing with scaling):
-                // https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
-                const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(m_modelMatrix));
-
-                glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
-                glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(m_modelMatrix));
-                glUniformMatrix3fv(2, 1, GL_FALSE, glm::value_ptr(normalModelMatrix));
-//                if (m_mesh.hasTextureCoords()) {
-//                    m_texture.bind(GL_TEXTURE0);
-//                    glUniform1i(3, 0);
-//                    glUniform1i(4, GL_TRUE);
-//                } else {
-//                    glUniform1i(4, GL_FALSE);
-//                }
-                glUniform1i(4, GL_FALSE);
-                entity.getComponent<MeshComponent>().mesh.draw();
-//            m_mesh.draw();
-            }
             // Processes input and swaps the window buffer
             m_window.swapBuffers();
+            timeStep += 1l;
         }
     }
 
@@ -216,9 +157,6 @@ private:
     Shader m_defaultShader;
     Shader m_shadowShader;
 
-    //TODO: HACK FOR DEMO BE SURE TO REMOVE
-    std::vector<Entity> entities;
-
     Scene scene;
 
 //    GPUMesh m_mesh;
@@ -228,7 +166,6 @@ private:
 int main() {
     Application app;
 
-    app.setup();
     app.update();
 
     return 0;
