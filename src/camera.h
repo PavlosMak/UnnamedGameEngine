@@ -6,13 +6,12 @@
 
 class Camera {
 private:
-    glm::vec3 m_position;
-    glm::vec3 m_lookTarget;
-    glm::vec3 m_upVector;
+    float m_aspectRatio;
 public:
-    Camera(glm::vec3 position, glm::vec3 lookTarget, glm::vec3 up): m_position(position), m_lookTarget(lookTarget), m_upVector(up) {};
-    void updatePosition(const glm::vec3& offset);
-    void getViewProjectionMatrix(glm::mat4& vpMatrix, float aspectRatio);
+    Camera(): m_aspectRatio(1.0f) {};
+    void updateAspectRatio(float aspectRatio);
+    //fov in degrees
+    void getProjectionMatrix(glm::mat4& pMatrix, float fov) const;
 };
 
 

@@ -53,6 +53,8 @@ public:
 	// Useful for a first person camera.
 	void setMouseCapture(bool capture);
 
+    GLFWwindow* getWindowHandle();
+
 	[[nodiscard]] glm::ivec2 getWindowSize() const;
 	[[nodiscard]] glm::ivec2 getFrameBufferSize() const;
 	[[nodiscard]] float getAspectRatio() const;

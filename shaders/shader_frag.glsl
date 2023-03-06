@@ -16,6 +16,6 @@ void main()
         fragColor = vec4(texture(colorMap, fragTexCoord).rgb, 1);
     } else {
         // Output color value, change from (1, 0, 0) to something else
-        fragColor = vec4(normal, 1);
+        fragColor = vec4(abs(normalize(fragNormal)), 1);
     }
 }

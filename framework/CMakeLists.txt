@@ -36,7 +36,7 @@ else()
 		"src/window.cpp"
 		"src/imguizmo.cpp"
 		"src/ImGuizmo/ImGuizmo.cpp"
-	)
+            include/framework/entt/entt.h)
 	target_include_directories(CGFramework PRIVATE "include/framework/" PUBLIC "include/")
 	target_link_libraries(CGFramework PUBLIC OpenGL::GL glad glm glfw imgui stb tinyobjloader fmt nativefiledialog)
 	target_compile_features(CGFramework PUBLIC cxx_std_20)
