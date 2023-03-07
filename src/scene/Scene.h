@@ -2,6 +2,8 @@
 #define COMPUTERGRAPHICS_SCENE_H
 
 #include "framework/entt/entt.h"
+#include "unordered_map"
+
 #include "../camera.h"
 
 class Entity;
@@ -13,7 +15,8 @@ public:
 
     Entity createEntity(const std::string &name);
 
-    Entity registerCamera(Camera &camera, glm::mat4 cameraTransform);
+    //This implies that we use unique tags, we might want to rename this to something like id.
+    Entity getEntityByTag(std::basic_string<char> tag);
 
     void setup(Camera &camera);
 
@@ -21,7 +24,8 @@ public:
 
 private:
     entt::registry m_Registy;
-    entt::entity m_MainCamera;
+//    entt::entity m_MainCamera;
+    std::unordered_map<std::string,entt::entity> m_tagToEntity;
 
     friend class Entity;
 

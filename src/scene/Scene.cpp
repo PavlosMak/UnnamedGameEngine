@@ -10,19 +10,26 @@
 Scene::Scene() = default;
 
 
-Entity Scene::registerCamera(Camera &camera, glm::mat4 cameraTransform) {
-    auto handler = m_Registy.create();
-    this->m_MainCamera = handler;
-    Entity entity = {handler, this};
-    entity.addComponent<TagComponent>("Camera");
-    entity.addComponent<TransformComponent>(cameraTransform);
-    entity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
-    return entity;
+Entity Scene::getEntityByTag(std::basic_string<char> tag) {
+    return Entity{m_tagToEntity[tag], this};
 }
+
+//Entity Scene::registerCamera(Camera &camera, glm::mat4 cameraTransform) {
+//    auto handler = m_Registy.create();
+//    this->m_MainCamera = handler;
+//    Entity entity = {handler, this};
+//    entity.addComponent<TagComponent>("Camera");
+//    entity.addComponent<TransformComponent>(cameraTransform);
+//    entity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
+//    return entity;
+//}
 
 void Scene::setup(Camera &camera) {
 
-    this->registerCamera(camera, glm::translate(glm::mat4{1.0f}, glm::vec3(-1, 0.3, -1)));
+//    this->registerCamera(camera, glm::translate(glm::mat4{1.0f}, glm::vec3(-1, 0.3, -1)));
+    Entity cameraEntity = this->createEntity("Camera");
+    cameraEntity.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1,0.3,-1)));
+    cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
 
     Entity secondDragon = this->createEntity("Syrax");
     secondDragon.addComponent<MeshRendererComponent>("resources/dragon.obj");
@@ -44,8 +51,10 @@ void Scene::setup(Camera &camera) {
 
 void Scene::update() {
     glm::mat4 vpMatrix;
-    CameraComponent &mainCameraComponent = m_Registy.get<CameraComponent>(m_MainCamera);
-    TransformComponent &mainCameraTransform = m_Registy.get<TransformComponent>(m_MainCamera);
+
+    Entity camera = this->getEntityByTag("Camera");
+    auto &mainCameraComponent = camera.getComponent<CameraComponent>();
+    auto &mainCameraTransform = camera.getComponent<TransformComponent>();
     mainCameraComponent.getViewProjectionMatrix(vpMatrix, mainCameraTransform.transform);
 
     auto group = m_Registy.group<MeshRendererComponent, TransformComponent>();
@@ -72,7 +81,9 @@ void Scene::update() {
 
 
 Entity Scene::createEntity(const std::string &name) {
-    Entity entity = {m_Registy.create(), this};
+    auto handle = m_Registy.create();
+    Entity entity = {handle, this};
     entity.addComponent<TagComponent>(name);
+    m_tagToEntity.emplace(name, handle);
     return entity;
 }
