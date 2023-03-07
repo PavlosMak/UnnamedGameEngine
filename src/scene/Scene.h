@@ -24,7 +24,6 @@ public:
 
 private:
     entt::registry m_Registy;
-//    entt::entity m_MainCamera;
     std::unordered_map<std::string,entt::entity> m_tagToEntity;
 
     friend class Entity;

@@ -14,19 +14,8 @@ Entity Scene::getEntityByTag(std::basic_string<char> tag) {
     return Entity{m_tagToEntity[tag], this};
 }
 
-//Entity Scene::registerCamera(Camera &camera, glm::mat4 cameraTransform) {
-//    auto handler = m_Registy.create();
-//    this->m_MainCamera = handler;
-//    Entity entity = {handler, this};
-//    entity.addComponent<TagComponent>("Camera");
-//    entity.addComponent<TransformComponent>(cameraTransform);
-//    entity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
-//    return entity;
-//}
-
 void Scene::setup(Camera &camera) {
 
-//    this->registerCamera(camera, glm::translate(glm::mat4{1.0f}, glm::vec3(-1, 0.3, -1)));
     Entity cameraEntity = this->createEntity("Camera");
     cameraEntity.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1,0.3,-1)));
     cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
