@@ -10,11 +10,6 @@ DISABLE_WARNINGS_PUSH()
 #include <glad/glad.h>
 // Include glad before glfw3
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_inverse.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/mat4x4.hpp>
 #include <imgui/imgui.h>
 
 DISABLE_WARNINGS_POP()
@@ -23,12 +18,9 @@ DISABLE_WARNINGS_POP()
 #include <framework/window.h>
 #include <functional>
 #include <iostream>
-#include <vector>
-
 #include "camera.h"
 #include "scene/Scene.h"
 #include "scene/Entity.h"
-#include "scene/Components.h"
 
 class Application {
 public:
@@ -49,10 +41,6 @@ public:
         });
 
         try {
-            ShaderBuilder defaultBuilder;
-            defaultBuilder.addStage(GL_VERTEX_SHADER, "shaders/shader_vert.glsl");
-            defaultBuilder.addStage(GL_FRAGMENT_SHADER, "shaders/shader_frag.glsl");
-            m_defaultShader = defaultBuilder.build();
 
             ShaderBuilder shadowBuilder;
             shadowBuilder.addStage(GL_VERTEX_SHADER, "shaders/shadow_vert.glsl");
@@ -95,11 +83,7 @@ public:
             glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            // ...
-
-            m_defaultShader.bind();
-
-            scene.update();
+            scene.update(timeStep);
 
             // Processes input and swaps the window buffer
             m_window.swapBuffers();
@@ -154,12 +138,9 @@ private:
     Window m_window;
 
     // Shader for default rendering and for depth rendering
-    Shader m_defaultShader;
     Shader m_shadowShader;
 
     Scene scene;
-
-//    GPUMesh m_mesh;
 //    Texture m_texture;
 };
 
