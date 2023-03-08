@@ -5,6 +5,7 @@
 #include "unordered_map"
 
 #include "../camera.h"
+#include "../materials/ShaderManager.h"
 
 class Entity;
 
@@ -15,16 +16,17 @@ public:
 
     Entity createEntity(const std::string &name);
 
-    //This implies that we use unique tags, we might want to rename this to something like id.
+    //This implies that we use unique tags, we might want to rename this to something like ID.
     Entity getEntityByTag(std::basic_string<char> tag);
 
     void setup(Camera &camera);
 
-    void update();
+    void update(const long long& timeStep);
 
 private:
+    ShaderManager m_shaderManager;
     entt::registry m_Registy;
-    std::unordered_map<std::string,entt::entity> m_tagToEntity;
+    std::unordered_map<std::string, entt::entity> m_tagToEntity;
 
     friend class Entity;
 

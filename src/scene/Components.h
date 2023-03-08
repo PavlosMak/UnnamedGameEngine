@@ -5,7 +5,7 @@
 
 #include "glm/glm.hpp"
 #include "../mesh.h"
-
+#include "../materials/Material.h"
 
 struct TagComponent {
     std::string name;
@@ -59,6 +59,12 @@ struct CameraComponent {
         //TODO: We ideally want to support the up vector changing, for that get the rotation out of the transform and apply it to (0,1,0)
         vpMatrix = pMatrix * glm::lookAt(position, lookTarget, glm::vec3(0, 1, 0));
     }
+};
+
+struct MaterialComponent {
+    Material material;
+    MaterialComponent() = delete;
+    explicit MaterialComponent(const Material &material): material(material) {};
 };
 
 
