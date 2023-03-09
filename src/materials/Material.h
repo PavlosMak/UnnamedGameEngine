@@ -21,7 +21,7 @@ public:
 private:
     const SHADER_TYPE m_shaderType;
     const Shader &m_shader;
-    glm::vec3 m_color;
+    glm::vec3 m_color; //m_color acts as the diffuse
 };
 
 

@@ -16,8 +16,11 @@ void Material::setColor(glm::vec3 &color) {
 void Material::bindMaterial() {
     m_shader.bind();
     switch (m_shaderType) {
-        case SHADER_TYPE::SOLID_COLOR:
+        case SOLID_COLOR:
             glUniform3fv(3, 1, glm::value_ptr(m_color));
+            break;
+        case PHONG:
+            glUniform3fv(5, 1, glm::value_ptr(m_color));
             break;
         case NORMAL_AS_COLOR:
             break;

@@ -7,7 +7,8 @@
 
 enum SHADER_TYPE {
     SOLID_COLOR = 0,
-    NORMAL_AS_COLOR = 1
+    NORMAL_AS_COLOR = 1,
+    PHONG = 3
 };
 
 class ShaderManager {

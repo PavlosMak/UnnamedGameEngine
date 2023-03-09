@@ -22,6 +22,7 @@ DISABLE_WARNINGS_POP()
 #include "scene/Scene.h"
 #include "scene/Entity.h"
 
+
 class Application {
 public:
     Application()
@@ -73,6 +74,7 @@ public:
             ImGui::Begin("Debug Window");
             ImGui::Text("Application average: %.3f ms/frame (%.3f FPS)", 1000.0f / ImGui::GetIO().Framerate,
                         ImGui::GetIO().Framerate);
+            ImGui::Text("Triangles: %d", scene.getSceneStats().triangleCount);
             ImGui::End();
 
             //Adjust size of window
@@ -139,7 +141,6 @@ private:
 
     // Shader for default rendering and for depth rendering
     Shader m_shadowShader;
-
     Scene scene;
 //    Texture m_texture;
 };
