@@ -6,6 +6,7 @@
 
 #include "../camera.h"
 #include "../materials/ShaderManager.h"
+#include "../lights/Light.h"
 
 class Entity;
 
@@ -30,6 +31,9 @@ public:
     SceneStats getSceneStats();
 
 private:
+    void updateStatistics();
+
+    std::vector<Light> lights;
     ShaderManager m_shaderManager;
     entt::registry m_Registy;
     std::unordered_map<std::string, entt::entity> m_tagToEntity;

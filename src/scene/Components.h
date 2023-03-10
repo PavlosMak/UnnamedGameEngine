@@ -63,8 +63,10 @@ struct CameraComponent {
 
 struct MaterialComponent {
     Material material;
+
     MaterialComponent() = delete;
-    explicit MaterialComponent(const Material &material): material(material) {};
+
+    explicit MaterialComponent(const Material &material) : material(material) {};
 };
 
 

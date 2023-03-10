@@ -74,6 +74,7 @@ public:
             ImGui::Begin("Debug Window");
             ImGui::Text("Application average: %.3f ms/frame (%.3f FPS)", 1000.0f / ImGui::GetIO().Framerate,
                         ImGui::GetIO().Framerate);
+            ImGui::Text("Scene Stats: ");
             ImGui::Text("Triangles: %d", scene.getSceneStats().triangleCount);
             ImGui::End();
 
