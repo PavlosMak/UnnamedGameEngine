@@ -19,25 +19,25 @@ public:
      */
     template<typename T>
     bool hasComponent() {
-        return m_Scene->m_Registy.any_of<T>(m_EntityHandle);
+        return m_Scene->m_registry.any_of<T>(m_EntityHandle);
     }
 
     template<typename T, typename... Args>
     T &addComponent(Args &&... args) {
         assert(!hasComponent<T>());
-        return m_Scene->m_Registy.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
+        return m_Scene->m_registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
     }
 
     template<typename T>
     T &getComponent() {
         assert(hasComponent<T>());
-        return m_Scene->m_Registy.get<T>(m_EntityHandle);
+        return m_Scene->m_registry.get<T>(m_EntityHandle);
     }
 
     template<typename T>
     void removeComponent() {
         assert(hasComponent<T>());
-        m_Scene->m_Registy.remove<T>(m_EntityHandle);
+        m_Scene->m_registry.remove<T>(m_EntityHandle);
     }
 
 private:

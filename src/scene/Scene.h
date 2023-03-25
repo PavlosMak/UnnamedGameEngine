@@ -12,7 +12,7 @@ class Entity;
 class Scene : public std::enable_shared_from_this<Scene> {
 public:
 
-    Scene();
+    Scene(entt::registry& registry);
 
     Entity createEntity(const std::string &name);
 
@@ -25,11 +25,10 @@ public:
 
 private:
     ShaderManager m_shaderManager;
-    entt::registry m_Registy;
+    entt::registry& m_registry;
     std::unordered_map<std::string, entt::entity> m_tagToEntity;
 
     friend class Entity;
-
 };
 
 

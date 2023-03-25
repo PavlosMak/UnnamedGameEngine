@@ -7,8 +7,7 @@
 #include "glm/gtc/matrix_inverse.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-Scene::Scene() : m_shaderManager() {};
-
+Scene::Scene(entt::registry& registry) : m_registry(registry), m_shaderManager() {}
 
 Entity Scene::getEntityByTag(std::basic_string<char> tag) {
     return Entity{m_tagToEntity[tag], this};
@@ -25,9 +24,15 @@ void Scene::setup(Camera &camera) {
     Material normalMaterial = Material(m_shaderManager.getShader(SHADER_TYPE::NORMAL_AS_COLOR),
                                        SHADER_TYPE::NORMAL_AS_COLOR);
 
-    Entity cameraEntity = this->createEntity("Camera");
-    cameraEntity.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1, 0.3, -1)));
-    cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
+    Entity ape = this->createEntity("Ape");
+    ape.addComponent<MeshRendererComponent>("resources/ape.obj");
+    ape.addComponent<TransformComponent>(glm::scale(glm::rotate(glm::mat4{1.0f},
+                                                                glm::radians(-45.f),
+                                                                glm::vec3(0.0, 1.0, 0.0)),
+                                                    glm::vec3(0.1, 0.1, 0.1))
+    );
+    ape.addComponent<MaterialComponent>(material);
+    ape.addComponent<WasdComponent>(0.9f);
 
     Entity secondDragon = this->createEntity("Syrax");
     secondDragon.addComponent<MeshRendererComponent>("resources/dragon.obj");
@@ -39,14 +44,10 @@ void Scene::setup(Camera &camera) {
     thirdDragon.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(0.0, 0.0, -1.0)));
     thirdDragon.addComponent<MaterialComponent>(normalMaterial);
 
-    Entity ape = this->createEntity("Ape");
-    ape.addComponent<MeshRendererComponent>("resources/ape.obj");
-    ape.addComponent<TransformComponent>(glm::scale(glm::rotate(glm::mat4{1.0f},
-                                                                glm::radians(-45.f),
-                                                                glm::vec3(0.0, 1.0, 0.0)),
-                                                    glm::vec3(0.1, 0.1, 0.1))
-    );
-    ape.addComponent<MaterialComponent>(material);
+    Entity cameraEntity = this->createEntity("Camera");
+    cameraEntity.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1, 0.3, -1)));
+    cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
+//    cameraEntity.addComponent<WasdComponent>(0.1f);
 }
 
 void Scene::update(const long long &timeStep) {
@@ -57,13 +58,14 @@ void Scene::update(const long long &timeStep) {
     auto &mainCameraTransform = camera.getComponent<TransformComponent>();
     mainCameraComponent.getViewProjectionMatrix(vpMatrix, mainCameraTransform.transform);
 
-    auto group = m_Registy.group<MeshRendererComponent, TransformComponent>();
+    // Render system: takes care of rendering all objects with a mesh and transform
+    auto group = m_registry.group<MeshRendererComponent, TransformComponent>();
 
     glEnable(GL_DEPTH_TEST);
     for (auto entity: group) {
         TransformComponent &transform = group.get<TransformComponent>(entity);
         MeshRendererComponent &meshRenderer = group.get<MeshRendererComponent>(entity);
-        MaterialComponent &materialComponent = m_Registy.get<MaterialComponent>(entity);
+        MaterialComponent &materialComponent = m_registry.get<MaterialComponent>(entity);
 
         const glm::mat4 mvpMatrix = vpMatrix * transform.transform;
         // Normals should be transformed differently than positions (ignoring translations + dealing with scaling):
@@ -79,13 +81,15 @@ void Scene::update(const long long &timeStep) {
         meshRenderer.mesh.draw();
         //        glUniform1i(4, GL_FALSE); This was used for the texture coordinates
     }
+
+
 }
 
-
 Entity Scene::createEntity(const std::string &name) {
-    auto handle = m_Registy.create();
+    auto handle = m_registry.create();
     Entity entity = {handle, this};
     entity.addComponent<TagComponent>(name);
     m_tagToEntity.emplace(name, handle);
     return entity;
 }
+
