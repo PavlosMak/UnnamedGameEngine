@@ -1,13 +1,12 @@
-#ifndef COMPUTERGRAPHICS_ENTITY_H
-#define COMPUTERGRAPHICS_ENTITY_H
+#pragma once
 
 #include "Scene.h"
 #include "framework/entt/entt.h"
 
 class Entity {
 public:
-    Entity(entt::entity handle, Scene *scene);
 
+    Entity(entt::entity handle, entt::registry& registry) : m_EntityHandle(handle), m_registry(registry) {};
 
     /**
      * Creates a new component in the entity. We are using
@@ -19,31 +18,28 @@ public:
      */
     template<typename T>
     bool hasComponent() {
-        return m_Scene->m_registry.any_of<T>(m_EntityHandle);
+        return m_registry.any_of<T>(m_EntityHandle);
     }
 
     template<typename T, typename... Args>
     T &addComponent(Args &&... args) {
         assert(!hasComponent<T>());
-        return m_Scene->m_registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
+        return m_registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
     }
 
     template<typename T>
     T &getComponent() {
         assert(hasComponent<T>());
-        return m_Scene->m_registry.get<T>(m_EntityHandle);
+        return m_registry.get<T>(m_EntityHandle);
     }
 
     template<typename T>
     void removeComponent() {
         assert(hasComponent<T>());
-        m_Scene->m_registry.remove<T>(m_EntityHandle);
+        m_registry.remove<T>(m_EntityHandle);
     }
 
 private:
     entt::entity m_EntityHandle;
-    Scene *m_Scene;
+    entt::registry& m_registry;
 };
-
-
-#endif //COMPUTERGRAPHICS_ENTITY_H

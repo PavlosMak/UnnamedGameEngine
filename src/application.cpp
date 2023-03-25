@@ -23,6 +23,7 @@ DISABLE_WARNINGS_POP()
 #include "scene/Entity.h"
 #include "scene/Components.h"
 #include "systems/WasdControllerSystem.h"
+#include "systems/RenderSystem.h"
 
 class Application {
 public:
@@ -66,9 +67,6 @@ public:
         long long timeStep = 0l;
         while (!m_window.shouldClose()) {
 
-            // This is your game loop
-            // Put your real-time logic and rendering in here
-
             // update the window state
             m_window.updateInput();
 
@@ -78,17 +76,13 @@ public:
                         ImGui::GetIO().Framerate);
             ImGui::End();
 
-            // Adjust size of window
-            glViewport(0, 0, m_window.getWindowSize().x, m_window.getWindowSize().y);
-            camera.updateAspectRatio(m_window.getAspectRatio());
-
-            // Clear the screen
-            glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+            // handle input
             m_wasdSystem.update(m_registry);
 
+            // update scene
             m_scene.update(timeStep);
+
+            m_renderSystem.renderMeshes(m_registry, m_scene.getEntityByTag("Camera"), m_window.getWindowSize(), m_window.getAspectRatio());
 
             // Processes input and swaps the window buffer
             m_window.swapBuffers();
@@ -143,6 +137,7 @@ private:
 
     // systems
     WasdControllerSystem m_wasdSystem;
+    RenderSystem m_renderSystem;
 };
 
 int main() {
