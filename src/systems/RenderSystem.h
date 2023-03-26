@@ -22,10 +22,11 @@ public:
 
         clearScreen();
 
-        auto cam = camera.getComponent<CameraComponent>().camera;
+        Camera& cam = camera.getComponent<CameraComponent>().camera;
 
         // Adjust size of window
         glViewport(0, 0, windowSize.x, windowSize.y);
+        cam.updateAspectRatio(aspectRatio);
 
         auto view = registry.view<MeshRendererComponent, TransformComponent, MaterialComponent>();
 
@@ -52,10 +53,6 @@ public:
             meshRenderer.mesh.draw();
             //        glUniform1i(4, GL_FALSE); This was used for the texture coordinates
         }
-
-//        // Clear the screen
-//        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     }
 };

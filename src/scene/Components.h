@@ -49,7 +49,7 @@ struct CameraComponent {
 
     glm::vec3 lookTarget;
 
-    CameraComponent() = delete;
+    CameraComponent() = default;
 
     CameraComponent(const CameraComponent &) = default;
 
