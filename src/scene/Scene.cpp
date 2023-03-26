@@ -1,6 +1,6 @@
 #include "glm/glm.hpp"
 #include "glm/ext/matrix_transform.hpp"
-#include <iostream>
+
 #include "Scene.h"
 #include "Entity.h"
 #include "Components.h"
@@ -67,12 +67,12 @@ void Scene::setup(Camera &camera) {
 //        sponza.addComponent<TransformComponent>(glm::scale(glm::mat4{1.0f}, glm::vec3(0.02, 0.02, 0.02)));
 //        sponza.addComponent<MaterialComponent>(phongMaterial);
 
-    //Update the scene statistics
-    updateStatistics();
     Entity cameraEntity = this->createEntity("Camera");
     cameraEntity.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-2, 0, 0)));
     cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
-//    cameraEntity.addComponent<WasdComponent>(0.1f);
+    cameraEntity.addComponent<WasdComponent>(0.1f);
+
+    updateStatistics();
 }
 
 void Scene::update(const long long &timeStep) {

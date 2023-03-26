@@ -29,10 +29,10 @@ public:
 
         clearScreen();
 
-        auto cam = camera.getComponent<CameraComponent>().camera;
+        Camera& cam = camera.getComponent<CameraComponent>().camera;
         glm::vec3 camPosition = camera.getComponent<TransformComponent>().transform[3];
 
-                  // Adjust size of window
+        // Adjust size of window
         glViewport(0, 0, windowSize.x, windowSize.y);
         cam.updateAspectRatio(aspectRatio);
 
@@ -61,5 +61,6 @@ public:
             meshRenderer.mesh.draw();
             //        glUniform1i(4, GL_FALSE); This was used for the texture coordinates
         }
+
     }
 };

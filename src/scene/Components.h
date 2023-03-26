@@ -1,7 +1,8 @@
-#ifndef COMPUTERGRAPHICS_COMPONENTS_H
-#define COMPUTERGRAPHICS_COMPONENTS_H
+#pragma once
 
 #include <utility>
+
+#include "framework/entt_imgui/imgui_entt_entity_editor.hpp"
 
 #include "glm/glm.hpp"
 #include "../mesh.h"
@@ -43,7 +44,7 @@ struct MeshRendererComponent {
 };
 
 struct CameraComponent {
-    Camera& camera;
+    Camera &camera;
     float fov = 80.0f;
 
     glm::vec3 lookTarget;
@@ -52,7 +53,7 @@ struct CameraComponent {
 
     CameraComponent(const CameraComponent &) = default;
 
-    explicit CameraComponent(Camera& camera, glm::vec3 lookTarget) : camera(camera), lookTarget(lookTarget) {};
+    explicit CameraComponent(Camera &camera, glm::vec3 lookTarget) : camera(camera), lookTarget(lookTarget) {};
 
     void getViewProjectionMatrix(glm::mat4 &vpMatrix, glm::mat4 &transform) const {
         glm::mat4 pMatrix;
@@ -74,6 +75,8 @@ struct MaterialComponent {
 struct WasdComponent {
     float movementSpeed = 0.1f;
 
+    WasdComponent() : movementSpeed(0.0f) {};
+
     explicit WasdComponent(float movementSpeed) : movementSpeed(movementSpeed) {};
 };
 
@@ -83,5 +86,3 @@ struct LightComponent {
 
     explicit LightComponent(const Light &light): light(light) {};
 };
-
-#endif //COMPUTERGRAPHICS_COMPONENTS_H

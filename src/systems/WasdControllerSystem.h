@@ -19,7 +19,6 @@ class WasdControllerSystem {
         switch (key) {
             case GLFW_KEY_A:
                 this->aDown = newState;
-                std::cout << this->aDown << std::endl;
                 break;
             case GLFW_KEY_W:
                 this->wDown = newState;
