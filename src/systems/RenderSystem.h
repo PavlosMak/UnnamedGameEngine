@@ -17,14 +17,22 @@ private:
 
 public:
 
-
     void renderMeshes(entt::registry& registry, Entity camera, glm::ivec2 windowSize, float aspectRatio) {
+
+        //Get the lights from the scene
+        std::vector<Light> lights;
+        auto lightView = registry.view<LightComponent>();
+        for(auto lightEntity : lightView) {
+            lights.push_back(lightView.get<LightComponent>(lightEntity).light);
+        }
+
 
         clearScreen();
 
         auto cam = camera.getComponent<CameraComponent>().camera;
+        glm::vec3 camPosition = camera.getComponent<TransformComponent>().transform[3];
 
-        // Adjust size of window
+                  // Adjust size of window
         glViewport(0, 0, windowSize.x, windowSize.y);
         cam.updateAspectRatio(aspectRatio);
 
@@ -44,7 +52,7 @@ public:
             // https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
             const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(transform.transform));
 
-            materialComponent.material.bindMaterial();
+            materialComponent.material.bindMaterial(camPosition,lights);
 
             glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
             glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(transform.transform));
@@ -53,10 +61,5 @@ public:
             meshRenderer.mesh.draw();
             //        glUniform1i(4, GL_FALSE); This was used for the texture coordinates
         }
-
-//        // Clear the screen
-//        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-//        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     }
 };

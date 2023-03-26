@@ -77,4 +77,11 @@ struct WasdComponent {
     explicit WasdComponent(float movementSpeed) : movementSpeed(movementSpeed) {};
 };
 
+
+struct LightComponent {
+    Light light;
+
+    explicit LightComponent(const Light &light): light(light) {};
+};
+
 #endif //COMPUTERGRAPHICS_COMPONENTS_H

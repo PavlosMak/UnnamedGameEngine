@@ -19,8 +19,7 @@ vec3 lightContribution(vec3 lightVec, vec3 lightColor, vec3 cameraVec) {
     vec3 reflection = normalize(reflect(-lightVec, fragNormal));
     float phi = max(0.0, dot(reflection, cameraVec));
     vec3 specular = kd*pow(phi, shininess);
-//    return lightColor*(kd*theta + kd*phi);
-    return lightColor*kd*phi;
+    return lightColor*(kd*theta + kd*phi);
 }
 
 void main() {

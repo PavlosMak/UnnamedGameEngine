@@ -16,7 +16,7 @@ Entity Scene::getEntityByTag(std::basic_string<char> tag) {
 }
 
 void Scene::updateStatistics() {
-    auto group = m_Registy.group<MeshRendererComponent, TransformComponent>();
+    auto group = m_registry.group<MeshRendererComponent, TransformComponent>();
     for (auto entity: group) {
         MeshRendererComponent &meshRenderer = group.get<MeshRendererComponent>(entity);
         m_stats.triangleCount += meshRenderer.mesh.getTriangleCount();
@@ -34,29 +34,45 @@ void Scene::setup(Camera &camera) {
                                      SHADER_TYPE::SOLID_COLOR);
     Material normalMaterial = Material(m_shaderManager.getShader(SHADER_TYPE::NORMAL_AS_COLOR),
                                        SHADER_TYPE::NORMAL_AS_COLOR);
-    Material phongMaterial = Material(m_shaderManager.getShader(SHADER_TYPE::PHONG), glm::vec3(.8, 0, 0),
+    Material phongMaterial = Material(m_shaderManager.getShader(SHADER_TYPE::PHONG),
+                                      glm::vec3(.8, 0, 0),
+                                      1,
                                       SHADER_TYPE::PHONG);
 
-    lights.emplace_back(glm::vec3(-1, 1, 0), glm::vec3(1.0f));
+    Light light = Light(glm::vec3(-1, 1, 1), glm::vec3(1.0f));
+    Entity light1 = this->createEntity("Light1");
+    light1.addComponent<LightComponent>(light);
 
-    Entity batman = this->createEntity("Batman");
-    batman.addComponent<MeshRendererComponent>("resources/batman.obj");
-    batman.addComponent<TransformComponent>(glm::scale(glm::rotate(glm::mat4{1.0f},
-                                                                   glm::degrees(90.0f),glm::vec3(0, 1, 0)), glm::vec3(0.3, 0.3, 0.3)));
-    batman.addComponent<MaterialComponent>(phongMaterial);
+//    Entity sphere = this->createEntity("Sphere");
+//    sphere.addComponent<MeshRendererComponent>("resources/sphere.obj");
+//    sphere.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(5, 3, -1)));
+//    sphere.addComponent<Material>(normalMaterial);
+//    sphere.addComponent<WasdComponent>(0.1f);
 
-    Entity sponza = this->createEntity("Sponza");
-//    //TODO: The app loads very slowly if we use nested path for the resource
-    sponza.addComponent<MeshRendererComponent>("resources/sponza.obj");
-    sponza.addComponent<TransformComponent>(glm::scale(glm::mat4{1.0f}, glm::vec3(0.02, 0.02, 0.02)));
-    sponza.addComponent<MaterialComponent>(phongMaterial);
+    Entity sphere = this->createEntity("TodoDelete");
+    sphere.addComponent<MeshRendererComponent>("resources/sphere.obj");
+    sphere.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(0, 0, 0)));
+    sphere.addComponent<MaterialComponent>(phongMaterial);
+    sphere.addComponent<WasdComponent>(0.1f);
+//
+//    Entity batman = this->createEntity("Batman");
+//    batman.addComponent<MeshRendererComponent>("resources/batman.obj");
+//    batman.addComponent<TransformComponent>(glm::scale(glm::rotate(
+//            glm::translate(glm::mat4{1.0f}, glm::vec3(0,.3,0.0)), glm::degrees(90.0f),glm::vec3(0, 1, 0)), glm::vec3(0.3, 0.3, 0.3)));
+//    batman.addComponent<MaterialComponent>(phongMaterial);
+    //
+//        Entity sponza = this->createEntity("Sponza");
+//    //    //TODO: The app loads very slowly if we use nested path for the resource
+//        sponza.addComponent<MeshRendererComponent>("resources/sponza.obj");
+//        sponza.addComponent<TransformComponent>(glm::scale(glm::mat4{1.0f}, glm::vec3(0.02, 0.02, 0.02)));
+//        sponza.addComponent<MaterialComponent>(phongMaterial);
 
     //Update the scene statistics
     updateStatistics();
     Entity cameraEntity = this->createEntity("Camera");
-    cameraEntity.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(0.02, 0.02, 0.02)));
+    cameraEntity.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-2, 0, 0)));
     cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
-    cameraEntity.addComponent<WasdComponent>(0.1f);
+//    cameraEntity.addComponent<WasdComponent>(0.1f);
 }
 
 void Scene::update(const long long &timeStep) {
