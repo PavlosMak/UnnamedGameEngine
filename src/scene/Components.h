@@ -6,6 +6,8 @@
 #include "glm/glm.hpp"
 #include "../mesh.h"
 #include "../materials/Material.h"
+#include "../camera.h"
+#include "glm/ext/matrix_transform.hpp"
 
 struct TagComponent {
     std::string name;
@@ -41,7 +43,7 @@ struct MeshRendererComponent {
 };
 
 struct CameraComponent {
-    Camera &camera;
+    Camera& camera;
     float fov = 80.0f;
 
     glm::vec3 lookTarget;
@@ -50,7 +52,7 @@ struct CameraComponent {
 
     CameraComponent(const CameraComponent &) = default;
 
-    explicit CameraComponent(Camera &camera, glm::vec3 lookTarget) : camera(camera), lookTarget(lookTarget) {};
+    explicit CameraComponent(Camera& camera, glm::vec3 lookTarget) : camera(camera), lookTarget(lookTarget) {};
 
     void getViewProjectionMatrix(glm::mat4 &vpMatrix, glm::mat4 &transform) const {
         glm::mat4 pMatrix;
@@ -69,5 +71,10 @@ struct MaterialComponent {
     explicit MaterialComponent(const Material &material) : material(material) {};
 };
 
+struct WasdComponent {
+    float movementSpeed = 0.1f;
+
+    explicit WasdComponent(float movementSpeed) : movementSpeed(movementSpeed) {};
+};
 
 #endif //COMPUTERGRAPHICS_COMPONENTS_H

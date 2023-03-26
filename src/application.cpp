@@ -21,12 +21,15 @@ DISABLE_WARNINGS_POP()
 #include "camera.h"
 #include "scene/Scene.h"
 #include "scene/Entity.h"
-
+#include "scene/Components.h"
+#include "systems/WasdControllerSystem.h"
+#include "systems/RenderSystem.h"
 
 class Application {
 public:
     Application()
-            : m_window("Final Project", glm::ivec2(1024, 1024), OpenGLVersion::GL45) {
+            : m_window("Final Project", glm::ivec2(1024, 1024), OpenGLVersion::GL45), m_scene(m_registry) {
+
         m_window.registerKeyCallback([this](int key, int scancode, int action, int mods) {
             if (action == GLFW_PRESS)
                 onKeyPressed(key, mods);
@@ -57,36 +60,29 @@ public:
         }
     }
 
-    float static getAspectRatio() {
-        return 0.0f;
-    }
-
     void update() {
         //Create our camera
         Camera camera = Camera();
-        scene.setup(camera);
+        m_scene.setup(camera);
         long long timeStep = 0l;
         while (!m_window.shouldClose()) {
-            // This is your game loop
-            // Put your real-time logic and rendering in here
+
+            // update the window state
             m_window.updateInput();
+
             // Use ImGui for easy input/output of ints, floats, strings, etc...
             ImGui::Begin("Debug Window");
             ImGui::Text("Application average: %.3f ms/frame (%.3f FPS)", 1000.0f / ImGui::GetIO().Framerate,
                         ImGui::GetIO().Framerate);
-            ImGui::Text("Scene Stats: ");
-            ImGui::Text("Triangles: %d", scene.getSceneStats().triangleCount);
             ImGui::End();
 
-            //Adjust size of window
-            glViewport(0, 0, m_window.getWindowSize().x, m_window.getWindowSize().y);
-            camera.updateAspectRatio(m_window.getAspectRatio());
+            // handle input
+            m_wasdSystem.update(m_registry);
 
-            // Clear the screen
-            glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            // update scene
+            m_scene.update(timeStep);
 
-            scene.update(timeStep);
+            m_renderSystem.renderMeshes(m_registry, m_scene.getEntityByTag("Camera"), m_window.getWindowSize(), m_window.getAspectRatio());
 
             // Processes input and swaps the window buffer
             m_window.swapBuffers();
@@ -94,47 +90,40 @@ public:
         }
     }
 
+    // Event based input handlers
+    // callbacks called when key pressed
+
     // In here you can handle key presses
     // key - Integer that corresponds to numbers in https://www.glfw.org/docs/latest/group__keys.html
     // mods - Any modifier keys pressed, like shift or control
     void onKeyPressed(int key, int mods) {
-        switch (key) {
-            case GLFW_KEY_A:
-                break;
-            case GLFW_KEY_W:
-                break;
-            case GLFW_KEY_S:
-                break;
-            case GLFW_KEY_D:
-                break;
-        }
-//        std::cout << "Key pressed: " << key << std::endl;
+        m_wasdSystem.onKeyPressed(key);
     }
 
     // In here you can handle key releases
     // key - Integer that corresponds to numbers in https://www.glfw.org/docs/latest/group__keys.html
     // mods - Any modifier keys pressed, like shift or control
     void onKeyReleased(int key, int mods) {
-        std::cout << "Key released: " << key << std::endl;
+        m_wasdSystem.onKeyReleased(key);
     }
 
     // If the mouse is moved this function will be called with the x, y screen-coordinates of the mouse
     void onMouseMove(const glm::dvec2 &cursorPos) {
-        std::cout << "Mouse at position: " << cursorPos.x << " " << cursorPos.y << std::endl;
+        // std::cout << "Mouse at position: " << cursorPos.x << " " << cursorPos.y << std::endl;
     }
 
     // If one of the mouse buttons is pressed this function will be called
     // button - Integer that corresponds to numbers in https://www.glfw.org/docs/latest/group__buttons.html
     // mods - Any modifier buttons pressed
     void onMouseClicked(int button, int mods) {
-        std::cout << "Pressed mouse button: " << button << std::endl;
+        // std::cout << "Pressed mouse button: " << button << std::endl;
     }
 
     // If one of the mouse buttons is released this function will be called
     // button - Integer that corresponds to numbers in https://www.glfw.org/docs/latest/group__buttons.html
     // mods - Any modifier buttons pressed
     void onMouseReleased(int button, int mods) {
-        std::cout << "Released mouse button: " << button << std::endl;
+        // std::cout << "Released mouse button: " << button << std::endl;
     }
 
 private:
@@ -142,8 +131,13 @@ private:
 
     // Shader for default rendering and for depth rendering
     Shader m_shadowShader;
-    Scene scene;
-//    Texture m_texture;
+    //Texture m_texture;
+    Scene m_scene;
+    entt::registry m_registry;
+
+    // systems
+    WasdControllerSystem m_wasdSystem;
+    RenderSystem m_renderSystem;
 };
 
 int main() {
