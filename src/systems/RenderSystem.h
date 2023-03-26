@@ -26,7 +26,6 @@ public:
 
         // Adjust size of window
         glViewport(0, 0, windowSize.x, windowSize.y);
-        cam.updateAspectRatio(aspectRatio);
 
         auto view = registry.view<MeshRendererComponent, TransformComponent, MaterialComponent>();
 

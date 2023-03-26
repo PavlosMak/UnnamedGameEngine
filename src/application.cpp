@@ -14,6 +14,8 @@ DISABLE_WARNINGS_PUSH()
 
 DISABLE_WARNINGS_POP()
 
+#include <framework/entt_imgui/imgui_entt_entity_editor.hpp>
+
 #include <framework/shader.h>
 #include <framework/window.h>
 #include <functional>
@@ -24,6 +26,8 @@ DISABLE_WARNINGS_POP()
 #include "scene/Components.h"
 #include "systems/WasdControllerSystem.h"
 #include "systems/RenderSystem.h"
+#include "systems/DebugSystem.h"
+
 
 class Application {
 public:
@@ -58,6 +62,11 @@ public:
         } catch (ShaderLoadingException e) {
             std::cerr << e.what() << std::endl;
         }
+
+        // register inspector components
+        m_debugSystem.register_component<WasdComponent>("WASD");
+        m_debugSystem.register_component<TransformComponent>("Transform");
+        m_debugSystem.register_component<TagComponent>("Tag");
     }
 
     void update() {
@@ -70,11 +79,8 @@ public:
             // update the window state
             m_window.updateInput();
 
-            // Use ImGui for easy input/output of ints, floats, strings, etc...
-            ImGui::Begin("Debug Window");
-            ImGui::Text("Application average: %.3f ms/frame (%.3f FPS)", 1000.0f / ImGui::GetIO().Framerate,
-                        ImGui::GetIO().Framerate);
-            ImGui::End();
+
+            m_debugSystem.run(m_registry);
 
             // handle input
             m_wasdSystem.update(m_registry);
@@ -131,6 +137,9 @@ private:
 
     // Shader for default rendering and for depth rendering
     Shader m_shadowShader;
+
+    DebugSystem m_debugSystem;
+
 
     Scene m_scene;
     entt::registry m_registry;

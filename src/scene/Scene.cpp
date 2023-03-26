@@ -45,6 +45,11 @@ void Scene::setup(Camera &camera) {
     cameraEntity.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1, 0.3, -1)));
     cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
     cameraEntity.addComponent<WasdComponent>(0.1f);
+
+//    Entity cubeEntity = this->createEntity("Cube");
+//    cameraEntity.addComponent<TransformComponent>(glm::translate(glm::mat4(1.0f)));
+//    cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
+//    cameraEntity.addComponent<WasdComponent>(0.1f);
 }
 
 void Scene::update(const long long &timeStep) {
