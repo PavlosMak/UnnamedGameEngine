@@ -6,8 +6,13 @@
 
 #include "../camera.h"
 #include "../materials/ShaderManager.h"
+#include "../lights/Light.h"
 
 class Entity;
+
+struct SceneStats {
+    int triangleCount = 0;
+};
 
 class Scene : public std::enable_shared_from_this<Scene> {
 public:
@@ -21,12 +26,18 @@ public:
 
     void setup(Camera &camera);
 
-    void update(const long long& timeStep);
+    void update(const long long &timeStep);
+
+    SceneStats getSceneStats();
 
 private:
+    void updateStatistics();
+
+    std::vector<Light> lights;
     ShaderManager m_shaderManager;
     entt::registry& m_registry;
     std::unordered_map<std::string, entt::entity> m_tagToEntity;
+    SceneStats m_stats;
 
     friend class Entity;
 };

@@ -33,6 +33,32 @@ namespace MM {
         ImGui::DragFloat("Fov", &cam.fov, 0.001f);
         ImGui::DragFloat3("LookTarget", &cam.lookTarget[0], 0.001f);
     }
+
+    template<>
+    void ComponentEditorWidget<LightComponent>(entt::registry &reg, entt::registry::entity_type e) {
+        auto &light = reg.get<LightComponent>(e);
+        glm::vec3 newColor = light.light.getColor();
+        ImGui::DragFloat3("Color", &newColor[0],0.001f,0.0);
+        light.light.setColor(newColor);
+    }
+
+    template<>
+    void ComponentEditorWidget<MaterialComponent>(entt::registry &reg, entt::registry::entity_type e) {
+        auto &material = reg.get<MaterialComponent>(e).material;
+        ImGui::Text("Material");
+        glm::vec3 baseColor = material->getColor();
+        float roughness = material->getRoughness();
+        float metallic = material->getMetallic();
+        float ambient = material->getAmbient();
+        ImGui::ColorPicker3("Albedo", &baseColor[0],0.001f);
+        ImGui::DragFloat("Roughness", &roughness, 0.001f,0.0);
+        ImGui::DragFloat("Metallic", &metallic, 0.001f, 0.0);
+        ImGui::DragFloat("Ambient", &ambient, 0.001f, 0.0);
+        material->setColor(baseColor);
+        material->setMetallic(metallic);
+        material->setRoughness(roughness);
+        material->setAmbient(ambient);
+    }
 }
 
 class DebugSystem {
