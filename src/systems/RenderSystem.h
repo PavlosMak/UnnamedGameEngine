@@ -21,9 +21,11 @@ public:
 
         //Get the lights from the scene
         std::vector<Light> lights;
+        std::vector<glm::vec3> lightPos;
         auto lightView = registry.view<LightComponent>();
         for(auto lightEntity : lightView) {
             lights.push_back(lightView.get<LightComponent>(lightEntity).light);
+            lightPos.push_back(registry.get<TransformComponent>(lightEntity).transform[3]);
         }
 
 
@@ -52,7 +54,7 @@ public:
             // https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
             const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(transform.transform));
 
-            materialComponent.material.bindMaterial(camPosition,lights);
+            materialComponent.material.bindMaterial(camPosition,lights,lightPos);
 
             glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
             glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(transform.transform));

@@ -1,5 +1,6 @@
 #version 450
 
+#define LIGHTS 2
 
 layout(location = 3) uniform vec3 lightPos;
 layout(location = 4) uniform vec3 lightColor;
@@ -13,7 +14,6 @@ layout(location = 0) out vec4 fragColor;
 in vec3 fragPosition;
 in vec3 fragNormal;
 
-//TODO: Refactor to encapsulate light into struct
 vec3 lightContribution(vec3 lightVec, vec3 lightColor, vec3 cameraVec) {
     float theta = max(0, dot(lightVec, fragNormal));
     vec3 reflection = normalize(reflect(-lightVec, fragNormal));
@@ -24,7 +24,7 @@ vec3 lightContribution(vec3 lightVec, vec3 lightColor, vec3 cameraVec) {
 
 void main() {
     vec3 result = vec3(0.0);
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < LIGHTS; i++) {
         vec3 lightVec = normalize(lightPos - fragPosition);
         vec3 cameraVec = normalize(cameraPos - fragPosition);
         result += lightContribution(lightVec, lightColor, cameraVec);

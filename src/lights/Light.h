@@ -6,20 +6,14 @@
 
 class Light {
 public:
-    Light() = default;;
+    Light() = default;
 
-    Light(glm::vec3 position, glm::vec3 color) : m_position(position), m_color(color) {};
+    Light(glm::vec3 color) : m_color(color) {};
 
-    void setPosition(glm::vec3 &newPosition);
-
-    void setColor(glm::vec3 &newColor);
-
-    glm::vec3 getPosition();
+    void setColor(glm::vec3 newColor);
 
     glm::vec3 getColor();
-
 private:
-    glm::vec3 m_position{0.f};
     glm::vec3 m_color{1.0f};
 };
 

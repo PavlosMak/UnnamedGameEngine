@@ -67,6 +67,7 @@ public:
         m_debugSystem.register_component<WasdComponent>("WASD");
         m_debugSystem.register_component<TransformComponent>("Transform");
         m_debugSystem.register_component<TagComponent>("Tag");
+        m_debugSystem.register_component<LightComponent>("Light");
         // m_debugSystem.register_component<CameraComponent>("Camera");
     }
 
@@ -79,7 +80,6 @@ public:
 
             // update the window state
             m_window.updateInput();
-
 
             m_debugSystem.run(m_registry);
 

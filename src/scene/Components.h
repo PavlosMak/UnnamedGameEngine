@@ -84,5 +84,7 @@ struct WasdComponent {
 struct LightComponent {
     Light light;
 
+    LightComponent() {};
+
     explicit LightComponent(const Light &light): light(light) {};
 };

@@ -8,7 +8,8 @@
 enum SHADER_TYPE {
     SOLID_COLOR = 0,
     NORMAL_AS_COLOR = 1,
-    PHONG = 3
+    PHONG = 3,
+    PBR = 4
 };
 
 class ShaderManager {
