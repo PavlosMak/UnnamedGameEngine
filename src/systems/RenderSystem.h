@@ -28,7 +28,6 @@ public:
             lightPos.push_back(registry.get<TransformComponent>(lightEntity).transform[3]);
         }
 
-
         clearScreen();
 
         Camera& cam = camera.getComponent<CameraComponent>().camera;

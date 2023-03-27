@@ -1,18 +1,19 @@
 #version 450
 
-
 //Constants
 const float PI = 3.14159;
 const float epsilon = 0.000001; //small epsilon to avoid div by 0
+const int NUM_OF_LIGHTS = 2;
 
 //Inputs
-layout(location = 3) uniform vec3 lightPos;
-layout(location = 4) uniform vec3 lightColor;
-layout(location = 5) uniform vec3 cameraPos;
+layout(location = 3) uniform vec3 cameraPos;
 
-layout(location = 6) uniform vec3 albedo;
-layout(location = 7) uniform float roughness;
-layout(location = 8) uniform float metallic;
+layout(location = 4) uniform vec3 albedo;
+layout(location = 5) uniform float roughness;
+layout(location = 6) uniform float metallic;
+
+layout(location = 7) uniform vec3 lightPos[NUM_OF_LIGHTS];
+layout(location = 9) uniform vec3 lightColor[NUM_OF_LIGHTS];
 
 in vec3 fragPosition;
 in vec3 fragNormal;
@@ -67,17 +68,17 @@ void main() {
     F0 = mix(F0, albedo, metallic);
 
     vec3 result = vec3(0.0);
-    for (int i = 0; i < 1; i++) {
-        vec3 lightVec = normalize(lightPos - fragPosition);
+    for (int i = 0; i < NUM_OF_LIGHTS; i++) {
+        vec3 lightVec = normalize(lightPos[i] - fragPosition);
         vec3 H = normalize(lightVec + camVec);
 
         float cosTheta = max(dot(lightVec, normal), 0.0);
         float cosPhi = max(dot(normal, camVec), 0.0);
 
         //Scale contribution of light based on distance
-        float distanceToLight = length(lightPos - fragPosition);
+        float distanceToLight = length(lightPos[i] - fragPosition);
         float attenuation = 1.0 / (distanceToLight * distanceToLight);
-        vec3 radiance = lightColor*attenuation;
+        vec3 radiance = lightColor[i]*attenuation;
 
         //Cook-Torrance BRDF
         float normalDistribution = distributionGGX(normal, H);

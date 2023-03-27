@@ -53,10 +53,15 @@ void Shader::bind() const
     glUseProgram(m_program);
 }
 
+GLuint Shader::getProgramId() const {
+    return m_program;
+}
+
 ShaderBuilder::~ShaderBuilder()
 {
     freeShaders();
 }
+
 
 ShaderBuilder& ShaderBuilder::addStage(GLuint shaderStage, std::filesystem::path shaderFile)
 {
