@@ -67,6 +67,7 @@ public:
         m_debugSystem.register_component<WasdComponent>("WASD");
         m_debugSystem.register_component<TransformComponent>("Transform");
         m_debugSystem.register_component<TagComponent>("Tag");
+        m_debugSystem.register_component<CameraComponent>("Camera");
         m_debugSystem.register_component<LightComponent>("Light");
         m_debugSystem.register_component<MaterialComponent>("Material");
     }
@@ -89,7 +90,9 @@ public:
             // update scene
             m_scene.update(timeStep);
 
-            m_renderSystem.renderMeshes(m_registry, m_scene.getEntityByTag("Camera"), m_window.getWindowSize(), m_window.getAspectRatio());
+            // m_renderSystem.renderMeshes(m_registry, m_scene.getEntityByTag("Camera"), m_window.getWindowSize(), m_window.getAspectRatio());
+            m_renderSystem.renderMeshes(m_registry, m_scene.getEntityByTag("Camera"), m_window.getWindowSize(),
+                                        m_window.getAspectRatio());
 
             // Processes input and swaps the window buffer
             m_window.swapBuffers();

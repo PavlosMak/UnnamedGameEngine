@@ -10,7 +10,7 @@ namespace MM {
     template<>
     void ComponentEditorWidget<WasdComponent>(entt::registry &reg, entt::registry::entity_type e) {
         auto &w = reg.get<WasdComponent>(e);
-        ImGui::DragFloat("Movement Speed", &w.movementSpeed, 0.1f);
+        ImGui::DragFloat("Movement Speed", &w.movementSpeed, 0.001f);
     }
 
     template<>
@@ -23,15 +23,16 @@ namespace MM {
     void ComponentEditorWidget<TransformComponent>(entt::registry &reg, entt::registry::entity_type e) {
         auto &t = reg.get<TransformComponent>(e);
 
-        ImGui::DragFloat3("Position", &t.transform[3][0], 0.001f);
+        ImGui::DragFloat3("Position", &t.localTransform.pos[0], 0.01f);
+        ImGui::DragFloat3("Rotation", &t.localTransform.rotation[0], 1.0f);
+        ImGui::DragFloat3("Scale", &t.localTransform.scale[0], 0.005f);
     }
 
     template<>
     void ComponentEditorWidget<CameraComponent>(entt::registry &reg, entt::registry::entity_type e) {
         auto &cam = reg.get<CameraComponent>(e);
 
-        ImGui::DragFloat("Fov", &cam.fov, 0.001f);
-        ImGui::DragFloat3("LookTarget", &cam.lookTarget[0], 0.001f);
+        ImGui::DragFloat("Fov", &cam.camera->fov, 0.001f);
     }
 
     template<>

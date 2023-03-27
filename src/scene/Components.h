@@ -9,6 +9,7 @@
 #include "../materials/Material.h"
 #include "../camera.h"
 #include "glm/ext/matrix_transform.hpp"
+#include "../Transform.h"
 
 struct TagComponent {
     std::string name;
@@ -21,17 +22,29 @@ struct TagComponent {
 };
 
 struct TransformComponent {
-    glm::mat4 transform;
 
-    //Define various constructors
+    Transform localTransform;
+    TransformComponent* parent {};
+
     TransformComponent() = default;
 
     TransformComponent(const TransformComponent &) = default;
 
-    explicit TransformComponent(const glm::mat4 transform) : transform(transform) {};
+    explicit TransformComponent(const glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale)
+    : localTransform(Transform(pos, rotation, scale)), parent(nullptr) {};
 
-    //define ability to cast to mat4, so we can do math with the component
-    explicit operator glm::mat4 &() { return transform; }
+    explicit TransformComponent(const glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale, TransformComponent* parent)
+    : localTransform(Transform(pos, rotation, scale)), parent(parent) {};
+
+    glm::mat4 worldTransform() const {
+
+        if (parent == nullptr) {
+            return localTransform.transform();
+        } else {
+            return (*parent).worldTransform() * localTransform.transform();
+        }
+    }
+
 };
 
 struct MeshRendererComponent {
@@ -44,24 +57,13 @@ struct MeshRendererComponent {
 };
 
 struct CameraComponent {
-    Camera &camera;
-    float fov = 80.0f;
+    Camera *camera;
 
-    glm::vec3 lookTarget;
-
-    CameraComponent() = delete;
+    CameraComponent() = default;
 
     CameraComponent(const CameraComponent &) = default;
 
-    explicit CameraComponent(Camera &camera, glm::vec3 lookTarget) : camera(camera), lookTarget(lookTarget) {};
-
-    void getViewProjectionMatrix(glm::mat4 &vpMatrix, glm::mat4 &transform) const {
-        glm::mat4 pMatrix;
-        camera.getProjectionMatrix(pMatrix, fov);
-        auto position = glm::vec3(transform[3]);
-        //TODO: We ideally want to support the up vector changing, for that get the rotation out of the transform and apply it to (0,1,0)
-        vpMatrix = pMatrix * glm::lookAt(position, lookTarget, glm::vec3(0, 1, 0));
-    }
+    explicit CameraComponent(Camera* camera) : camera(camera) {};
 };
 
 struct MaterialComponent {

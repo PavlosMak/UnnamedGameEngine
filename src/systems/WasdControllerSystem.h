@@ -38,33 +38,33 @@ class WasdControllerSystem {
         }
     }
 
-    glm::vec3 translationVec(float movementSpeed) const {
+    glm::vec3 translationVec(float movementSpeed, Transform& transform) const {
 
-        glm::vec3 unitX = glm::vec3(movementSpeed, 0, 0);
-        glm::vec3 unitY = glm::vec3(0, movementSpeed, 0);
-        glm::vec3 unitZ = glm::vec3(0, 0, movementSpeed);
+        glm::vec3 unitX = transform.right();
+        glm::vec3 unitY = transform.up();
+        glm::vec3 unitZ = transform.forward();
 
         auto translationVec = glm::vec3(0, 0, 0);
 
         if (aDown) {
-            translationVec += unitZ;
+            translationVec -= unitX;
         } if (dDown) {
-            translationVec -= unitZ;
+            translationVec += unitX;
         }
 
         if (wDown) {
-            translationVec += unitX;
+            translationVec += unitZ;
         } if (sDown) {
-            translationVec -= unitX;
+            translationVec -= unitZ;
         }
 
         if (eDown) {
-            translationVec -= unitY;
-        } if (rDown) {
             translationVec += unitY;
+        } if (rDown) {
+            translationVec -= unitY;
         }
 
-        return translationVec;
+        return translationVec * movementSpeed;
 
     }
 
@@ -79,14 +79,15 @@ public:
     }
 
     void update(entt::registry& registry) const {
+
         auto view = registry.view<WasdComponent, TransformComponent>();
 
         for (auto entity : view) {
             auto &wasdC = view.get<WasdComponent>(entity);
             auto &transformC = view.get<TransformComponent>(entity);
 
-            transformC.transform = glm::translate(transformC.transform,
-                                                  translationVec(wasdC.movementSpeed));
+            // update position
+            transformC.localTransform.pos += translationVec(wasdC.movementSpeed, transformC.localTransform);
         }
 
     }
