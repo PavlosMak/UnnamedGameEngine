@@ -15,7 +15,6 @@ void Material::setColor(glm::vec3 &color) {
 
 void Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions) {
     m_shader.bind();
-
     switch (m_shaderType) {
         case SOLID_COLOR:
             glUniform3fv(3, 1, glm::value_ptr(m_color));
@@ -34,7 +33,7 @@ void Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &light
             glUniform1f(6, m_metallic);
             for(int i = 0; i < lights.size(); i++) {
                 glUniform3fv(7 + i, 1, glm::value_ptr(lightPositions[i]));
-                glUniform3fv(9 + i, 1, glm::value_ptr(lights[i].getColor()));
+                glUniform3fv(7 + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
             }
             break;
         case NORMAL_AS_COLOR:
@@ -50,5 +49,19 @@ float Material::getShininess() const {
     return m_shininess;
 }
 
+float Material::getRoughness() const {
+    return m_roughness;
+}
 
+void Material::setRoughness(float roughness) {
+    m_roughness = roughness;
+}
+
+float Material::getMetallic() const {
+    return m_metallic;
+}
+
+void Material::setMetallic(float metallic) {
+    m_metallic = metallic;
+}
 

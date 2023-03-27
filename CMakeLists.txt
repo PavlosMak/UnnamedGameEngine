@@ -24,6 +24,8 @@ add_executable(FinalProject
         src/lights/Light.cpp
         src/materials/ShaderManager.cpp
         src/materials/Material.cpp
+        src/materials/MaterialManager.h
+        src/materials/MaterialManager.cpp
         src/systems/WasdControllerSystem.h
         src/systems/RenderSystem.h
         src/systems/DebugSystem.h)

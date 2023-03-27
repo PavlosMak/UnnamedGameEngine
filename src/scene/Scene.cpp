@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "Entity.h"
 #include "Components.h"
+#include "../materials/MaterialManager.h"
 
 Scene::Scene(entt::registry &registry) : m_registry(registry), m_shaderManager() {}
 
@@ -28,29 +29,30 @@ void Scene::setup(Camera &camera) {
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/shader_frag.glsl", SHADER_TYPE::NORMAL_AS_COLOR);
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/phong_frag.glsl", SHADER_TYPE::PHONG);
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/pbr_frag.glsl", SHADER_TYPE::PBR);
-    //TODO: We probably want a material pool to access them by name
-    Material material = Material(m_shaderManager.getShader(SHADER_TYPE::SOLID_COLOR), glm::vec3(1.0, 0.0, 0.0),
-                                 SHADER_TYPE::SOLID_COLOR);
-    Material materialBlue = Material(m_shaderManager.getShader(SHADER_TYPE::SOLID_COLOR), glm::vec3(0.0, 1.0, 0.0),
-                                     SHADER_TYPE::SOLID_COLOR);
-    Material normalMaterial = Material(m_shaderManager.getShader(SHADER_TYPE::NORMAL_AS_COLOR),
-                                       SHADER_TYPE::NORMAL_AS_COLOR);
-    Material phongMaterial = Material(m_shaderManager.getShader(SHADER_TYPE::PHONG),
-                                      glm::vec3(.8, 0, 0), 1,
-                                      SHADER_TYPE::PHONG);
-    Material pbrMaterial = Material(m_shaderManager.getShader(SHADER_TYPE::PBR),
-                                      glm::vec3(.8, 0, 0), 1,
-                                      SHADER_TYPE::PBR);
 
+    MaterialManager* materialManager = MaterialManager::getInstance();
+
+    //TODO: We probably want a material pool to access them by name
+//    Material pbrMaterial = Material(m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec3(1, 0, 0), 0.5f, .5f);
+
+    std::shared_ptr<Material> pbrMaterial = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec3(1,0,0), 0.5f, 0.5f);
     auto light = Light(glm::vec3(1.0f));
 
     Entity light1 = this->createEntity("Light1");
     light1.addComponent<LightComponent>(light);
-    light1.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1,1,1)));
+    light1.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1.5,0.339,0.25)));
 
     Entity light2 = this->createEntity("Light2");
     light2.addComponent<LightComponent>(light);
-    light2.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1,1,-1)));
+    light2.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1.5,-0.244,0.25)));
+
+    Entity light3 = this->createEntity("Light3");
+    light3.addComponent<LightComponent>(light);
+    light3.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1.5,-0.244,-0.168)));
+
+    Entity light4 = this->createEntity("Light4");
+    light4.addComponent<LightComponent>(light);
+    light4.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1.5,0.339,-0.168)));
 
     Entity sphere = this->createEntity("Sphere");
     sphere.addComponent<MeshRendererComponent>("resources/sphere.obj");
@@ -58,19 +60,8 @@ void Scene::setup(Camera &camera) {
     sphere.addComponent<MaterialComponent>(pbrMaterial);
     sphere.addComponent<WasdComponent>(0.1f);
 
-//    Entity batman = this->createEntity("Batman");
-//    batman.addComponent<MeshRendererComponent>("resources/batman.obj");
-//    batman.addComponent<TransformComponent>(glm::scale(glm::rotate(
-//            glm::translate(glm::mat4{1.0f}, glm::vec3(0,.3,0.0)), glm::degrees(90.0f),glm::vec3(0, 1, 0)), glm::vec3(0.3, 0.3, 0.3)));
-//    batman.addComponent<MaterialComponent>(phongMaterial);
-//        Entity sponza = this->createEntity("Sponza");
-//    //    //TODO: The app loads very slowly if we use nested path for the resource
-//        sponza.addComponent<MeshRendererComponent>("resources/sponza.obj");
-//        sponza.addComponent<TransformComponent>(glm::scale(glm::mat4{1.0f}, glm::vec3(0.02, 0.02, 0.02)));
-//        sponza.addComponent<MaterialComponent>(phongMaterial);
-
     Entity cameraEntity = this->createEntity("Camera");
-    cameraEntity.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-2, 0, 0)));
+    cameraEntity.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-4, 0, 0)));
     cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
 
     updateStatistics();

@@ -53,7 +53,7 @@ public:
             // https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
             const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(transform.transform));
 
-            materialComponent.material.bindMaterial(camPosition,lights,lightPos);
+            materialComponent.material->bindMaterial(camPosition,lights,lightPos);
 
             glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
             glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(transform.transform));

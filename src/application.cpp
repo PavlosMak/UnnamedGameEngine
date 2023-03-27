@@ -68,7 +68,7 @@ public:
         m_debugSystem.register_component<TransformComponent>("Transform");
         m_debugSystem.register_component<TagComponent>("Tag");
         m_debugSystem.register_component<LightComponent>("Light");
-        // m_debugSystem.register_component<CameraComponent>("Camera");
+        m_debugSystem.register_component<MaterialComponent>("Material");
     }
 
     void update() {

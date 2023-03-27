@@ -3,7 +3,7 @@
 //Constants
 const float PI = 3.14159;
 const float epsilon = 0.000001; //small epsilon to avoid div by 0
-const int NUM_OF_LIGHTS = 2;
+const int NUM_OF_LIGHTS = 4;
 
 //Inputs
 layout(location = 3) uniform vec3 cameraPos;
@@ -13,7 +13,7 @@ layout(location = 5) uniform float roughness;
 layout(location = 6) uniform float metallic;
 
 layout(location = 7) uniform vec3 lightPos[NUM_OF_LIGHTS];
-layout(location = 9) uniform vec3 lightColor[NUM_OF_LIGHTS];
+layout(location = 7 + NUM_OF_LIGHTS) uniform vec3 lightColor[NUM_OF_LIGHTS];
 
 in vec3 fragPosition;
 in vec3 fragNormal;

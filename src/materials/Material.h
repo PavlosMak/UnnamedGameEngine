@@ -1,5 +1,4 @@
-#ifndef COMPUTERGRAPHICS_MATERIAL_H
-#define COMPUTERGRAPHICS_MATERIAL_H
+#pragma once
 
 #include "framework/shader.h"
 #include "ShaderManager.h"
@@ -17,6 +16,13 @@ public:
                                                                                                m_color(color),
                                                                                                m_shininess(shininess),
                                                                                                m_shaderType(shaderType) {}
+    Material(const Shader &shader, glm::vec3 albedo, float roughness, float metallic):
+        m_shader(shader),
+        m_color(albedo),
+        m_roughness(roughness),
+        m_metallic(metallic),
+        m_shaderType(SHADER_TYPE::PBR) {}
+
     [[nodiscard]] const Shader &getShader() const;
 
     [[nodiscard]] glm::vec3 getColor() const;
@@ -25,6 +31,12 @@ public:
 
     [[nodiscard]] float getShininess() const;
     void setShininess(float shininess);
+
+    [[nodiscard]] float getRoughness() const;
+    void setRoughness(float roughness);
+
+    [[nodiscard]] float getMetallic() const;
+    void setMetallic(float metallic);
 
     void bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions);
 
@@ -38,6 +50,3 @@ private:
     float m_roughness {1.0f};
     float m_metallic {1.0f};
 };
-
-
-#endif //COMPUTERGRAPHICS_MATERIAL_H
