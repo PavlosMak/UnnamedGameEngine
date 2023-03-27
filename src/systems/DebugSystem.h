@@ -10,7 +10,7 @@ namespace MM {
     template<>
     void ComponentEditorWidget<WasdComponent>(entt::registry &reg, entt::registry::entity_type e) {
         auto &w = reg.get<WasdComponent>(e);
-        ImGui::DragFloat("Movement Speed", &w.movementSpeed, 0.1f);
+        ImGui::DragFloat("Movement Speed", &w.movementSpeed, 0.001f);
     }
 
     template<>

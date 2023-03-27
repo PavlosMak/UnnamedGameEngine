@@ -25,6 +25,13 @@ glm::mat4 Transform::rotationMatrix() const {
 }
 
 glm::vec3 Transform::forward() const {
-    return glm::vec3(0);
+    return glm::normalize(glm::vec3(this->rotationMatrix() * glm::vec4(0, 0, -1, 1)));
 }
 
+glm::vec3 Transform::up() const {
+    return glm::normalize(glm::vec3(this->rotationMatrix() * glm::vec4(0, 1, 0, 1)));
+}
+
+glm::vec3 Transform::right() const {
+    return glm::normalize(glm::vec3(this->rotationMatrix() * glm::vec4(1, 0, 0, 1)));
+}

@@ -17,4 +17,6 @@ struct Transform {
     glm::mat4 rotationMatrix() const;
 
     glm::vec3 forward() const;
+    glm::vec3 up() const;
+    glm::vec3 right() const;
 };
