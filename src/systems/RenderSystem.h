@@ -18,7 +18,6 @@ private:
 
 public:
 
-
     void renderMeshesSRT(entt::registry& registry, Entity camera, glm::ivec2 windowSize, float aspectRatio) {
 
         clearScreen();
@@ -29,13 +28,13 @@ public:
         glViewport(0, 0, windowSize.x, windowSize.y);
         cam.updateAspectRatio(aspectRatio);
 
-        // access components with a mesh, transform and material
+        // access components with a mesh, localTransform and material
         auto view = registry.view<MeshRendererComponent, TransformComponent, MaterialComponent>();
 
         // compute view projection matrix
-        // TODO get world transform properly
+        // TODO get world localTransform properly
         glm::mat4 vpMatrix;
-        auto camTransform = camera.getComponent<TransformComponent>().worldTransform();
+        auto camTransform = camera.getComponent<TransformComponent>().localTransform;
         camera.getComponent<CameraComponent>().getViewProjectionMatrix(vpMatrix, camTransform);
 
         glEnable(GL_DEPTH_TEST);

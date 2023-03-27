@@ -43,11 +43,11 @@ void Scene::setup(Camera &camera) {
 
     Entity cameraEntity = this->createEntity("Camera");
     cameraEntity.addComponent<TransformComponent>(
-            glm::vec3(-0.6f, 0.3f, 0.3f),
-            glm::vec3(0),
+            glm::vec3(0, 0, 0),
+            glm::vec3(0, 0, 0),
             glm::vec3(1, 1, 1));
     cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
-    cameraEntity.addComponent<WasdComponent>(0.1f);
+    cameraEntity.addComponent<WasdComponent>(0.01f);
 
     Entity cube = this->createEntity("Cube");
     cube.addComponent<MeshRendererComponent>("resources/cube.obj");
@@ -58,7 +58,6 @@ void Scene::setup(Camera &camera) {
     bicep.addComponent<MeshRendererComponent>("resources/cube.obj");
     bicep.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(0.8, 2, 0.8), &cube.getComponent<TransformComponent>());
     bicep.addComponent<MaterialComponent>(normalMaterial);
-
 }
 
 void Scene::update(const long long &timeStep) {}

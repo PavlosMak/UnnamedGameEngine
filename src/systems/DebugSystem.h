@@ -23,9 +23,9 @@ namespace MM {
     void ComponentEditorWidget<TransformComponent>(entt::registry &reg, entt::registry::entity_type e) {
         auto &t = reg.get<TransformComponent>(e);
 
-        ImGui::DragFloat3("Position", &t.pos[0], 0.01f);
-        ImGui::DragFloat3("Rotation", &t.rotation[0], 1.0f);
-        ImGui::DragFloat3("Scale", &t.scale[0], 0.005f);
+        ImGui::DragFloat3("Position", &t.localTransform.pos[0], 0.01f);
+        ImGui::DragFloat3("Rotation", &t.localTransform.rotation[0], 1.0f);
+        ImGui::DragFloat3("Scale", &t.localTransform.scale[0], 0.005f);
     }
 
     template<>

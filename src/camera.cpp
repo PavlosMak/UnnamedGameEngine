@@ -9,4 +9,3 @@ void Camera::getProjectionMatrix(glm::mat4 &pMatrix, float fov) const {
 void Camera::updateAspectRatio(float aspectRatio) {
     this->m_aspectRatio = aspectRatio;
 }
-

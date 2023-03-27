@@ -47,21 +47,21 @@ class WasdControllerSystem {
         auto translationVec = glm::vec3(0, 0, 0);
 
         if (aDown) {
-            translationVec += unitZ;
+            translationVec -= unitX;
         } if (dDown) {
-            translationVec -= unitZ;
+            translationVec += unitX;
         }
 
         if (wDown) {
-            translationVec += unitX;
+            translationVec -= unitZ;
         } if (sDown) {
-            translationVec -= unitX;
+            translationVec += unitZ;
         }
 
         if (eDown) {
-            translationVec -= unitY;
-        } if (rDown) {
             translationVec += unitY;
+        } if (rDown) {
+            translationVec -= unitY;
         }
 
         return translationVec;
@@ -86,7 +86,7 @@ public:
             auto &transformC = view.get<TransformComponent>(entity);
 
             // update position
-            transformC.pos += translationVec(wasdC.movementSpeed);
+            transformC.localTransform.pos += translationVec(wasdC.movementSpeed);
         }
 
     }
