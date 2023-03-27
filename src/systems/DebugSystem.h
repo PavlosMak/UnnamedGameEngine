@@ -23,7 +23,16 @@ namespace MM {
     void ComponentEditorWidget<TransformComponent>(entt::registry &reg, entt::registry::entity_type e) {
         auto &t = reg.get<TransformComponent>(e);
 
-        ImGui::DragFloat3("Position", &t.transform[3][0], 0.001f);
+        ImGui::DragFloat3("Position", &t.localTransform[3][0], 0.001f);
+    }
+
+    template<>
+    void ComponentEditorWidget<SRTTransformComponent>(entt::registry &reg, entt::registry::entity_type e) {
+        auto &t = reg.get<SRTTransformComponent>(e);
+
+        ImGui::DragFloat3("Position", &t.pos[0], 0.01f);
+        ImGui::DragFloat3("Rotation", &t.rotation[0], 1.0f);
+        ImGui::DragFloat3("Scale", &t.scale[0], 0.005f);
     }
 
     template<>

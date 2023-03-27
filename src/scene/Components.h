@@ -21,17 +21,66 @@ struct TagComponent {
 };
 
 struct TransformComponent {
-    glm::mat4 transform;
+
+    glm::mat4 localTransform {};
+    TransformComponent* parent {};
 
     //Define various constructors
     TransformComponent() = default;
 
     TransformComponent(const TransformComponent &) = default;
 
-    explicit TransformComponent(const glm::mat4 transform) : transform(transform) {};
+    explicit TransformComponent(const glm::mat4 transform) : localTransform(transform) {};
+    explicit TransformComponent(const glm::mat4 transform, TransformComponent* parent) : localTransform(transform), parent(parent) {};
 
     //define ability to cast to mat4, so we can do math with the component
-    explicit operator glm::mat4 &() { return transform; }
+    explicit operator glm::mat4 &() { return localTransform; }
+};
+
+struct SRTTransformComponent {
+
+    // local transform
+    glm::vec3 pos;
+    glm::vec3 rotation;
+    glm::vec3 scale;
+
+    SRTTransformComponent* parent {};
+
+    SRTTransformComponent() = default;
+
+    SRTTransformComponent(const SRTTransformComponent &) = default;
+
+    explicit SRTTransformComponent(const glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale)
+    : pos(pos), rotation(rotation), scale(scale), parent(nullptr) {};
+
+    explicit SRTTransformComponent(const glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale, SRTTransformComponent* parent)
+    : pos(pos), rotation(rotation), scale(scale), parent(parent) {};
+
+    glm::mat4 localTransform() const {
+
+        // TODO write as single product, faster?
+        auto id = glm::mat4(1);
+        auto translation = glm::translate(id, pos);
+
+        auto rotX = glm::rotate(id, glm::radians(rotation.x), glm::vec3(1, 0, 0));
+        auto rotY = glm::rotate(id, glm::radians(rotation.y), glm::vec3(0, 1, 0));
+        auto rotZ = glm::rotate(id, glm::radians(rotation.z), glm::vec3(0, 0, 1));
+        auto scaleMX = glm::scale(id, this->scale);
+
+        // scale, then rotate, then translate
+        return translation * (rotX * rotY * rotZ) * scaleMX;
+    }
+
+    glm::mat4 worldTransform() const {
+
+        if (parent == nullptr) {
+            return localTransform();
+        } else {
+            // TODO revise order...
+            return (*parent).worldTransform() * localTransform();
+        }
+    }
+
 };
 
 struct MeshRendererComponent {

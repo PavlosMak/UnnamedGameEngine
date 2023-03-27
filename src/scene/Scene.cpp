@@ -22,14 +22,14 @@ void Scene::setup(Camera &camera) {
     Material normalMaterial = Material(m_shaderManager.getShader(SHADER_TYPE::NORMAL_AS_COLOR),
                                        SHADER_TYPE::NORMAL_AS_COLOR);
 
-    Entity ape = this->createEntity("Ape");
-    ape.addComponent<MeshRendererComponent>("resources/ape.obj");
-    ape.addComponent<TransformComponent>(glm::scale(glm::rotate(glm::mat4{1.0f},
-                                                                glm::radians(-45.f),
-                                                                glm::vec3(0.0, 1.0, 0.0)),
-                                                    glm::vec3(0.1, 0.1, 0.1))
-    );
-    ape.addComponent<MaterialComponent>(normalMaterial);
+//    Entity ape = this->createEntity("Ape");
+//    ape.addComponent<MeshRendererComponent>("resources/ape.obj");
+//    ape.addComponent<TransformComponent>(glm::scale(glm::rotate(glm::mat4{1.0f},
+//                                                                glm::radians(-45.f),
+//                                                                glm::vec3(0.0, 1.0, 0.0)),
+//                                                    glm::vec3(0.1, 0.1, 0.1))
+//    );
+//    ape.addComponent<MaterialComponent>(normalMaterial);
 
     Entity secondDragon = this->createEntity("Syrax");
     secondDragon.addComponent<MeshRendererComponent>("resources/dragon.obj");
@@ -46,14 +46,19 @@ void Scene::setup(Camera &camera) {
     cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
     cameraEntity.addComponent<WasdComponent>(0.1f);
 
-//    Entity cubeEntity = this->createEntity("Cube");
-//    cameraEntity.addComponent<TransformComponent>(glm::translate(glm::mat4(1.0f)));
-//    cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
-//    cameraEntity.addComponent<WasdComponent>(0.1f);
+    Entity cube = this->createEntity("Cube");
+    cube.addComponent<MeshRendererComponent>("resources/cube.obj");
+    cube.addComponent<SRTTransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(0.1, 0.1, 0.1));
+    cube.addComponent<MaterialComponent>(normalMaterial);
+
+    Entity bicep = this->createEntity("Bicep");
+    bicep.addComponent<MeshRendererComponent>("resources/cube.obj");
+    bicep.addComponent<SRTTransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(0.8, 2, 0.8), &cube.getComponent<SRTTransformComponent>());
+    bicep.addComponent<MaterialComponent>(normalMaterial);
+
 }
 
-void Scene::update(const long long &timeStep) {
-}
+void Scene::update(const long long &timeStep) {}
 
 Entity Scene::createEntity(const std::string &name) {
     auto handle = m_registry.create();
