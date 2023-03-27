@@ -11,9 +11,10 @@ layout(location = 3) uniform vec3 cameraPos;
 layout(location = 4) uniform vec3 albedo;
 layout(location = 5) uniform float roughness;
 layout(location = 6) uniform float metallic;
+layout(location = 7) uniform float ambient;
 
-layout(location = 7) uniform vec3 lightPos[NUM_OF_LIGHTS];
-layout(location = 7 + NUM_OF_LIGHTS) uniform vec3 lightColor[NUM_OF_LIGHTS];
+layout(location = 8) uniform vec3 lightPos[NUM_OF_LIGHTS];
+layout(location = 8 + NUM_OF_LIGHTS) uniform vec3 lightColor[NUM_OF_LIGHTS];
 
 in vec3 fragPosition;
 in vec3 fragNormal;
@@ -99,6 +100,9 @@ void main() {
 
         result += (diffuse + specular) * radiance * cosTheta;
     }
+
+    //Add ambient
+    result += albedo*ambient;
 
     //Tone mapping and gamma correction
     result = pow(reinhardToneMap(result), vec3(1.1/2.2));

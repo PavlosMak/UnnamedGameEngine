@@ -49,12 +49,15 @@ namespace MM {
         glm::vec3 baseColor = material->getColor();
         float roughness = material->getRoughness();
         float metallic = material->getMetallic();
-        ImGui::DragFloat3("Albedo", &baseColor[0],0.001f,0.0);
+        float ambient = material->getAmbient();
+        ImGui::ColorPicker3("Albedo", &baseColor[0],0.001f);
         ImGui::DragFloat("Roughness", &roughness, 0.001f,0.0);
         ImGui::DragFloat("Metallic", &metallic, 0.001f, 0.0);
+        ImGui::DragFloat("Ambient", &ambient, 0.001f, 0.0);
         material->setColor(baseColor);
         material->setMetallic(metallic);
         material->setRoughness(roughness);
+        material->setAmbient(ambient);
     }
 }
 

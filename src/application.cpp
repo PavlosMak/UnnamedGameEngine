@@ -141,7 +141,6 @@ private:
 
     DebugSystem m_debugSystem;
 
-
     Scene m_scene;
     entt::registry m_registry;
 

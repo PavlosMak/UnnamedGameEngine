@@ -9,7 +9,8 @@ enum SHADER_TYPE {
     SOLID_COLOR = 0,
     NORMAL_AS_COLOR = 1,
     PHONG = 3,
-    PBR = 4
+    PBR = 4,
+    TEXTURED_PBR = 5
 };
 
 class ShaderManager {

@@ -16,7 +16,7 @@ Texture::Texture(std::filesystem::path filePath)
     glTextureStorage2D(m_texture, 1, GL_RGB8, cpuTexture.width, cpuTexture.height);
 
     // Upload pixels into the GPU texture.
-    glTextureSubImage2D(m_texture, 0, 0, 0, cpuTexture.width, cpuTexture.height, GL_RGB, GL_UNSIGNED_BYTE, cpuTexture.pixels.data());
+    glTextureSubImage2D(m_texture, 0, 0, 0, cpuTexture.width, cpuTexture.height, GL_RGB, GL_FLOAT, cpuTexture.pixels.data());
 
     // Set behavior for when texture coordinates are outside the [0, 1] range.
     glTextureParameteri(m_texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -41,6 +41,7 @@ Texture::~Texture()
 
 void Texture::bind(GLint textureSlot)
 {
+    bool t = m_texture != INVALID;
     glActiveTexture(textureSlot);
     glBindTexture(GL_TEXTURE_2D, m_texture);
 }
