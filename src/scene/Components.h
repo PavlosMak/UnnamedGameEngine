@@ -22,38 +22,21 @@ struct TagComponent {
 
 struct TransformComponent {
 
-    glm::mat4 localTransform {};
-    TransformComponent* parent {};
-
-    //Define various constructors
-    TransformComponent() = default;
-
-    TransformComponent(const TransformComponent &) = default;
-
-    explicit TransformComponent(const glm::mat4 transform) : localTransform(transform) {};
-    explicit TransformComponent(const glm::mat4 transform, TransformComponent* parent) : localTransform(transform), parent(parent) {};
-
-    //define ability to cast to mat4, so we can do math with the component
-    explicit operator glm::mat4 &() { return localTransform; }
-};
-
-struct SRTTransformComponent {
-
     // local transform
     glm::vec3 pos;
     glm::vec3 rotation;
     glm::vec3 scale;
 
-    SRTTransformComponent* parent {};
+    TransformComponent* parent {};
 
-    SRTTransformComponent() = default;
+    TransformComponent() = default;
 
-    SRTTransformComponent(const SRTTransformComponent &) = default;
+    TransformComponent(const TransformComponent &) = default;
 
-    explicit SRTTransformComponent(const glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale)
+    explicit TransformComponent(const glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale)
     : pos(pos), rotation(rotation), scale(scale), parent(nullptr) {};
 
-    explicit SRTTransformComponent(const glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale, SRTTransformComponent* parent)
+    explicit TransformComponent(const glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale, TransformComponent* parent)
     : pos(pos), rotation(rotation), scale(scale), parent(parent) {};
 
     glm::mat4 localTransform() const {

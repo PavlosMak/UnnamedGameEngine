@@ -31,29 +31,32 @@ void Scene::setup(Camera &camera) {
 //    );
 //    ape.addComponent<MaterialComponent>(normalMaterial);
 
-    Entity secondDragon = this->createEntity("Syrax");
-    secondDragon.addComponent<MeshRendererComponent>("resources/dragon.obj");
-    secondDragon.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(0.0, 0.0, 1.0)));
-    secondDragon.addComponent<MaterialComponent>(normalMaterial);
+//    Entity secondDragon = this->createEntity("Syrax");
+//    secondDragon.addComponent<MeshRendererComponent>("resources/dragon.obj");
+//    secondDragon.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(0.0, 0.0, 1.0)));
+//    secondDragon.addComponent<MaterialComponent>(normalMaterial);
 
-    Entity thirdDragon = this->createEntity("Mushu");
-    thirdDragon.addComponent<MeshRendererComponent>("resources/dragon.obj");
-    thirdDragon.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(0.0, 0.0, -1.0)));
-    thirdDragon.addComponent<MaterialComponent>(normalMaterial);
+//    Entity thirdDragon = this->createEntity("Mushu");
+//    thirdDragon.addComponent<MeshRendererComponent>("resources/dragon.obj");
+//    thirdDragon.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(0.0, 0.0, -1.0)));
+//    thirdDragon.addComponent<MaterialComponent>(normalMaterial);
 
     Entity cameraEntity = this->createEntity("Camera");
-    cameraEntity.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1, 0.3, -1)));
+    cameraEntity.addComponent<TransformComponent>(
+            glm::vec3(-0.6f, 0.3f, 0.3f),
+            glm::vec3(0),
+            glm::vec3(1, 1, 1));
     cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
     cameraEntity.addComponent<WasdComponent>(0.1f);
 
     Entity cube = this->createEntity("Cube");
     cube.addComponent<MeshRendererComponent>("resources/cube.obj");
-    cube.addComponent<SRTTransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(0.1, 0.1, 0.1));
+    cube.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(0.1, 0.1, 0.1));
     cube.addComponent<MaterialComponent>(normalMaterial);
 
     Entity bicep = this->createEntity("Bicep");
     bicep.addComponent<MeshRendererComponent>("resources/cube.obj");
-    bicep.addComponent<SRTTransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(0.8, 2, 0.8), &cube.getComponent<SRTTransformComponent>());
+    bicep.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(0.8, 2, 0.8), &cube.getComponent<TransformComponent>());
     bicep.addComponent<MaterialComponent>(normalMaterial);
 
 }

@@ -85,8 +85,8 @@ public:
             auto &wasdC = view.get<WasdComponent>(entity);
             auto &transformC = view.get<TransformComponent>(entity);
 
-            transformC.localTransform = glm::translate(transformC.localTransform,
-                                                  translationVec(wasdC.movementSpeed));
+            // update position
+            transformC.pos += translationVec(wasdC.movementSpeed);
         }
 
     }
