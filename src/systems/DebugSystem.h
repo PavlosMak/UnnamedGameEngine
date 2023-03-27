@@ -32,8 +32,7 @@ namespace MM {
     void ComponentEditorWidget<CameraComponent>(entt::registry &reg, entt::registry::entity_type e) {
         auto &cam = reg.get<CameraComponent>(e);
 
-        ImGui::DragFloat("Fov", &cam.fov, 0.001f);
-        ImGui::DragFloat3("LookTarget", &cam.lookTarget[0], 0.001f);
+        ImGui::DragFloat("Fov", &cam.camera->fov, 0.001f);
     }
 }
 

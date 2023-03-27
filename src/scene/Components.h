@@ -57,29 +57,12 @@ struct MeshRendererComponent {
 };
 
 struct CameraComponent {
-    Camera &camera;
-    float fov = 80.0f;
-
-    glm::vec3 lookTarget;
+    Camera *camera;
 
     CameraComponent() = default;
-
     CameraComponent(const CameraComponent &) = default;
 
-    explicit CameraComponent(Camera &camera, glm::vec3 lookTarget) : camera(camera), lookTarget(lookTarget) {};
-
-    void getViewProjectionMatrix(glm::mat4 &vpMatrix, Transform& transform) const {
-        glm::mat4 pMatrix ;
-        camera.getProjectionMatrix(pMatrix, fov);
-
-        auto pos = transform.pos;
-
-        auto viewDir4 = transform.rotationMatrix() * glm::vec4(0, 0, -1, 1);
-
-
-        //TODO: We ideally want to support the up vector changing, for that get the rotation out of the localTransform and apply it to (0,1,0)
-        vpMatrix = pMatrix * glm::lookAt(pos, pos + glm::vec3(viewDir4), glm::vec3(0, 1, 0));
-    }
+    explicit CameraComponent(Camera* camera) : camera(camera) {};
 };
 
 struct MaterialComponent {

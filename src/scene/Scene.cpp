@@ -43,10 +43,11 @@ void Scene::setup(Camera &camera) {
 
     Entity cameraEntity = this->createEntity("Camera");
     cameraEntity.addComponent<TransformComponent>(
-            glm::vec3(0, 0, 0),
+            glm::vec3(0, -0.1, 1),
             glm::vec3(0, 0, 0),
             glm::vec3(1, 1, 1));
-    cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
+
+    cameraEntity.addComponent<CameraComponent>(&camera);
     cameraEntity.addComponent<WasdComponent>(0.01f);
 
     Entity cube = this->createEntity("Cube");
