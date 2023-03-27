@@ -28,6 +28,7 @@ public:
     // ... Feel free to add more methods here (e.g. for setting uniforms or keeping track of texture units) ...
 
     void bind() const;
+    GLuint getProgramId() const;
 
 private:
     friend class ShaderBuilder;

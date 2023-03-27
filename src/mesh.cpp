@@ -1,26 +1,32 @@
 #include "mesh.h"
 #include <framework/disable_all_warnings.h>
 #include <framework/mesh.h>
+
 DISABLE_WARNINGS_PUSH()
+
 #include <fmt/format.h>
+
 DISABLE_WARNINGS_POP()
+
 #include <iostream>
 #include <vector>
 
-GPUMesh::GPUMesh(std::filesystem::path filePath)
-{
+GPUMesh::GPUMesh(std::filesystem::path filePath) {
     if (!std::filesystem::exists(filePath))
         throw MeshLoadingException(fmt::format("File {} does not exist", filePath.string().c_str()));
 
     // Defined in <framework/mesh.h>
     const auto cpuMesh = mergeMeshes(loadMesh(filePath));
-
     // Create Element(/Index) Buffer Objects and Vertex Buffer Object.
     glCreateBuffers(1, &m_ibo);
-    glNamedBufferStorage(m_ibo, static_cast<GLsizeiptr>(cpuMesh.triangles.size() * sizeof(decltype(cpuMesh.triangles)::value_type)), cpuMesh.triangles.data(), 0);
+    glNamedBufferStorage(m_ibo, static_cast<GLsizeiptr>(cpuMesh.triangles.size() *
+                                                        sizeof(decltype(cpuMesh.triangles)::value_type)),
+                         cpuMesh.triangles.data(), 0);
 
     glCreateBuffers(1, &m_vbo);
-    glNamedBufferStorage(m_vbo, static_cast<GLsizeiptr>(cpuMesh.vertices.size() * sizeof(decltype(cpuMesh.vertices)::value_type)), cpuMesh.vertices.data(), 0);
+    glNamedBufferStorage(m_vbo, static_cast<GLsizeiptr>(cpuMesh.vertices.size() *
+                                                        sizeof(decltype(cpuMesh.vertices)::value_type)),
+                         cpuMesh.vertices.data(), 0);
 
     // Bind vertex data to shader inputs using their index (location).
     // These bindings are stored in the Vertex Array Object.
@@ -55,35 +61,33 @@ GPUMesh::GPUMesh(std::filesystem::path filePath)
     m_numIndices = static_cast<GLsizei>(3 * cpuMesh.triangles.size());
 }
 
-GPUMesh::GPUMesh(GPUMesh&& other)
-{
+int GPUMesh::getTriangleCount() {
+    return m_numIndices / 3;
+}
+
+GPUMesh::GPUMesh(GPUMesh &&other) {
     moveInto(std::move(other));
 }
 
-GPUMesh::~GPUMesh()
-{
+GPUMesh::~GPUMesh() {
     freeGpuMemory();
 }
 
-GPUMesh& GPUMesh::operator=(GPUMesh&& other)
-{
+GPUMesh &GPUMesh::operator=(GPUMesh &&other) {
     moveInto(std::move(other));
     return *this;
 }
 
-bool GPUMesh::hasTextureCoords() const
-{
+bool GPUMesh::hasTextureCoords() const {
     return m_hasTextureCoords;
 }
 
-void GPUMesh::draw()
-{
+void GPUMesh::draw() {
     glBindVertexArray(m_vao);
     glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, nullptr);
 }
 
-void GPUMesh::moveInto(GPUMesh&& other)
-{
+void GPUMesh::moveInto(GPUMesh &&other) {
     freeGpuMemory();
     m_numIndices = other.m_numIndices;
     m_hasTextureCoords = other.m_hasTextureCoords;
@@ -98,8 +102,7 @@ void GPUMesh::moveInto(GPUMesh&& other)
     other.m_vao = INVALID;
 }
 
-void GPUMesh::freeGpuMemory()
-{
+void GPUMesh::freeGpuMemory() {
     if (m_vao != INVALID)
         glDeleteVertexArrays(1, &m_vao);
     if (m_vbo != INVALID)

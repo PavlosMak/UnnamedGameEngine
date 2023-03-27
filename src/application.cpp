@@ -68,6 +68,8 @@ public:
         m_debugSystem.register_component<TransformComponent>("Transform");
         m_debugSystem.register_component<TagComponent>("Tag");
         m_debugSystem.register_component<CameraComponent>("Camera");
+        m_debugSystem.register_component<LightComponent>("Light");
+        m_debugSystem.register_component<MaterialComponent>("Material");
     }
 
     void update() {
@@ -79,7 +81,6 @@ public:
 
             // update the window state
             m_window.updateInput();
-
 
             m_debugSystem.run(m_registry);
 
@@ -142,7 +143,6 @@ private:
     Shader m_shadowShader;
 
     DebugSystem m_debugSystem;
-
 
     Scene m_scene;
     entt::registry m_registry;

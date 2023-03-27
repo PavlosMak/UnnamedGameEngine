@@ -60,17 +60,18 @@ struct CameraComponent {
     Camera *camera;
 
     CameraComponent() = default;
+
     CameraComponent(const CameraComponent &) = default;
 
     explicit CameraComponent(Camera* camera) : camera(camera) {};
 };
 
 struct MaterialComponent {
-    Material material;
+    std::shared_ptr<Material> material;
 
-    MaterialComponent() = delete;
+    MaterialComponent() = default;
 
-    explicit MaterialComponent(const Material &material) : material(material) {};
+    explicit MaterialComponent(std::shared_ptr<Material> material) : material(std::move(material)) {};
 };
 
 struct WasdComponent {
@@ -81,3 +82,11 @@ struct WasdComponent {
     explicit WasdComponent(float movementSpeed) : movementSpeed(movementSpeed) {};
 };
 
+
+struct LightComponent {
+    Light light;
+
+    LightComponent() {};
+
+    explicit LightComponent(const Light &light): light(light) {};
+};
