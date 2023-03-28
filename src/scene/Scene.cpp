@@ -46,32 +46,34 @@ void Scene::setup(Camera &camera) {
     //Define some lights
     Entity light1 = this->createEntity("Light1");
     light1.addComponent<LightComponent>(light);
-    light1.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1.5,0.339,0.25)));
+    light1.addComponent<TransformComponent>(glm::vec3(-1.5,0.339,0.25), glm::vec3(0), glm::vec3(1));
+
     Entity light2 = this->createEntity("Light2");
     light2.addComponent<LightComponent>(light);
-    light2.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1.5,-0.244,0.25)));
+    light2.addComponent<TransformComponent>(glm::vec3(-1.5,-0.244,0.25), glm::vec3(0), glm::vec3(1));
+
     Entity light3 = this->createEntity("Light3");
     light3.addComponent<LightComponent>(light);
-    light3.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1.5,-0.244,-0.168)));
+    light3.addComponent<TransformComponent>(glm::vec3(-1.5,-0.244,-0.168), glm::vec3(0), glm::vec3(1));
+
     Entity light4 = this->createEntity("Light4");
     light4.addComponent<LightComponent>(light);
-    light4.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1.5,0.339,-0.168)));
+    light4.addComponent<TransformComponent>(glm::vec3(-1.5,0.339,-0.168), glm::vec3(0), glm::vec3(1));
 
     Entity model = this->createEntity("Dragon");
     model.addComponent<MeshRendererComponent>("resources/dragon.obj");
-    model.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(1.573, 0, 0)));
+    model.addComponent<TransformComponent>(glm::vec3(1.573, 0, 0), glm::vec3(0), glm::vec3(1));
     model.addComponent<MaterialComponent>(texturedMaterial);
     model.addComponent<WasdComponent>(0.1f);
 
     Entity cameraEntity = this->createEntity("Camera");
-    cameraEntity.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1, 0, 0)));
-    cameraEntity.addComponent<CameraComponent>(camera, glm::vec3(0.0f));
+    cameraEntity.addComponent<TransformComponent>(glm::vec3(0, 0, -1), glm::vec3(0, 240, 0), glm::vec3(1));
+    cameraEntity.addComponent<CameraComponent>(&camera);
 
     updateStatistics();
 }
 
-void Scene::update(const long long &timeStep) {
-}
+void Scene::update(const long long &timeStep) {}
 
 Entity Scene::createEntity(const std::string &name) {
     auto handle = m_registry.create();
