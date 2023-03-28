@@ -112,6 +112,7 @@ public:
     // mods - Any modifier keys pressed, like shift or control
     void onKeyReleased(int key, int mods) {
         m_wasdSystem.onKeyReleased(key);
+        m_debugSystem.onKeyRelease(key);
     }
 
     // If the mouse is moved this function will be called with the x, y screen-coordinates of the mouse

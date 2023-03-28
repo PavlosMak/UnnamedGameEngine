@@ -57,7 +57,7 @@ void Scene::setup(Camera &camera) {
     light4.addComponent<LightComponent>(light);
     light4.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(-1.5,0.339,-0.168)));
 
-    Entity model = this->createEntity("Test Model");
+    Entity model = this->createEntity("Dragon");
     model.addComponent<MeshRendererComponent>("resources/dragon.obj");
     model.addComponent<TransformComponent>(glm::translate(glm::mat4{1.0f}, glm::vec3(1.573, 0, 0)));
     model.addComponent<MaterialComponent>(texturedMaterial);
