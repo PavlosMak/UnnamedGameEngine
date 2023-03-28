@@ -25,7 +25,7 @@ std::shared_ptr<Material> MaterialManager::createPBRMaterial(const Shader& shade
     return std::shared_ptr<Material>(&materialPool[materialPool.size()-1]);
 }
 
-std::shared_ptr<Material> MaterialManager::createTexturedPBRMaterial(const Shader &shader,
+Material* MaterialManager::createTexturedPBRMaterial(const Shader &shader,
                                                                      std::filesystem::path normalMap,
                                                                      std::filesystem::path roughnessMap,
                                                                      std::filesystem::path metallicMap,
@@ -41,5 +41,5 @@ std::shared_ptr<Material> MaterialManager::createTexturedPBRMaterial(const Shade
     int heightTex = textureManager->createTexture(std::move(heightMap));
     Material mat = Material(shader, normalTex, roughTex, metalTex, albedoTex, ambientTex, heightTex);
     materialPool.push_back(mat);
-    return std::shared_ptr<Material>(&materialPool[materialPool.size()-1]);
+    return &(materialPool[materialPool.size()-1]);
 }

@@ -33,7 +33,7 @@ void Scene::setup(Camera &camera) {
 
     MaterialManager* materialManager = MaterialManager::getInstance();
 
-    std::shared_ptr<Material> texturedMaterial = materialManager->createTexturedPBRMaterial(
+    Material* texturedMaterial = materialManager->createTexturedPBRMaterial(
             m_shaderManager.getShader(SHADER_TYPE::TEXTURED_PBR),
             "resources/dragon-scales/normal.png",
             "resources/dragon-scales/roughness.png",
@@ -41,34 +41,49 @@ void Scene::setup(Camera &camera) {
             "resources/dragon-scales/albedo.png",
             "resources/dragon-scales/ao.png",
             "resources/dragon-scales/height.png");
+
+    Material* texturedMaterial2 = materialManager->createTexturedPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::TEXTURED_PBR),
+            "resources/rustSteel/normal.png",
+            "resources/rustSteel/roughness.png",
+            "resources/rustSteel/metallic.png",
+            "resources/rustSteel/albedo.png",
+            "resources/rustSteel/ao.png",
+            "resources/rustSteel/height.png");
+
     auto light = Light(glm::vec3(1.0f));
 
     //Define some lights
     Entity light1 = this->createEntity("Light1");
     light1.addComponent<LightComponent>(light);
-    light1.addComponent<TransformComponent>(glm::vec3(-1.5,0.339,0.25), glm::vec3(0), glm::vec3(1));
-
-    Entity light2 = this->createEntity("Light2");
-    light2.addComponent<LightComponent>(light);
-    light2.addComponent<TransformComponent>(glm::vec3(-1.5,-0.244,0.25), glm::vec3(0), glm::vec3(1));
-
-    Entity light3 = this->createEntity("Light3");
-    light3.addComponent<LightComponent>(light);
-    light3.addComponent<TransformComponent>(glm::vec3(-1.5,-0.244,-0.168), glm::vec3(0), glm::vec3(1));
-
-    Entity light4 = this->createEntity("Light4");
-    light4.addComponent<LightComponent>(light);
-    light4.addComponent<TransformComponent>(glm::vec3(-1.5,0.339,-0.168), glm::vec3(0), glm::vec3(1));
+    light1.addComponent<TransformComponent>(glm::vec3(1.073, 0.110, 0), glm::vec3(0), glm::vec3(1));
+////
+//    Entity light2 = this->createEntity("Light2");
+//    light2.addComponent<LightComponent>(light);
+//    light2.addComponent<TransformComponent>(glm::vec3(-1.5,-0.244,0.25), glm::vec3(0), glm::vec3(1));
+//
+//    Entity light3 = this->createEntity("Light3");
+//    light3.addComponent<LightComponent>(light);
+//    light3.addComponent<TransformComponent>(glm::vec3(-1.5,-0.244,-0.168), glm::vec3(0), glm::vec3(1));
+//
+//    Entity light4 = this->createEntity("Light4");
+//    light4.addComponent<LightComponent>(light);
+//    light4.addComponent<TransformComponent>(glm::vec3(-1.5,0.339,-0.168), glm::vec3(0), glm::vec3(1));
 
     Entity model = this->createEntity("Dragon");
     model.addComponent<MeshRendererComponent>("resources/dragon.obj");
     model.addComponent<TransformComponent>(glm::vec3(1.573, 0, 0), glm::vec3(0), glm::vec3(1));
     model.addComponent<MaterialComponent>(texturedMaterial);
-    model.addComponent<WasdComponent>(0.1f);
+
+    Entity model2 = this->createEntity("Dragon2");
+    model2.addComponent<MeshRendererComponent>("resources/dragon.obj");
+    model2.addComponent<TransformComponent>(glm::vec3(1.573, 2, 0), glm::vec3(0), glm::vec3(1));
+    model2.addComponent<MaterialComponent>(texturedMaterial2);
 
     Entity cameraEntity = this->createEntity("Camera");
     cameraEntity.addComponent<TransformComponent>(glm::vec3(0, 0, -1), glm::vec3(0, 240, 0), glm::vec3(1));
     cameraEntity.addComponent<CameraComponent>(&camera);
+    cameraEntity.addComponent<WasdComponent>(0.02f);
 
     updateStatistics();
 }

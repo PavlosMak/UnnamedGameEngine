@@ -3,7 +3,7 @@
 //Constants
 const float PI = 3.14159;
 const float epsilon = 0.000001; //small epsilon to avoid div by 0
-const int NUM_OF_LIGHTS = 4;
+const int NUM_OF_LIGHTS = 1;
 
 //Inputs
 layout(location = 3) uniform vec3 cameraPos;
@@ -17,6 +17,8 @@ layout(location = 9) uniform sampler2D ambientMap;
 
 layout(location = 10) uniform vec3 lightPos[NUM_OF_LIGHTS];
 layout(location = 10 + NUM_OF_LIGHTS) uniform vec3 lightColor[NUM_OF_LIGHTS];
+
+layout(location = 10 + 2*NUM_OF_LIGHTS) uniform sampler2D shadowMaps[NUM_OF_LIGHTS];
 
 in vec3 fragPosition;
 in vec3 fragNormal;

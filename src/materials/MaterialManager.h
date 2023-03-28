@@ -6,7 +6,9 @@
 
 class MaterialManager {
 protected:
-    MaterialManager() : materialPool() {} ;
+    MaterialManager() : materialPool() {
+        materialPool.reserve(100);
+    };
     static MaterialManager* instance;
 
 public:
@@ -20,7 +22,7 @@ public:
     //Return a point to a material
     std::shared_ptr<Material> createDebugMaterial(Shader& shader);
     std::shared_ptr<Material> createPBRMaterial(const Shader& shader, glm::vec3 albedo, float roughness, float metallic, float ambient);
-    std::shared_ptr<Material> createTexturedPBRMaterial(
+    Material* createTexturedPBRMaterial(
             const Shader &shader,
             std::filesystem::path normalMap,
             std::filesystem::path roughnessMap,
