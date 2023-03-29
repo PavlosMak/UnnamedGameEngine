@@ -18,7 +18,8 @@ layout(location = 9) uniform sampler2D ambientMap;
 layout(location = 10) uniform vec3 lightPos[NUM_OF_LIGHTS];
 layout(location = 10 + NUM_OF_LIGHTS) uniform vec3 lightColor[NUM_OF_LIGHTS];
 
-layout(location = 10 + 2*NUM_OF_LIGHTS) uniform sampler2D shadowMaps[NUM_OF_LIGHTS];
+layout(location = 10 + NUM_OF_LIGHTS + 1) uniform sampler2D shadowMap;
+layout(location = 10 + NUM_OF_LIGHTS + 2) uniform mat4 lightMVP;
 
 in vec3 fragPosition;
 in vec3 fragNormal;
@@ -28,10 +29,10 @@ in vec2 fragTexCoord;
 layout(location = 0) out vec4 fragColor;
 
 
-//Normal Space to tangeant space
-//As seen in LearnOpenGL
-vec3 getNormalFromMap()
-{
+//Normal space to tangeant space
+//as seen in LearnOpenGL's normal mapping tutorial:
+//https://learnopengl.com/Advanced-Lighting/Normal-Mapping
+vec3 getNormalFromMap() {
     vec3 tangentNormal = texture(normalMap, fragTexCoord).xyz * 2.0 - 1.0;
     vec3 Q1  = dFdx(fragPosition);
     vec3 Q2  = dFdy(fragPosition);
@@ -81,6 +82,36 @@ vec3 fresnelSchlick(float cos, vec3 F0) {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cos, 0.0, 1.0), 5.0);
 }
 
+//Calculates how much the point is in shadow
+float shadowContribution(vec3 fragPos, vec3 normal, sampler2D texShadow, vec3 lightPosition) {
+    vec3 lightDir = normalize(lightPosition - fragPos);
+
+    //Change the bias based on the slope of the surface
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.03);
+    vec3 biasedFragPos = fragPos + lightDir*bias;
+
+    vec4 fragLightCoord = lightMVP * vec4(biasedFragPos, 1.0);
+    fragLightCoord.xyz /= fragLightCoord.w;
+    fragLightCoord.xyz = fragLightCoord.xyz * 0.5 + 0.5;
+
+    float fragLightDepth = fragLightCoord.z;
+    vec2 shadowMapCoord = fragLightCoord.xy;
+
+    float result = 0.0;
+
+    vec2 texelSize = 1.0 / textureSize(texShadow, 0);
+    for(int x = -1; x <= 1; x++) {
+        for (int y = -1; y <= 1; y++) {
+            vec2 filteredCoord = shadowMapCoord + vec2(x, y)*texelSize;
+            float shadowMapDepth = texture(texShadow, filteredCoord).x;
+            if ((shadowMapDepth < fragLightDepth)) {
+                result += 1.0f;
+            }
+        }
+    }
+    return result / 9.0f;
+}
+
 void main() {
     vec3 normal = getNormalFromMap();//normalize(vec3(texture(normalMap, fragTexCoord)));
     vec3 albedo = pow(texture(albedoMap, fragTexCoord).rgb, vec3(2.2));
@@ -96,6 +127,7 @@ void main() {
     F0 = mix(F0, albedo, metallic);
 
     vec3 result = vec3(0.0);
+    float shadowScale = 0;
     for (int i = 0; i < NUM_OF_LIGHTS; i++) {
         vec3 lightVec = normalize(lightPos[i] - fragPosition);
         vec3 H = normalize(lightVec + camVec);
@@ -126,7 +158,10 @@ void main() {
         vec3 diffuse = kd * (albedo / PI);
 
         result += (diffuse + specular) * radiance * cosTheta;
+        shadowScale += shadowContribution(fragPosition, normal, shadowMap, lightPos[i]);
     }
+    //Normalize the shadow scale based on number of lights
+    shadowScale = shadowScale / NUM_OF_LIGHTS;
 
     //Add ambient
     result += albedo*ambient*ambientOcclusion;
@@ -134,5 +169,5 @@ void main() {
     //Tone mapping and gamma correction
     result = pow(reinhardToneMap(result), vec3(1.1/2.2));
 
-    fragColor = vec4(result, 1.0);
+    fragColor = (1-shadowScale)*vec4(result, 1.0);
 }

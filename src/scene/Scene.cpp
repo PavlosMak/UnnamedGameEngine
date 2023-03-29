@@ -42,21 +42,22 @@ void Scene::setup(Camera &camera) {
             "resources/dragon-scales/ao.png",
             "resources/dragon-scales/height.png");
 
-    Material* texturedMaterial2 = materialManager->createTexturedPBRMaterial(
+    Material* mat2 = materialManager->createTexturedPBRMaterial(
             m_shaderManager.getShader(SHADER_TYPE::TEXTURED_PBR),
-            "resources/rustSteel/normal.png",
-            "resources/rustSteel/roughness.png",
-            "resources/rustSteel/metallic.png",
-            "resources/rustSteel/albedo.png",
-            "resources/rustSteel/ao.png",
-            "resources/rustSteel/height.png");
+            "resources/bricks/normal.png",
+            "resources/bricks/roughness.png",
+            "resources/bricks/metallic.png",
+            "resources/bricks/albedo.png",
+            "resources/bricks/ao.png",
+            "resources/bricks/height.png");
 
-    auto light = Light(glm::vec3(1.0f));
+    auto light = Light(glm::vec3(10.0f));
 
     //Define some lights
     Entity light1 = this->createEntity("Light1");
     light1.addComponent<LightComponent>(light);
-    light1.addComponent<TransformComponent>(glm::vec3(1.073, 0.110, 0), glm::vec3(0), glm::vec3(1));
+    light1.addComponent<TransformComponent>(glm::vec3(0.226, .860, -1.031), glm::vec3(0,240,0), glm::vec3(1));
+
 ////
 //    Entity light2 = this->createEntity("Light2");
 //    light2.addComponent<LightComponent>(light);
@@ -70,15 +71,20 @@ void Scene::setup(Camera &camera) {
 //    light4.addComponent<LightComponent>(light);
 //    light4.addComponent<TransformComponent>(glm::vec3(-1.5,0.339,-0.168), glm::vec3(0), glm::vec3(1));
 
-    Entity model = this->createEntity("Dragon");
-    model.addComponent<MeshRendererComponent>("resources/dragon.obj");
-    model.addComponent<TransformComponent>(glm::vec3(1.573, 0, 0), glm::vec3(0), glm::vec3(1));
-    model.addComponent<MaterialComponent>(texturedMaterial);
+    Entity smaug = this->createEntity("Smaug");
+    smaug.addComponent<MeshRendererComponent>("resources/dragon.obj");
+    smaug.addComponent<TransformComponent>(glm::vec3(1.573, 0, 0), glm::vec3(0), glm::vec3(1));
+    smaug.addComponent<MaterialComponent>(texturedMaterial);
 
-    Entity model2 = this->createEntity("Dragon2");
-    model2.addComponent<MeshRendererComponent>("resources/dragon.obj");
-    model2.addComponent<TransformComponent>(glm::vec3(1.573, 2, 0), glm::vec3(0), glm::vec3(1));
-    model2.addComponent<MaterialComponent>(texturedMaterial2);
+    Entity mushu = this->createEntity("Mushu");
+    mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
+    mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20,0), glm::vec3(1));
+    mushu.addComponent<MaterialComponent>(texturedMaterial);
+
+    Entity model2 = this->createEntity("Ground");
+    model2.addComponent<MeshRendererComponent>("resources/cube.obj");
+    model2.addComponent<TransformComponent>(glm::vec3(1.573, -1.270, 0), glm::vec3(0), glm::vec3(5.900, 0.995, 4.840));
+    model2.addComponent<MaterialComponent>(mat2);
 
     Entity cameraEntity = this->createEntity("Camera");
     cameraEntity.addComponent<TransformComponent>(glm::vec3(0, 0, -1), glm::vec3(0, 240, 0), glm::vec3(1));
