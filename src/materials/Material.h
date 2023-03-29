@@ -51,7 +51,14 @@ public:
 
     void setAmbient(float ambient);
 
-    void bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions);
+    /**
+     * Binds the material
+     * @param cameraPosition
+     * @param lights
+     * @param lightPositions
+     * @return the number of texture slots occupied
+     */
+    int bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions);
 
 private:
     const SHADER_TYPE m_shaderType;

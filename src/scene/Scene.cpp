@@ -53,16 +53,16 @@ void Scene::setup(Camera &camera) {
 
     auto light = Light(glm::vec3(10.0f));
 
-    //Define some lights
+//    //Define some lights
     Entity light1 = this->createEntity("Light1");
     light1.addComponent<LightComponent>(light);
     light1.addComponent<TransformComponent>(glm::vec3(0.226, .860, -1.031), glm::vec3(0,240,0), glm::vec3(1));
 
-////
-//    Entity light2 = this->createEntity("Light2");
-//    light2.addComponent<LightComponent>(light);
-//    light2.addComponent<TransformComponent>(glm::vec3(-1.5,-0.244,0.25), glm::vec3(0), glm::vec3(1));
-//
+
+    Entity light2 = this->createEntity("Light2");
+    light2.addComponent<LightComponent>(light);
+    light2.addComponent<TransformComponent>(glm::vec3(2.883,0.840,-2.128), glm::vec3(0,163.000,0), glm::vec3(1,1,1));
+
 //    Entity light3 = this->createEntity("Light3");
 //    light3.addComponent<LightComponent>(light);
 //    light3.addComponent<TransformComponent>(glm::vec3(-1.5,-0.244,-0.168), glm::vec3(0), glm::vec3(1));

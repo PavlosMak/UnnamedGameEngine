@@ -3,7 +3,10 @@
 //Constants
 const float PI = 3.14159;
 const float epsilon = 0.000001; //small epsilon to avoid div by 0
-const int NUM_OF_LIGHTS = 1;
+const int NUM_OF_LIGHTS = 2;
+
+//GLOBAL VARS
+float shadowed_by = 0;
 
 //Inputs
 layout(location = 3) uniform vec3 cameraPos;
@@ -18,8 +21,8 @@ layout(location = 9) uniform sampler2D ambientMap;
 layout(location = 10) uniform vec3 lightPos[NUM_OF_LIGHTS];
 layout(location = 10 + NUM_OF_LIGHTS) uniform vec3 lightColor[NUM_OF_LIGHTS];
 
-layout(location = 10 + NUM_OF_LIGHTS + 1) uniform sampler2D shadowMap;
-layout(location = 10 + NUM_OF_LIGHTS + 2) uniform mat4 lightMVP;
+layout(location = 10 + 2*NUM_OF_LIGHTS) uniform sampler2D shadowMaps[NUM_OF_LIGHTS];
+layout(location = 10 + 3*NUM_OF_LIGHTS) uniform mat4 lightMVPs[NUM_OF_LIGHTS];
 
 in vec3 fragPosition;
 in vec3 fragNormal;
@@ -83,7 +86,7 @@ vec3 fresnelSchlick(float cos, vec3 F0) {
 }
 
 //Calculates how much the point is in shadow
-float shadowContribution(vec3 fragPos, vec3 normal, sampler2D texShadow, vec3 lightPosition) {
+float shadowContribution(vec3 fragPos, vec3 normal, sampler2D texShadow, vec3 lightPosition, mat4 lightMVP) {
     vec3 lightDir = normalize(lightPosition - fragPos);
 
     //Change the bias based on the slope of the surface
@@ -100,11 +103,18 @@ float shadowContribution(vec3 fragPos, vec3 normal, sampler2D texShadow, vec3 li
     float result = 0.0;
 
     vec2 texelSize = 1.0 / textureSize(texShadow, 0);
+
+
+    float shadowMapDepth = texture(texShadow, shadowMapCoord).x;
+    if ((shadowMapDepth < fragLightDepth) && fragLightDepth < 1.0) {
+        shadowed_by += 1;
+    }
+
     for(int x = -1; x <= 1; x++) {
         for (int y = -1; y <= 1; y++) {
             vec2 filteredCoord = shadowMapCoord + vec2(x, y)*texelSize;
             float shadowMapDepth = texture(texShadow, filteredCoord).x;
-            if ((shadowMapDepth < fragLightDepth)) {
+            if ((shadowMapDepth < fragLightDepth) && fragLightDepth < 1.0) {
                 result += 1.0f;
             }
         }
@@ -158,10 +168,10 @@ void main() {
         vec3 diffuse = kd * (albedo / PI);
 
         result += (diffuse + specular) * radiance * cosTheta;
-        shadowScale += shadowContribution(fragPosition, normal, shadowMap, lightPos[i]);
+        shadowScale += shadowContribution(fragPosition, normal, shadowMaps[i], lightPos[i], lightMVPs[i]);
     }
     //Normalize the shadow scale based on number of lights
-    shadowScale = shadowScale / NUM_OF_LIGHTS;
+    shadowScale = shadowScale / 2;//max(1,shadowed_by);
 
     //Add ambient
     result += albedo*ambient*ambientOcclusion;

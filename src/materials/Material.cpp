@@ -14,11 +14,11 @@ void Material::setColor(glm::vec3 &color) {
     m_color = glm::vec3(color.x, color.y, color.z);
 }
 
-void Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions) {
+int Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions) {
     m_shader.bind();
 
     TextureManager* texManager = TextureManager::getInstance();
-
+    int textureSlotOccupied = 0;
     switch (m_shaderType) {
         case SOLID_COLOR:
             glUniform3fv(3, 1, glm::value_ptr(m_color));
@@ -58,10 +58,12 @@ void Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &light
                 glUniform3fv(10 + i, 1, glm::value_ptr(lightPositions[i]));
                 glUniform3fv(10 + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
             }
+            textureSlotOccupied = 5;
             break;
         case NORMAL_AS_COLOR:
             break;
     }
+    return textureSlotOccupied;
 }
 
 void Material::setShininess(float shininess) {

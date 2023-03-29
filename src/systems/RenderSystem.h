@@ -52,6 +52,8 @@ public:
             // Set behaviour for when texture coordinates are outside the [0, 1] range.
             glTextureParameteri(texShadow, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTextureParameteri(texShadow, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+//            float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+//            glTexParameterfv(texShadow, GL_TEXTURE_BORDER_COLOR, borderColor);
 
             // Set interpolation for texture sampling (GL_NEAREST for no interpolation).
             glTextureParameteri(texShadow, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -133,8 +135,10 @@ public:
 
         glEnable(GL_DEPTH_TEST);
 
-        //This is used to access the uniform buffers that come after the light uniforms
-        int lightOffset = 10 + lightPos.size();
+        //This is used to access the uniform buffers for the shadow maps and MVP
+        int lightCount = lightPos.size();
+        int shadowMapBufferOffset = 10 + 2*lightCount;
+        int mvpBufferOffset = 10 + 3*lightCount;
 
         for (auto entity: view) {
 
@@ -151,20 +155,22 @@ public:
             // https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
             const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
 
-            materialComponent.material->bindMaterial(camera.getComponent<TransformComponent>().localTransform.pos,
+            int texturesUsed = materialComponent.material->bindMaterial(camera.getComponent<TransformComponent>().localTransform.pos,
                                                      lights, lightPos);
 
             glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
             glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(worldTransform));
             glUniformMatrix3fv(2, 1, GL_FALSE, glm::value_ptr(normalModelMatrix));
 
-            //Load shadow map texture
-            glActiveTexture(GL_TEXTURE0 + 5);
-            glBindTexture(GL_TEXTURE_2D, shadowMaps[0]);
-            glUniform1i(lightOffset + 1, 5);
+            //Load shadow map textures and light MVP matrices
+            for(int i = 0; i < shadowMaps.size(); i++) {
+                int offset = texturesUsed + i;
+                glActiveTexture(GL_TEXTURE0 + offset);
+                glBindTexture(GL_TEXTURE_2D, shadowMaps[i]);
+                glUniform1i(shadowMapBufferOffset + i, offset);
 
-            //Pass the mvp of the light
-            glUniformMatrix4fv(lightOffset + 2, 1, GL_FALSE, glm::value_ptr(lightVPs[0]));
+                glUniformMatrix4fv(mvpBufferOffset + i, 1, GL_FALSE, glm::value_ptr(lightVPs[i]));
+            }
 
             meshRenderer.mesh.draw();
         }
