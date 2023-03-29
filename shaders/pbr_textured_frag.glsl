@@ -104,22 +104,16 @@ float shadowContribution(vec3 fragPos, vec3 normal, sampler2D texShadow, vec3 li
 
     vec2 texelSize = 1.0 / textureSize(texShadow, 0);
 
-
-    float shadowMapDepth = texture(texShadow, shadowMapCoord).x;
-    if ((shadowMapDepth < fragLightDepth) && fragLightDepth < 1.0) {
-        shadowed_by += 1;
-    }
-
     for(int x = -1; x <= 1; x++) {
         for (int y = -1; y <= 1; y++) {
             vec2 filteredCoord = shadowMapCoord + vec2(x, y)*texelSize;
             float shadowMapDepth = texture(texShadow, filteredCoord).x;
             if ((shadowMapDepth < fragLightDepth) && fragLightDepth < 1.0) {
-                result += 1.0f;
+                result += 0.111f; // (1 / 9)
             }
         }
     }
-    return result / 9.0f;
+    return result;
 }
 
 void main() {
@@ -170,8 +164,9 @@ void main() {
         result += (diffuse + specular) * radiance * cosTheta;
         shadowScale += shadowContribution(fragPosition, normal, shadowMaps[i], lightPos[i], lightMVPs[i]);
     }
+
     //Normalize the shadow scale based on number of lights
-    shadowScale = shadowScale / 2;//max(1,shadowed_by);
+    shadowScale = 0.5 * shadowScale; //(/ NUM_OF_LIGHTS;//max(1,shadowed_by);
 
     //Add ambient
     result += albedo*ambient*ambientOcclusion;

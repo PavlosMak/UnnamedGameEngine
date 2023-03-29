@@ -78,7 +78,7 @@ public:
         long long timeStep = 0l;
 
 
-        m_renderSystem.createShadowMaps(m_shadowShader, m_registry);
+        m_renderSystem.init(m_shadowShader, m_registry);
 
         while (!m_window.shouldClose()) {
 
@@ -94,7 +94,7 @@ public:
             m_scene.update(timeStep);
 
             // m_renderSystem.renderMeshes(m_registry, m_scene.getEntityByTag("Camera"), m_window.getWindowSize(), m_window.getAspectRatio());
-            m_renderSystem.renderMeshes(m_debugShader, m_registry, m_scene.getEntityByTag("Camera"),
+            m_renderSystem.renderMeshes(m_shadowShader, m_registry, m_scene.getEntityByTag("Camera"),
                                         m_window.getWindowSize(),
                                         m_window.getAspectRatio());
 

@@ -13,15 +13,17 @@ MaterialManager *MaterialManager::getInstance() {
 }
 
 std::shared_ptr<Material> MaterialManager::createDebugMaterial(Shader& shader) {
-    Material normalMaterial = Material(shader,
+    Material normalMaterial = Material(lastID, shader,
                                        SHADER_TYPE::NORMAL_AS_COLOR);
     materialPool.push_back(normalMaterial);
+    lastID += 1;
     return std::shared_ptr<Material>(&materialPool[materialPool.size()-1]);
 }
 
 Material* MaterialManager::createPBRMaterial(const Shader& shader,glm::vec3 albedo, float roughness, float metallic, float ambient) {
-    Material pbrMaterial = Material(shader, albedo, roughness, metallic, ambient);
+    Material pbrMaterial = Material(lastID, shader, albedo, roughness, metallic, ambient);
     materialPool.push_back(pbrMaterial);
+    lastID += 1;
     return &materialPool[materialPool.size()-1];
 }
 
@@ -39,7 +41,8 @@ Material* MaterialManager::createTexturedPBRMaterial(const Shader &shader,
     int albedoTex = textureManager->createTexture(std::move(albedoPath));
     int ambientTex = textureManager->createTexture(std::move(aoPath));
     int heightTex = textureManager->createTexture(std::move(heightMap));
-    Material mat = Material(shader, normalTex, roughTex, metalTex, albedoTex, ambientTex, heightTex);
+    Material mat = Material(lastID, shader, normalTex, roughTex, metalTex, albedoTex, ambientTex, heightTex);
     materialPool.push_back(mat);
+    lastID += 1;
     return &(materialPool[materialPool.size()-1]);
 }
