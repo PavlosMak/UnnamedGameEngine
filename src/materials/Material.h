@@ -8,25 +8,25 @@
 
 class Material {
 public:
-    Material(const Shader &shader, glm::vec3 color, SHADER_TYPE shaderType) :
-            m_shader(shader), m_color(color), m_shaderType(shaderType) {};
+    Material(int id, const Shader &shader, glm::vec3 color, SHADER_TYPE shaderType) :
+            ID(id), m_shader(shader), m_color(color), m_shaderType(shaderType) {};
 
-    Material(const Shader &shader, SHADER_TYPE shaderType) : m_shader(shader), m_color(), m_shaderType(shaderType) {};
+    Material(int id, const Shader &shader, SHADER_TYPE shaderType) : ID(id), m_shader(shader), m_color(), m_shaderType(shaderType) {};
 
-    Material(const Shader &shader, glm::vec3 color, float shininess, SHADER_TYPE shaderType) : m_shader(shader),
+    Material(int id, const Shader &shader, glm::vec3 color, float shininess, SHADER_TYPE shaderType) : ID(id), m_shader(shader),
                                                                                                m_color(color),
                                                                                                m_shininess(shininess),
                                                                                                m_shaderType(
                                                                                                        shaderType) {};
 
-    Material(const Shader &shader, int normalMapId, int roughMapId,int metalMapId,  int albedoMapId,
-             int ambientOcclusionMapId, int heightMapId) : m_shader(shader), m_shaderType(SHADER_TYPE::TEXTURED_PBR), m_normalMapId(normalMapId),
+    Material(int id, const Shader &shader, int normalMapId, int roughMapId,int metalMapId,  int albedoMapId,
+             int ambientOcclusionMapId, int heightMapId) : ID(id), m_shader(shader), m_shaderType(SHADER_TYPE::TEXTURED_PBR), m_normalMapId(normalMapId),
                                    m_roughnessMapId(roughMapId), m_metallicMapId(metalMapId), m_albedoMapId(albedoMapId),
                                    m_heightMapId(heightMapId), m_ambientOcclusionMapId(ambientOcclusionMapId) {
     };
 
-    Material(const Shader &shader, glm::vec3 albedo, float roughness, float metallic, float ambient) :
-            m_shader(shader), m_color(albedo), m_roughness(roughness), m_metallic(metallic),
+    Material(int id, const Shader &shader, glm::vec3 albedo, float roughness, float metallic, float ambient) :
+            ID(id), m_shader(shader), m_color(albedo), m_roughness(roughness), m_metallic(metallic),
             m_ambient(ambient), m_shaderType(SHADER_TYPE::PBR) {}
 
     [[nodiscard]] const Shader &getShader() const;
@@ -51,8 +51,16 @@ public:
 
     void setAmbient(float ambient);
 
-    void bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions);
+    /**
+     * Binds the material
+     * @param cameraPosition
+     * @param lights
+     * @param lightPositions
+     * @return the number of texture slots occupied
+     */
+    int bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions);
 
+    const int ID;
 private:
     const SHADER_TYPE m_shaderType;
     const Shader &m_shader;

@@ -49,16 +49,15 @@ public:
         });
 
         try {
-
             ShaderBuilder shadowBuilder;
             shadowBuilder.addStage(GL_VERTEX_SHADER, "shaders/shadow_vert.glsl");
             m_shadowShader = shadowBuilder.build();
 
-            // Any new shaders can be added below in similar fashion.
-            // ==> Don't forget to reconfigure CMake when you do!
-            //     Visual Studio: PROJECT => Generate Cache for ComputerGraphics
-            //     VS Code: ctrl + shift + p => CMake: Configure => enter
-            // ....
+            ShaderBuilder debugBuilder;
+            debugBuilder.addStage(GL_VERTEX_SHADER, "shaders/debug_vert.glsl")
+                    .addStage(GL_FRAGMENT_SHADER, "shaders/shadow_debug_frag.glsl");
+            m_debugShader = debugBuilder.build();
+
         } catch (ShaderLoadingException e) {
             std::cerr << e.what() << std::endl;
         }
@@ -77,6 +76,10 @@ public:
         Camera camera = Camera();
         m_scene.setup(camera);
         long long timeStep = 0l;
+
+
+        m_renderSystem.init(m_shadowShader, m_registry);
+
         while (!m_window.shouldClose()) {
 
             // update the window state
@@ -91,7 +94,8 @@ public:
             m_scene.update(timeStep);
 
             // m_renderSystem.renderMeshes(m_registry, m_scene.getEntityByTag("Camera"), m_window.getWindowSize(), m_window.getAspectRatio());
-            m_renderSystem.renderMeshes(m_registry, m_scene.getEntityByTag("Camera"), m_window.getWindowSize(),
+            m_renderSystem.renderMeshes(m_shadowShader, m_registry, m_scene.getEntityByTag("Camera"),
+                                        m_window.getWindowSize(),
                                         m_window.getAspectRatio());
 
             // Processes input and swaps the window buffer
@@ -142,6 +146,7 @@ private:
 
     // Shader for default rendering and for depth rendering
     Shader m_shadowShader;
+    Shader m_debugShader;
 
     DebugSystem m_debugSystem;
 

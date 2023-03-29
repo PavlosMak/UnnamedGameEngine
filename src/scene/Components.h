@@ -67,11 +67,11 @@ struct CameraComponent {
 };
 
 struct MaterialComponent {
-    std::shared_ptr<Material> material;
+    Material* material;
 
     MaterialComponent() = default;
 
-    explicit MaterialComponent(std::shared_ptr<Material> material) : material(std::move(material)) {};
+    explicit MaterialComponent(Material* material) : material(std::move(material)) {};
 };
 
 struct WasdComponent {
