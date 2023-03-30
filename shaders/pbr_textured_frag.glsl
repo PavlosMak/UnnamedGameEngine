@@ -161,12 +161,9 @@ void main() {
         kd = kd * (1.0 - metallic);
         vec3 diffuse = kd * (albedo / PI);
 
-        result += (diffuse + specular) * radiance * cosTheta;
-        shadowScale += shadowContribution(fragPosition, normal, shadowMaps[i], lightPos[i], lightMVPs[i]);
+        shadowScale = shadowContribution(fragPosition, normal, shadowMaps[i], lightPos[i], lightMVPs[i]);
+        result += (1 - shadowScale) * (diffuse + specular) * radiance * cosTheta;
     }
-
-    //Normalize the shadow scale based on number of lights
-    shadowScale = 0.5 * shadowScale; //(/ NUM_OF_LIGHTS;//max(1,shadowed_by);
 
     //Add ambient
     result += albedo*ambient*ambientOcclusion;
@@ -174,5 +171,6 @@ void main() {
     //Tone mapping and gamma correction
     result = pow(reinhardToneMap(result), vec3(1.1/2.2));
 
-    fragColor = (1-shadowScale)*vec4(result, 1.0);
+//    fragColor = (1-shadowScale)*vec4(result, 1.0);
+    fragColor = vec4(result, 1.0);
 }
