@@ -65,7 +65,7 @@ private:
             meshRenderer.mesh.draw();
         }
 
-        shadowMaps.push_back(texShadow);
+        //shadowMaps.push_back(texShadow);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
@@ -89,6 +89,7 @@ public:
         m_mvpBufferOffset = 10 + 3*lightCount;
 
         createShadowMaps(shadowShader, registry);
+
     }
 
     void createShadowMaps(Shader &shadowShader, entt::registry &registry) {
@@ -121,6 +122,7 @@ public:
             auto view = registry.view<MeshRendererComponent, TransformComponent, MaterialComponent>();
 
             renderInShadowMap(shadowShader, registry, texShadow, lightVp, view);
+            shadowMaps.push_back(texShadow);
         }
     }
 
@@ -140,11 +142,6 @@ public:
             renderInShadowMap(shadowShader, registry, shadowMaps[lightIndex], lightVp, view);
             lightIndex++;
         }
-//        for(int i = 0; i < lightTransforms.size(); i++) {
-//            GLuint& texShadow = shadowMaps[i];
-//            glm::mat4& lightVp = lightVPs[i];
-//            renderInShadowMap(shadowShader, registry, texShadow, lightVp, view);
-//        }
     }
 
     void renderMeshes(Shader& shadowShader, entt::registry &registry, Entity camera, glm::ivec2 windowSize,
