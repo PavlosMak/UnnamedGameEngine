@@ -169,6 +169,10 @@ public:
         int prevMaterial = -1;
         int texturesUsed = 0;
 
+        int lightCount = lightPos.size();
+
+        int shadowMapBufferOffset;
+        int mvpBufferOffset;
         for (auto entity: view) {
 
             auto &transform = view.get<TransformComponent>(entity);
@@ -185,7 +189,10 @@ public:
 
             //Bind material only if it's new
             if(prevMaterial != materialComponent.material->ID) {
-                texturesUsed = materialComponent.material->bindMaterial(camera.getComponent<TransformComponent>().localTransform.pos,lights, lightPos);
+                materialComponent.material->bindMaterial(camera.getComponent<TransformComponent>().localTransform.pos,lights, lightPos);
+                texturesUsed = materialComponent.material->textureSlotOccupied;
+                shadowMapBufferOffset = materialComponent.material->lightOffset + 2*lightCount;
+                mvpBufferOffset = materialComponent.material->lightOffset + 3*lightCount;
                 prevMaterial = materialComponent.material->ID;
             }
 
@@ -198,8 +205,8 @@ public:
                 int offset = texturesUsed + i;
                 glActiveTexture(GL_TEXTURE0 + offset);
                 glBindTexture(GL_TEXTURE_2D, shadowMaps[i]);
-                glUniform1i(m_shadowMapBufferOffset + i, offset);
-                glUniformMatrix4fv(m_mvpBufferOffset + i, 1, GL_FALSE, glm::value_ptr(lightVPs[i]));
+                glUniform1i(shadowMapBufferOffset + i, offset);
+                glUniformMatrix4fv(mvpBufferOffset + i, 1, GL_FALSE, glm::value_ptr(lightVPs[i]));
             }
 
             meshRenderer.mesh.draw();

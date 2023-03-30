@@ -14,7 +14,7 @@ void Material::setColor(glm::vec3 &color) {
     m_color = glm::vec3(color.x, color.y, color.z);
 }
 
-int Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions) {
+void Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions) {
     m_shader.bind();
 
     TextureManager* texManager = TextureManager::getInstance();
@@ -37,8 +37,8 @@ int Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights
             glUniform1f(6, m_metallic);
             glUniform1f(7, m_ambient);
             for(int i = 0; i < lights.size(); i++) {
-                glUniform3fv(8 + i, 1, glm::value_ptr(lightPositions[i]));
-                glUniform3fv(8 + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
+                glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
+                glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
             }
             break;
         case TEXTURED_PBR:
@@ -55,15 +55,13 @@ int Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights
             texManager->bind(m_ambientOcclusionMapId,GL_TEXTURE0+4);
             glUniform1i(9,4);
             for(int i = 0; i < lights.size(); i++) {
-                glUniform3fv(10 + i, 1, glm::value_ptr(lightPositions[i]));
-                glUniform3fv(10 + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
+                glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
+                glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
             }
-            textureSlotOccupied = 5;
             break;
         case NORMAL_AS_COLOR:
             break;
     }
-    return textureSlotOccupied;
 }
 
 void Material::setShininess(float shininess) {

@@ -22,6 +22,7 @@ std::shared_ptr<Material> MaterialManager::createDebugMaterial(Shader& shader) {
 
 Material* MaterialManager::createPBRMaterial(const Shader& shader,glm::vec3 albedo, float roughness, float metallic, float ambient) {
     Material pbrMaterial = Material(lastID, shader, albedo, roughness, metallic, ambient);
+    pbrMaterial.lightOffset = 8;
     materialPool.push_back(pbrMaterial);
     lastID += 1;
     return &materialPool[materialPool.size()-1];
@@ -42,6 +43,8 @@ Material* MaterialManager::createTexturedPBRMaterial(const Shader &shader,
     int ambientTex = textureManager->createTexture(std::move(aoPath));
     int heightTex = textureManager->createTexture(std::move(heightMap));
     Material mat = Material(lastID, shader, normalTex, roughTex, metalTex, albedoTex, ambientTex, heightTex);
+    mat.textureSlotOccupied = 5;
+    mat.lightOffset = 10;
     materialPool.push_back(mat);
     lastID += 1;
     return &(materialPool[materialPool.size()-1]);

@@ -8,6 +8,7 @@
 
 class Material {
 public:
+
     Material(int id, const Shader &shader, glm::vec3 color, SHADER_TYPE shaderType) :
             ID(id), m_shader(shader), m_color(color), m_shaderType(shaderType) {};
 
@@ -58,9 +59,15 @@ public:
      * @param lightPositions
      * @return the number of texture slots occupied
      */
-    int bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions);
+    void bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions);
 
     const int ID;
+
+
+    //TODO: properly encapsulate these
+    int textureSlotOccupied = 0;
+    int lightOffset = 0;
+
 private:
     const SHADER_TYPE m_shaderType;
     const Shader &m_shader;

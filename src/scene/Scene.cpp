@@ -51,6 +51,9 @@ void Scene::setup(Camera &camera) {
             "resources/bricks/ao.png",
             "resources/bricks/height.png");
 
+    Material* pbrMat = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),glm::vec3(0.8,0.0,0.0),1.0,0.0,0.2);
+
+
     auto light = Light(glm::vec3(10.0f));
 
 //    //Define some lights
@@ -63,14 +66,6 @@ void Scene::setup(Camera &camera) {
     light2.addComponent<LightComponent>(light);
     light2.addComponent<TransformComponent>(glm::vec3(2.883,0.840,-2.128), glm::vec3(0,163.000,0), glm::vec3(1,1,1));
 
-//    Entity light3 = this->createEntity("Light3");
-//    light3.addComponent<LightComponent>(light);
-//    light3.addComponent<TransformComponent>(glm::vec3(-1.5,-0.244,-0.168), glm::vec3(0), glm::vec3(1));
-//
-//    Entity light4 = this->createEntity("Light4");
-//    light4.addComponent<LightComponent>(light);
-//    light4.addComponent<TransformComponent>(glm::vec3(-1.5,0.339,-0.168), glm::vec3(0), glm::vec3(1));
-
     Entity smaug = this->createEntity("Smaug");
     smaug.addComponent<MeshRendererComponent>("resources/dragon.obj");
     smaug.addComponent<TransformComponent>(glm::vec3(1.573, 0, 0), glm::vec3(0), glm::vec3(1));
@@ -79,7 +74,7 @@ void Scene::setup(Camera &camera) {
     Entity mushu = this->createEntity("Mushu");
     mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
     mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20,0), glm::vec3(1));
-    mushu.addComponent<MaterialComponent>(texturedMaterial);
+    mushu.addComponent<MaterialComponent>(pbrMat);
 
     Entity model2 = this->createEntity("Ground");
     model2.addComponent<MeshRendererComponent>("resources/cube.obj");
