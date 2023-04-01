@@ -1,6 +1,4 @@
-#ifndef COMPUTERGRAPHICS_LIGHT_H
-#define COMPUTERGRAPHICS_LIGHT_H
-
+#pragma once
 
 #include "glm/vec3.hpp"
 
@@ -18,4 +16,3 @@ private:
 };
 
 
-#endif //COMPUTERGRAPHICS_LIGHT_H

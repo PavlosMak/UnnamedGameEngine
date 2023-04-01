@@ -55,7 +55,7 @@ private:
             auto &meshTransform = view.template get<TransformComponent>(entity);
             auto &meshRenderer = view.template get<MeshRendererComponent>(entity);
 
-            auto worldTransform = meshTransform.worldTransform();
+            auto worldTransform = meshTransform.transform.worldTransform();
             const glm::mat4 mvpMatrix = lightVp * worldTransform;
 
             const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
@@ -77,7 +77,7 @@ public:
 
         //We are going to be moving this camera around to mimic light directionality
         for (auto lightEntity: lightView) {
-            Transform &transform = registry.get<TransformComponent>(lightEntity).localTransform;
+            Transform &transform = registry.get<TransformComponent>(lightEntity).transform;
             lights.push_back(lightView.get<LightComponent>(lightEntity).light);
             lightPos.push_back(transform.pos);
             lightTransforms.push_back(transform);
@@ -133,7 +133,7 @@ public:
         //We are going to be moving this camera around to mimic light directionality
         glm::mat4 lightVp;
         for (auto lightEntity: lightView) {
-            Transform &transform = registry.get<TransformComponent>(lightEntity).localTransform;
+            Transform &transform = registry.get<TransformComponent>(lightEntity).transform;
             lights[lightIndex] = lightView.get<LightComponent>(lightEntity).light;
             lightPos[lightIndex] = transform.pos;
             lightTransforms[lightIndex] = transform;
@@ -160,7 +160,7 @@ public:
 
         // compute view projection matrix
         // TODO get world localTransform properly
-        auto& camTransform = camera.getComponent<TransformComponent>().localTransform;
+        auto& camTransform = camera.getComponent<TransformComponent>().transform;
         camera.getComponent<CameraComponent>().camera->getViewProjectionMatrix(m_cameraVP, camTransform);
 
         glEnable(GL_DEPTH_TEST);
@@ -175,7 +175,7 @@ public:
             auto &meshRenderer = view.get<MeshRendererComponent>(entity);
             auto &materialComponent = view.get<MaterialComponent>(entity);
 
-            auto worldTransform = transform.worldTransform();
+            auto worldTransform = transform.transform.worldTransform();
 
             //Actual MVP
             const glm::mat4 mvpMatrix = m_cameraVP * worldTransform;
@@ -185,7 +185,7 @@ public:
 
             //Bind material only if it's new
             if(prevMaterial != materialComponent.material->ID) {
-                texturesUsed = materialComponent.material->bindMaterial(camera.getComponent<TransformComponent>().localTransform.pos,lights, lightPos);
+                texturesUsed = materialComponent.material->bindMaterial(camera.getComponent<TransformComponent>().transform.pos,lights, lightPos);
                 prevMaterial = materialComponent.material->ID;
             }
 

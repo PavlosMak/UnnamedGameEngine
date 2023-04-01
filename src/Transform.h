@@ -4,15 +4,20 @@
 
 struct Transform {
 
-    // in degrees
+    // local transform
     glm::vec3 rotation;
     glm::vec3 pos;
     glm::vec3 scale;
 
+    // parent
+    Transform* parent;
+
     Transform();
     Transform(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale);
+    Transform(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale, Transform* parent);
 
     glm::mat4 transform() const;
+    glm::mat4 worldTransform() const;
 
     glm::mat4 rotationMatrix() const;
 

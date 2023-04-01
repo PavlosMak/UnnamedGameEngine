@@ -2,9 +2,9 @@
 #include "glm/ext/matrix_transform.hpp"
 
 #include "Scene.h"
+#include "../materials/MaterialManager.h"
 #include "Entity.h"
 #include "Components.h"
-#include "../materials/MaterialManager.h"
 
 Scene::Scene(entt::registry &registry) : m_registry(registry), m_shaderManager() {}
 
@@ -51,45 +51,28 @@ void Scene::setup(Camera &camera) {
             "resources/bricks/ao.png",
             "resources/bricks/height.png");
 
+    Material* matRobot = materialManager->createPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec3(1, 0, 0), 0.4, 0.4, 0.01);
+
+    loadRobotArm(Transform(glm::vec3(0.2, -0.5, -0.6), glm::vec3(0), glm::vec3(0.1)), mat2);
+
     auto light = Light(glm::vec3(10.0f));
 
-//    //Define some lights
-    Entity light1 = this->createEntity("Light1");
-    light1.addComponent<LightComponent>(light);
-    light1.addComponent<TransformComponent>(glm::vec3(0.226, .860, -1.031), glm::vec3(0,240,0), glm::vec3(1));
-
-
+    //Define some lights
     Entity light2 = this->createEntity("Light2");
+    light2.addComponent<TransformComponent>(glm::vec3(0.4, 0.8, -1), glm::vec3(0,240,0), glm::vec3(1));
     light2.addComponent<LightComponent>(light);
-    light2.addComponent<TransformComponent>(glm::vec3(2.883,0.840,-2.128), glm::vec3(0,163.000,0), glm::vec3(1,1,1));
 
-//    Entity light3 = this->createEntity("Light3");
-//    light3.addComponent<LightComponent>(light);
-//    light3.addComponent<TransformComponent>(glm::vec3(-1.5,-0.244,-0.168), glm::vec3(0), glm::vec3(1));
-//
-//    Entity light4 = this->createEntity("Light4");
-//    light4.addComponent<LightComponent>(light);
-//    light4.addComponent<TransformComponent>(glm::vec3(-1.5,0.339,-0.168), glm::vec3(0), glm::vec3(1));
-
-    Entity smaug = this->createEntity("Smaug");
-    smaug.addComponent<MeshRendererComponent>("resources/dragon.obj");
-    smaug.addComponent<TransformComponent>(glm::vec3(1.573, 0, 0), glm::vec3(0), glm::vec3(1));
-    smaug.addComponent<MaterialComponent>(texturedMaterial);
-
-    Entity mushu = this->createEntity("Mushu");
-    mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
-    mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20,0), glm::vec3(1));
-    mushu.addComponent<MaterialComponent>(texturedMaterial);
-
-    Entity model2 = this->createEntity("Ground");
-    model2.addComponent<MeshRendererComponent>("resources/cube.obj");
-    model2.addComponent<TransformComponent>(glm::vec3(1.573, -1.270, 0), glm::vec3(0), glm::vec3(5.900, 0.995, 4.840));
-    model2.addComponent<MaterialComponent>(mat2);
+    //Define some lights
+    Entity light1 = this->createEntity("Light1");
+    light1.addComponent<TransformComponent>(glm::vec3(0.2, 0.8, -1), glm::vec3(0,240,0), glm::vec3(1));
+    light1.addComponent<LightComponent>(light);
 
     Entity cameraEntity = this->createEntity("Camera");
     cameraEntity.addComponent<TransformComponent>(glm::vec3(0, 0, -1), glm::vec3(0, 240, 0), glm::vec3(1));
     cameraEntity.addComponent<CameraComponent>(&camera);
     cameraEntity.addComponent<WasdComponent>(0.02f);
+
 
     updateStatistics();
 }
@@ -102,5 +85,49 @@ Entity Scene::createEntity(const std::string &name) {
     entity.addComponent<TagComponent>(name);
     m_tagToEntity.emplace(name, handle);
     return entity;
+}
+
+void Scene::loadRobotArm(Transform baseTransform, Material* mat) {
+
+    // Robot arm
+    Entity base = this->createEntity("Base");
+    base.addComponent<TransformComponent>(baseTransform.pos, baseTransform.rotation, baseTransform.scale);
+    base.addComponent<MeshRendererComponent>("resources/robotarm/Base.obj");
+    base.addComponent<MaterialComponent>(mat);
+
+    Entity rBase = this->createEntity("rBase");
+    rBase.addComponent<TransformComponent>(glm::vec3(0, 0.89, 0), glm::vec3(0), glm::vec3(1), &base.getComponent<TransformComponent>().transform);
+    rBase.addComponent<MeshRendererComponent>("resources/robotarm/RotatingBase.obj");
+    rBase.addComponent<MaterialComponent>(mat);
+
+    Entity bicep = this->createEntity("Bicep");
+    bicep.addComponent<TransformComponent>(glm::vec3(0, 0.9951, 0), glm::vec3(0), glm::vec3(1), &rBase.getComponent<TransformComponent>().transform);
+    bicep.addComponent<MeshRendererComponent>("resources/robotarm/Bicep.obj");
+    bicep.addComponent<MaterialComponent>(mat);
+
+    Entity forearm = this->createEntity("Forearm");
+    forearm.addComponent<TransformComponent>(glm::vec3(0, 2.8, 0), glm::vec3(0), glm::vec3(1), &bicep.getComponent<TransformComponent>().transform);
+    forearm.addComponent<MeshRendererComponent>("resources/robotarm/Forearm.obj");
+    forearm.addComponent<MaterialComponent>(mat);
+
+    Entity wrist = this->createEntity("Wrist");
+    wrist.addComponent<TransformComponent>(glm::vec3(0, 3, 0), glm::vec3(0), glm::vec3(1), &forearm.getComponent<TransformComponent>().transform);
+    wrist.addComponent<MeshRendererComponent>("resources/robotarm/Wrist.obj");
+    wrist.addComponent<MaterialComponent>(mat);
+
+    Entity hand = this->createEntity("Hand");
+    hand.addComponent<TransformComponent>(glm::vec3(0, 1.2, 0), glm::vec3(0), glm::vec3(1), &wrist.getComponent<TransformComponent>().transform);
+    hand.addComponent<MeshRendererComponent>("resources/robotarm/Hand.obj");
+    hand.addComponent<MaterialComponent>(mat);
+
+    Entity c1 = this->createEntity("Claw1");
+    c1.addComponent<TransformComponent>(glm::vec3(0, 0.8, 0.3), glm::vec3(0), glm::vec3(1), &hand.getComponent<TransformComponent>().transform);
+    c1.addComponent<MeshRendererComponent>("resources/robotarm/Claw1.obj");
+    c1.addComponent<MaterialComponent>(mat);
+
+    Entity c2 = this->createEntity("Claw2");
+    c2.addComponent<TransformComponent>(glm::vec3(0, 0.8, -0.3), glm::vec3(0), glm::vec3(1), &hand.getComponent<TransformComponent>().transform);
+    c2.addComponent<MeshRendererComponent>("resources/robotarm/Claw2.obj");
+    c2.addComponent<MaterialComponent>(mat);
 }
 

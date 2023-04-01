@@ -87,7 +87,7 @@ public:
             auto &transformC = view.get<TransformComponent>(entity);
 
             // update position
-            transformC.localTransform.pos += translationVec(wasdC.movementSpeed, transformC.localTransform);
+            transformC.transform.pos += translationVec(wasdC.movementSpeed, transformC.transform);
         }
 
     }

@@ -8,6 +8,7 @@
 
 class Material {
 public:
+
     Material(int id, const Shader &shader, glm::vec3 color, SHADER_TYPE shaderType) :
             ID(id), m_shader(shader), m_color(color), m_shaderType(shaderType) {};
 

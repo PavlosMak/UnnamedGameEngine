@@ -4,7 +4,7 @@
 #include "Transform.h"
 
 void Camera::getProjectionMatrix(glm::mat4 &pMatrix) const {
-    pMatrix = glm::perspective(glm::radians(fov), m_aspectRatio, 0.1f, 30.0f);
+    pMatrix = glm::perspective(glm::radians(fov), m_aspectRatio, 0.01f, 30.0f);
 }
 
 void Camera::updateAspectRatio(float aspectRatio) {
