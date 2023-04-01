@@ -42,6 +42,6 @@ private:
 
     friend class Entity;
 
-    void loadRobotArm(Transform baseTransform, Material *mat);
+    Entity loadRobotArm(Transform baseTransform, Material *mat);
 };
 

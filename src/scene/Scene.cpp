@@ -6,6 +6,7 @@
 #include "../materials/MaterialManager.h"
 #include "Entity.h"
 #include "Components.h"
+#include "../components/AnimComponents.h"
 
 Scene::Scene(entt::registry &registry) : m_registry(registry), m_shaderManager() {}
 
@@ -88,7 +89,7 @@ Entity Scene::createEntity(const std::string &name) {
     return entity;
 }
 
-void Scene::loadRobotArm(Transform baseTransform, Material* mat) {
+Entity Scene::loadRobotArm(Transform baseTransform, Material* mat) {
 
     // Robot arm
     Entity base = this->createEntity("Base");
@@ -96,46 +97,84 @@ void Scene::loadRobotArm(Transform baseTransform, Material* mat) {
     base.addComponent<MeshRendererComponent>("resources/robotarm/Base.obj");
     base.addComponent<MaterialComponent>(mat);
 
+//    auto bezierAnim = Anim(true, 4);
+//    auto curve = CubicBezier(
+//            glm::vec3(0, 0, 0),
+//            glm::vec3(1, 1, 0),
+//            glm::vec3(3, 0, 0),
+//            glm::vec3(2, 1, 0)
+//    );
+//
+//    base.addComponent<BezierAnimation>(bezierAnim, curve);
+//    base.addComponent<RotationAnimation>(bezierAnim, [](float t) {
+//        return glm::vec3(500*t*t, 500*t*t, 500*t*t);
+//    });
+
     Entity rBase = this->createEntity("rBase");
-    rBase.addComponent<SetRotation>(20, 1);
     rBase.addComponent<TransformComponent>(glm::vec3(0, 0.89, 0), glm::vec3(0), glm::vec3(1), &base.getComponent<TransformComponent>().transform);
     rBase.addComponent<MeshRendererComponent>("resources/robotarm/RotatingBase.obj");
     rBase.addComponent<MaterialComponent>(mat);
 
+    auto baseAnim = Anim(true, 3);
+    auto backForthY = [](Transform trans, float t) {
+        auto newTransform(trans);
+
+        if (t > 0.5) {
+            newTransform.rotation = glm::vec3(0, 360*t, 0);
+        } else {
+            newTransform.rotation = glm::vec3(0, -360*t, 0);
+        }
+
+        return newTransform;
+    };
+
+    auto backForthX = [](Transform trans, float t) {
+        auto newTransform(trans);
+
+        if (t > 0.5) {
+            newTransform.rotation = glm::vec3(360*t, 0, 0);
+        } else {
+            newTransform.rotation = glm::vec3(-360*t, 0, 0);
+        }
+
+        return newTransform;
+    };
+
+
     Entity bicep = this->createEntity("Bicep");
-    bicep.addComponent<SetRotation>(41, 0);
     bicep.addComponent<TransformComponent>(glm::vec3(0, 0.9951, 0), glm::vec3(0), glm::vec3(1), &rBase.getComponent<TransformComponent>().transform);
     bicep.addComponent<MeshRendererComponent>("resources/robotarm/Bicep.obj");
     bicep.addComponent<MaterialComponent>(mat);
+    rBase.addComponent<TransformAnimation>(baseAnim, backForthY);
 
     Entity forearm = this->createEntity("Forearm");
-    forearm.addComponent<SetRotation>(250, 0);
     forearm.addComponent<TransformComponent>(glm::vec3(0, 2.8, 0), glm::vec3(0), glm::vec3(1), &bicep.getComponent<TransformComponent>().transform);
     forearm.addComponent<MeshRendererComponent>("resources/robotarm/Forearm.obj");
     forearm.addComponent<MaterialComponent>(mat);
+    forearm.addComponent<TransformAnimation>(baseAnim, backForthX);
 
     Entity wrist = this->createEntity("Wrist");
-    wrist.addComponent<SetRotation>(300, 0);
     wrist.addComponent<TransformComponent>(glm::vec3(0, 3, 0), glm::vec3(0), glm::vec3(1), &forearm.getComponent<TransformComponent>().transform);
     wrist.addComponent<MeshRendererComponent>("resources/robotarm/Wrist.obj");
     wrist.addComponent<MaterialComponent>(mat);
+    wrist.addComponent<TransformAnimation>(baseAnim, backForthY);
 
     Entity hand = this->createEntity("Hand");
-    hand.addComponent<SetRotation>(94, 1);
     hand.addComponent<TransformComponent>(glm::vec3(0, 1.2, 0), glm::vec3(0), glm::vec3(1), &wrist.getComponent<TransformComponent>().transform);
     hand.addComponent<MeshRendererComponent>("resources/robotarm/Hand.obj");
     hand.addComponent<MaterialComponent>(mat);
+//    hand.addComponent<RotationAnimation>(baseAnim, backForthY);
 
     Entity c1 = this->createEntity("Claw1");
-    c1.addComponent<RobotClaw1>();
     c1.addComponent<TransformComponent>(glm::vec3(0, 0.8, 0.3), glm::vec3(0), glm::vec3(1), &hand.getComponent<TransformComponent>().transform);
     c1.addComponent<MeshRendererComponent>("resources/robotarm/Claw1.obj");
     c1.addComponent<MaterialComponent>(mat);
 
-    rBase.addComponent<RobotClaw2>();
     Entity c2 = this->createEntity("Claw2");
     c2.addComponent<TransformComponent>(glm::vec3(0, 0.8, -0.3), glm::vec3(0), glm::vec3(1), &hand.getComponent<TransformComponent>().transform);
     c2.addComponent<MeshRendererComponent>("resources/robotarm/Claw2.obj");
     c2.addComponent<MaterialComponent>(mat);
+
+    return base;
 }
 

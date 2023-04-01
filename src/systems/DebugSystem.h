@@ -8,6 +8,12 @@ namespace MM {
 
     // Define the "inspectors" of each component here
     template<>
+    void ComponentEditorWidget<BezierAnimation>(entt::registry &reg, entt::registry::entity_type e) {
+        auto &w = reg.get<BezierAnimation>(e);
+        w.anim.inspectorImGui();
+    }
+
+    template<>
     void ComponentEditorWidget<SetRotation>(entt::registry &reg, entt::registry::entity_type e) {
         auto &w = reg.get<SetRotation>(e);
         ImGui::DragFloat("Rotation", &w.rotation, 1);
