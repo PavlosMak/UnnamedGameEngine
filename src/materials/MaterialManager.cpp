@@ -20,7 +20,7 @@ std::shared_ptr<Material> MaterialManager::createDebugMaterial(Shader& shader) {
     return std::shared_ptr<Material>(&materialPool[materialPool.size()-1]);
 }
 
-Material* MaterialManager::createPBRMaterial(const Shader& shader,glm::vec3 albedo, float roughness, float metallic, float ambient) {
+Material* MaterialManager::createPBRMaterial(const Shader& shader,glm::vec4 albedo, float roughness, float metallic, float ambient) {
     Material pbrMaterial = Material(lastID, shader, albedo, roughness, metallic, ambient);
     pbrMaterial.lightOffset = 8;
     materialPool.push_back(pbrMaterial);

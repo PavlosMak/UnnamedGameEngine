@@ -9,12 +9,12 @@
 class Material {
 public:
 
-    Material(int id, const Shader &shader, glm::vec3 color, SHADER_TYPE shaderType) :
+    Material(int id, const Shader &shader, glm::vec4 color, SHADER_TYPE shaderType) :
             ID(id), m_shader(shader), m_color(color), m_shaderType(shaderType) {};
 
     Material(int id, const Shader &shader, SHADER_TYPE shaderType) : ID(id), m_shader(shader), m_color(), m_shaderType(shaderType) {};
 
-    Material(int id, const Shader &shader, glm::vec3 color, float shininess, SHADER_TYPE shaderType) : ID(id), m_shader(shader),
+    Material(int id, const Shader &shader, glm::vec4 color, float shininess, SHADER_TYPE shaderType) : ID(id), m_shader(shader),
                                                                                                m_color(color),
                                                                                                m_shininess(shininess),
                                                                                                m_shaderType(
@@ -26,15 +26,15 @@ public:
                                    m_heightMapId(heightMapId), m_ambientOcclusionMapId(ambientOcclusionMapId) {
     };
 
-    Material(int id, const Shader &shader, glm::vec3 albedo, float roughness, float metallic, float ambient) :
+    Material(int id, const Shader &shader, glm::vec4 albedo, float roughness, float metallic, float ambient) :
             ID(id), m_shader(shader), m_color(albedo), m_roughness(roughness), m_metallic(metallic),
             m_ambient(ambient), m_shaderType(SHADER_TYPE::PBR) {}
 
     [[nodiscard]] const Shader &getShader() const;
 
-    [[nodiscard]] glm::vec3 getColor() const;
+    [[nodiscard]] glm::vec4 getColor() const;
 
-    void setColor(glm::vec3 &color);
+    void setColor(glm::vec4 &color);
 
     [[nodiscard]] float getShininess() const;
 
@@ -71,7 +71,7 @@ public:
 private:
     const SHADER_TYPE m_shaderType;
     const Shader &m_shader;
-    glm::vec3 m_color{1.0f}; //m_color acts as the diffuse for phong and albedo for pbr
+    glm::vec4 m_color{1.0f}; //m_color acts as the diffuse for phong and albedo for pbr
     float m_shininess{0.0f};
 
     //PBR

@@ -2,13 +2,13 @@
 
 //Constants
 const float PI = 3.14159;
-const float epsilon = 0.000001; //small epsilon to avoid div by 0
+const float epsilon = 0.000001;//small epsilon to avoid div by 0
 const int NUM_OF_LIGHTS = 2;
 
 //Inputs
 layout(location = 3) uniform vec3 cameraPos;
 
-layout(location = 4) uniform vec3 albedo;
+layout(location = 4) uniform vec4 alpha_albedo;
 layout(location = 5) uniform float roughness;
 layout(location = 6) uniform float metallic;
 layout(location = 7) uniform float ambient;
@@ -82,12 +82,12 @@ float shadowContribution(vec3 fragPos, vec3 normal, sampler2D texShadow, vec3 li
 
     vec2 texelSize = 1.0 / textureSize(texShadow, 0);
 
-    for(int x = -1; x <= 1; x++) {
+    for (int x = -1; x <= 1; x++) {
         for (int y = -1; y <= 1; y++) {
             vec2 filteredCoord = shadowMapCoord + vec2(x, y)*texelSize;
             float shadowMapDepth = texture(texShadow, filteredCoord).x;
             if ((shadowMapDepth < fragLightDepth) && fragLightDepth < 1.0) {
-                result += 0.111f; // (1 / 9)
+                result += 0.111f;// (1 / 9)
             }
         }
     }
@@ -98,7 +98,7 @@ float shadowContribution(vec3 fragPos, vec3 normal, sampler2D texShadow, vec3 li
 void main() {
     vec3 normal = normalize(fragNormal);
     vec3 camVec = normalize(cameraPos - fragPosition);
-
+    vec3 albedo = vec3(alpha_albedo);
     //Precalculate base reflectivity so we can use Schlick for
     //both dielectrics and conductors
     vec3 F0 = vec3(0.04);
@@ -145,5 +145,5 @@ void main() {
     //Tone mapping and gamma correction
     result = pow(reinhardToneMap(result), vec3(1.1/2.2));
 
-    fragColor = vec4(result, 1.0);
+    fragColor = vec4(result, alpha_albedo.w);
 }

@@ -18,11 +18,6 @@ private:
     std::vector<GLuint> shadowMaps;
     std::vector<glm::mat4> lightVPs;
 
-
-    //This is used to access the uniform buffers for the shadow maps and MVP
-    int m_shadowMapBufferOffset;
-    int m_mvpBufferOffset;
-
     GLuint m_Shadowframebuffer;
 
     //Dimensions for shadow maps
@@ -35,10 +30,10 @@ private:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    inline void renderInShadowMap(Shader& shadowShader,
-                           entt::registry& registry,
-                           GLuint& texShadow,
-                           glm::mat4& lightVp, auto view) {
+    inline void renderInShadowMap(Shader &shadowShader,
+                                  entt::registry &registry,
+                                  GLuint &texShadow,
+                                  glm::mat4 &lightVp, auto view) {
         glNamedFramebufferTexture(m_Shadowframebuffer, GL_DEPTH_ATTACHMENT, texShadow, 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_Shadowframebuffer);
@@ -64,14 +59,12 @@ private:
 
             meshRenderer.mesh.draw();
         }
-
-        //shadowMaps.push_back(texShadow);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
 public:
 
-    void init(Shader &shadowShader, entt::registry& registry) {
+    void init(Shader &shadowShader, entt::registry &registry) {
         //Get all lights
         auto lightView = registry.view<LightComponent, TransformComponent>();
 
@@ -85,8 +78,6 @@ public:
 
         //This is used to access the uniform buffers for the shadow maps and MVP
         int lightCount = lightPos.size();
-        m_shadowMapBufferOffset = 10 + 2*lightCount;
-        m_mvpBufferOffset = 10 + 3*lightCount;
 
         createShadowMaps(shadowShader, registry);
 
@@ -126,8 +117,7 @@ public:
         }
     }
 
-
-    inline void updateShadowMaps(Shader& shadowShader, entt::registry& registry, auto view) {
+    inline void updateShadowMaps(Shader &shadowShader, entt::registry &registry, auto view) {
         auto lightView = registry.view<LightComponent, TransformComponent>();
         int lightIndex = 0;
         //We are going to be moving this camera around to mimic light directionality
@@ -144,14 +134,14 @@ public:
         }
     }
 
-    void renderMeshes(Shader& shadowShader, entt::registry &registry, Entity camera, glm::ivec2 windowSize,
+    void renderMeshes(Shader &shadowShader, entt::registry &registry, Entity camera, glm::ivec2 windowSize,
                       float aspectRatio) {
         clearScreen();
 
         // access components with a mesh, localTransform and material
         auto view = registry.view<MeshRendererComponent, TransformComponent, MaterialComponent>();
 
-        updateShadowMaps(shadowShader,registry, view);
+        updateShadowMaps(shadowShader, registry, view);
 
         // Adjust size of window
         Camera *cam = camera.getComponent<CameraComponent>().camera;
@@ -160,7 +150,7 @@ public:
 
         // compute view projection matrix
         // TODO get world localTransform properly
-        auto& camTransform = camera.getComponent<TransformComponent>().localTransform;
+        auto &camTransform = camera.getComponent<TransformComponent>().localTransform;
         camera.getComponent<CameraComponent>().camera->getViewProjectionMatrix(m_cameraVP, camTransform);
 
         glEnable(GL_DEPTH_TEST);
@@ -173,6 +163,10 @@ public:
 
         int shadowMapBufferOffset;
         int mvpBufferOffset;
+
+        std::vector<entt::entity> transparentEntities;
+
+        //Fully opague pass
         for (auto entity: view) {
 
             auto &transform = view.get<TransformComponent>(entity);
@@ -187,13 +181,20 @@ public:
             // https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
             const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
 
+            Material *material = materialComponent.material;
+
+            if (material->getColor().w < 1.0) {
+                transparentEntities.push_back(entity);
+                continue;
+            }
+
             //Bind material only if it's new
-            if(prevMaterial != materialComponent.material->ID) {
-                materialComponent.material->bindMaterial(camera.getComponent<TransformComponent>().localTransform.pos,lights, lightPos);
-                texturesUsed = materialComponent.material->textureSlotOccupied;
-                shadowMapBufferOffset = materialComponent.material->lightOffset + 2*lightCount;
-                mvpBufferOffset = materialComponent.material->lightOffset + 3*lightCount;
-                prevMaterial = materialComponent.material->ID;
+            if (prevMaterial != materialComponent.material->ID) {
+                material->bindMaterial(camera.getComponent<TransformComponent>().localTransform.pos, lights, lightPos);
+                texturesUsed = material->textureSlotOccupied;
+                shadowMapBufferOffset = material->lightOffset + 2 * lightCount;
+                mvpBufferOffset = material->lightOffset + 3 * lightCount;
+                prevMaterial = material->ID;
             }
 
             glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
@@ -201,7 +202,7 @@ public:
             glUniformMatrix3fv(2, 1, GL_FALSE, glm::value_ptr(normalModelMatrix));
 
             //Load shadow map textures and light MVP matrices
-            for(int i = 0; i < shadowMaps.size(); i++) {
+            for (int i = 0; i < shadowMaps.size(); i++) {
                 int offset = texturesUsed + i;
                 glActiveTexture(GL_TEXTURE0 + offset);
                 glBindTexture(GL_TEXTURE_2D, shadowMaps[i]);
@@ -212,6 +213,49 @@ public:
             meshRenderer.mesh.draw();
         }
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //2nd rendering pass
+        for (auto entity: transparentEntities) {
+
+            auto &transform = view.get<TransformComponent>(entity);
+            auto &meshRenderer = view.get<MeshRendererComponent>(entity);
+            auto &materialComponent = view.get<MaterialComponent>(entity);
+
+            auto worldTransform = transform.worldTransform();
+
+            //Actual MVP
+            const glm::mat4 mvpMatrix = m_cameraVP * worldTransform;
+            // Normals should be transformed differently than positions (ignoring translations + dealing with scaling):
+            // https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
+            const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
+
+            Material *material = materialComponent.material;
+
+            //Bind material only if it's new
+            if (prevMaterial != materialComponent.material->ID) {
+                material->bindMaterial(camera.getComponent<TransformComponent>().localTransform.pos, lights, lightPos);
+                texturesUsed = material->textureSlotOccupied;
+                shadowMapBufferOffset = material->lightOffset + 2 * lightCount;
+                mvpBufferOffset = material->lightOffset + 3 * lightCount;
+                prevMaterial = material->ID;
+            }
+
+            glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
+            glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(worldTransform));
+            glUniformMatrix3fv(2, 1, GL_FALSE, glm::value_ptr(normalModelMatrix));
+
+            //Load shadow map textures and light MVP matrices
+            for (int i = 0; i < shadowMaps.size(); i++) {
+                int offset = texturesUsed + i;
+                glActiveTexture(GL_TEXTURE0 + offset);
+                glBindTexture(GL_TEXTURE_2D, shadowMaps[i]);
+                glUniform1i(shadowMapBufferOffset + i, offset);
+                glUniformMatrix4fv(mvpBufferOffset + i, 1, GL_FALSE, glm::value_ptr(lightVPs[i]));
+            }
+
+            meshRenderer.mesh.draw();
+        }
     }
 
 };

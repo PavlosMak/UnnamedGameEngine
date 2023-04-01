@@ -2,7 +2,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "TextureManager.h"
 
-glm::vec3 Material::getColor() const {
+glm::vec4 Material::getColor() const {
     return m_color;
 }
 
@@ -10,8 +10,8 @@ const Shader &Material::getShader() const {
     return m_shader;
 }
 
-void Material::setColor(glm::vec3 &color) {
-    m_color = glm::vec3(color.x, color.y, color.z);
+void Material::setColor(glm::vec4 &color) {
+    m_color = glm::vec4(color.x, color.y, color.z, color.w);
 }
 
 void Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions) {
@@ -21,18 +21,18 @@ void Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &light
     int textureSlotOccupied = 0;
     switch (m_shaderType) {
         case SOLID_COLOR:
-            glUniform3fv(3, 1, glm::value_ptr(m_color));
+            glUniform3fv(3, 1, glm::value_ptr(glm::vec3(m_color)));
             break;
         case PHONG:
             glUniform3fv(3, 1, glm::value_ptr(lightPositions[0]));
             glUniform3fv(4, 1, glm::value_ptr(lights[0].getColor()));
             glUniform3fv(5, 1, glm::value_ptr(cameraPosition));
-            glUniform3fv(6, 1, glm::value_ptr(m_color));
+            glUniform3fv(6, 1, glm::value_ptr(glm::vec3(m_color)));
             glUniform1f(7, m_shininess);
             break;
         case PBR:
             glUniform3fv(3, 1, glm::value_ptr(cameraPosition));
-            glUniform3fv(4, 1, glm::value_ptr(m_color));
+            glUniform4fv(4, 1, glm::value_ptr(m_color));
             glUniform1f(5, m_roughness);
             glUniform1f(6, m_metallic);
             glUniform1f(7, m_ambient);

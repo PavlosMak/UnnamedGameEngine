@@ -23,7 +23,7 @@ public:
     //Return a point to a material
     std::shared_ptr<Material> createDebugMaterial(Shader &shader);
 
-    Material *createPBRMaterial(const Shader &shader, glm::vec3 albedo, float roughness, float metallic, float ambient);
+    Material *createPBRMaterial(const Shader &shader, glm::vec4 albedo, float roughness, float metallic, float ambient);
 
     Material *createTexturedPBRMaterial(
             const Shader &shader,
@@ -33,7 +33,6 @@ public:
             std::filesystem::path albedoPath,
             std::filesystem::path aoPath,
             std::filesystem::path heightMap);
-
 private:
     std::vector<Material> materialPool;
     int lastID{0};
