@@ -67,10 +67,10 @@ void Scene::setup(Camera &camera) {
 //    smaug.addComponent<TransformComponent>(glm::vec3(1.573, 0, 0), glm::vec3(0), glm::vec3(1));
 //    smaug.addComponent<MaterialComponent>(texturedMaterial);
 //
-//    Entity mushu = this->createEntity("Mushu");
-//    mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
-//    mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20,0), glm::vec3(1));
-//    mushu.addComponent<MaterialComponent>(texturedMaterial);
+    Entity mushu = this->createEntity("Mushu");
+    mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
+    mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20,0), glm::vec3(1));
+    mushu.addComponent<MaterialComponent>(texturedMaterial);
 
 
     Entity quad2 = this->createEntity("Quad2");

@@ -27,7 +27,8 @@ private:
     inline void clearScreen() {
         // Clear the screen
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_DEPTH_BUFFER_BIT);
     }
 
     inline void renderInShadowMap(Shader &shadowShader,
@@ -153,8 +154,6 @@ public:
         auto &camTransform = camera.getComponent<TransformComponent>().localTransform;
         camera.getComponent<CameraComponent>().camera->getViewProjectionMatrix(m_cameraVP, camTransform);
 
-        glEnable(GL_DEPTH_TEST);
-
         //Some state used to switch shaders around
         int prevMaterial = -1;
         int texturesUsed = 0;
@@ -165,13 +164,18 @@ public:
         int mvpBufferOffset;
 
         std::vector<entt::entity> transparentEntities;
-
-        //Fully opague pass
+        // ===== Fully opague pass =====
+        glClear(GL_DEPTH_BUFFER_BIT);
+        glDepthFunc(GL_LESS);
+        glDepthMask(GL_TRUE);
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        glDisable(GL_BLEND);
         for (auto entity: view) {
 
             auto &transform = view.get<TransformComponent>(entity);
             auto &meshRenderer = view.get<MeshRendererComponent>(entity);
             auto &materialComponent = view.get<MaterialComponent>(entity);
+            auto tag = registry.get<TagComponent>(entity).name;
 
             auto worldTransform = transform.worldTransform();
 
@@ -213,9 +217,34 @@ public:
             meshRenderer.mesh.draw();
         }
 
+        // ===== 2nd rendering pass =====
+        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+        glDepthMask(GL_TRUE);
+        shadowShader.bind();
+        for (auto entity: view) {
+            auto &transform = view.get<TransformComponent>(entity);
+            auto &meshRenderer = view.get<MeshRendererComponent>(entity);
+
+            auto worldTransform = transform.worldTransform();
+
+            //Actual MVP
+            const glm::mat4 mvpMatrix = m_cameraVP * worldTransform;
+            // Normals should be transformed differently than positions (ignoring translations + dealing with scaling):
+            // https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
+            const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
+
+            glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
+            meshRenderer.mesh.draw();
+        }
+
+
+        // ===== 3rd rendering pass ===
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        glDepthFunc(GL_EQUAL); //originally equal
+        glDepthMask(GL_TRUE); //originally false
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        //2nd rendering pass
+        glDisable(GL_DEPTH_TEST);
         for (auto entity: transparentEntities) {
 
             auto &transform = view.get<TransformComponent>(entity);
@@ -233,13 +262,12 @@ public:
             Material *material = materialComponent.material;
 
             //Bind material only if it's new
-            if (prevMaterial != materialComponent.material->ID) {
-                material->bindMaterial(camera.getComponent<TransformComponent>().localTransform.pos, lights, lightPos);
-                texturesUsed = material->textureSlotOccupied;
-                shadowMapBufferOffset = material->lightOffset + 2 * lightCount;
-                mvpBufferOffset = material->lightOffset + 3 * lightCount;
-                prevMaterial = material->ID;
-            }
+            material->bindMaterial(camera.getComponent<TransformComponent>().localTransform.pos, lights,
+                                   lightPos);
+            texturesUsed = material->textureSlotOccupied;
+            shadowMapBufferOffset = material->lightOffset + 2 * lightCount;
+            mvpBufferOffset = material->lightOffset + 3 * lightCount;
+            prevMaterial = material->ID;
 
             glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
             glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(worldTransform));
@@ -256,6 +284,8 @@ public:
 
             meshRenderer.mesh.draw();
         }
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
     }
 
 };
