@@ -7,6 +7,12 @@
 namespace MM {
 
     // Define the "inspectors" of each component here
+    template<>
+    void ComponentEditorWidget<SetRotation>(entt::registry &reg, entt::registry::entity_type e) {
+        auto &w = reg.get<SetRotation>(e);
+        ImGui::DragFloat("Rotation", &w.rotation, 1);
+        ImGui::DragInt("Axis", &w.axis, 1, 0, 2);
+    }
 
     template<>
     void ComponentEditorWidget<WasdComponent>(entt::registry &reg, entt::registry::entity_type e) {

@@ -25,9 +25,9 @@ DISABLE_WARNINGS_POP()
 #include "scene/Entity.h"
 #include "scene/Components.h"
 #include "systems/WasdControllerSystem.h"
+#include "systems/RobotArmSystem.h"
 #include "systems/RenderSystem.h"
 #include "systems/DebugSystem.h"
-
 
 class Application {
 public:
@@ -69,6 +69,7 @@ public:
         m_debugSystem.register_component<CameraComponent>("Camera");
         m_debugSystem.register_component<LightComponent>("Light");
         m_debugSystem.register_component<MaterialComponent>("Material");
+        m_debugSystem.register_component<SetRotation>("SetRotation");
     }
 
     void update() {
@@ -76,7 +77,6 @@ public:
         Camera camera = Camera();
         m_scene.setup(camera);
         long long timeStep = 0l;
-
 
         m_renderSystem.init(m_shadowShader, m_registry);
 
@@ -89,6 +89,8 @@ public:
 
             // handle input
             m_wasdSystem.update(m_registry);
+
+            m_roboArmSystem.setRotations(m_registry);
 
             // update scene
             m_scene.update(timeStep);
@@ -155,6 +157,7 @@ private:
 
     // systems
     WasdControllerSystem m_wasdSystem;
+    RobotArmSystem m_roboArmSystem;
     RenderSystem m_renderSystem;
 };
 
