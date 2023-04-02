@@ -31,6 +31,8 @@ void Scene::setup(Camera &camera) {
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/pbr_frag.glsl", SHADER_TYPE::PBR);
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/pbr_textured_frag.glsl", SHADER_TYPE::TEXTURED_PBR);
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/xtoon_frag.glsl", SHADER_TYPE::TOON);
+    m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/pbr_oscilating_textured_frag.glsl",
+                               SHADER_TYPE::OSCILLATING_PBR);
 
     MaterialManager *materialManager = MaterialManager::getInstance();
 
@@ -56,6 +58,22 @@ void Scene::setup(Camera &camera) {
     Material *toonMat = materialManager->createXToonMaterial(m_shaderManager.getShader(SHADER_TYPE::TOON),
                                                              "resources/toon_map.png");
 
+    Material *oscillating = materialManager->createTexturedOscillatingPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::OSCILLATING_PBR),
+            "resources/dragon-scales/normal.png",
+            "resources/dragon-scales/roughness.png",
+            "resources/dragon-scales/metallic.png",
+            "resources/dragon-scales/albedo.png",
+            "resources/dragon-scales/ao.png",
+            "resources/dragon-scales/height.png",
+            "resources/rustedIron/normal.png",
+            "resources/rustedIron/roughness.png",
+            "resources/rustedIron/metallic.png",
+            "resources/rustedIron/albedo.png",
+            "resources/ones_texture.png",
+            "resources/zero_texture.png"
+    );
+
     auto light = Light(glm::vec3(10.0f));
 
 //    //Define some lights
@@ -72,7 +90,7 @@ void Scene::setup(Camera &camera) {
     Entity mushu = this->createEntity("Mushu");
     mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
     mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20, 0), glm::vec3(1));
-    mushu.addComponent<MaterialComponent>(toonMat);
+    mushu.addComponent<MaterialComponent>(oscillating);
 
 
     Entity quad2 = this->createEntity("Quad2");

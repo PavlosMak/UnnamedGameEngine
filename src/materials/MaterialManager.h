@@ -34,6 +34,23 @@ public:
             std::filesystem::path aoPath,
             std::filesystem::path heightMap);
 
+    Material *createTexturedOscillatingPBRMaterial(
+            const Shader &shader,
+            std::filesystem::path normalMap1,
+            std::filesystem::path roughnessMap1,
+            std::filesystem::path metallicMap1,
+            std::filesystem::path albedoPath1,
+            std::filesystem::path aoPath1,
+            std::filesystem::path heightMap1,
+            std::filesystem::path normalMap2,
+            std::filesystem::path roughnessMap2,
+            std::filesystem::path metallicMap2,
+            std::filesystem::path albedoPath2,
+            std::filesystem::path aoPath2,
+            std::filesystem::path heightMap2
+    );
+
+
     Material *createXToonMaterial(const Shader &shader, std::filesystem::path toonTexture);
 
 private:

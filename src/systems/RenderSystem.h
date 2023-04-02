@@ -294,12 +294,10 @@ public:
             glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(worldTransform));
             glUniformMatrix3fv(2, 1, GL_FALSE, glm::value_ptr(normalModelMatrix));
 
-
             if (material->TYPE == SHADER_TYPE::TOON) {
                 //TODO: Currently controlled by time but we change to something else
                 //maybe distance from john carmack???
-                float time = glfwGetTime();
-                glUniform1f(4, (2*std::sin(time)-1));
+                glUniform1f(4, (2*std::sin(glfwGetTime())-1));
                 m_timeCounter += 1;
             } else {
                 //Load shadow map textures and light MVP matrices
@@ -314,6 +312,10 @@ public:
 //                glActiveTexture(GL_TEXTURE0 + depthOffset);
 //                glBindTexture(GL_TEXTURE_2D, m_depthTexture);
 //                glUniform1i(8 + 4 * lightCount, depthOffset);
+            }
+
+            if(material->TYPE == SHADER_TYPE::OSCILLATING_PBR) {
+                glUniform1f(15, ((std::sin(glfwGetTime())+1.f)*0.5f));
             }
             meshRenderer.mesh.draw();
         }
