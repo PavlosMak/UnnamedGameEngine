@@ -1,8 +1,11 @@
 #include "Transform.h"
 
-Transform::Transform() : pos(glm::vec3(0)), rotation(glm::vec3(0)), scale(glm::vec3(1)) {}
+Transform::Transform() : pos(glm::vec3(0)), rotation(glm::vec3(0)), scale(glm::vec3(1)), parent(nullptr) {}
 
-Transform::Transform(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale) : pos(pos), rotation(rotation), scale(scale) {}
+Transform::Transform(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale) : pos(pos), rotation(rotation), scale(scale), parent(
+        nullptr) {}
+
+Transform::Transform(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale, Transform* parent) : pos(pos), rotation(rotation), scale(scale), parent(parent) {}
 
 glm::mat4 Transform::transform() const {
 
@@ -22,6 +25,15 @@ glm::mat4 Transform::rotationMatrix() const {
     auto rotY = glm::rotate(id, glm::radians(rotation.y), glm::vec3(0, 1, 0));
     auto rotZ = glm::rotate(id, glm::radians(rotation.z), glm::vec3(0, 0, 1));
     return rotX * rotY * rotZ;
+}
+
+glm::mat4 Transform::worldTransform() const {
+
+    if (parent == nullptr) {
+        return this->transform();
+    } else {
+        return (*parent).worldTransform() * this->transform();
+    }
 }
 
 glm::vec3 Transform::forward() const {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Scene.h"
 #include "framework/entt/entt.h"
 
 class Entity {

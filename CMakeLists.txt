@@ -11,6 +11,10 @@ else ()
 endif ()
 
 add_executable(FinalProject
+        src/materials/Material.h
+        src/materials/Material.cpp
+        src/materials/MaterialManager.h
+        src/materials/MaterialManager.cpp
         "src/application.cpp"
         "src/texture.cpp"
         "src/mesh.cpp"
@@ -20,16 +24,16 @@ add_executable(FinalProject
         "src/scene/Scene.h"
         "src/scene/Entity.h"
         "src/scene/Components.h"
-        src/materials/ShaderManager.cpp src/materials/Material.cpp src/systems/WasdControllerSystem.h src/systems/RenderSystem.h src/systems/DebugSystem.h src/Transform.cpp src/Transform.h
+        src/systems/WasdControllerSystem.h
+        src/systems/RenderSystem.h
+        src/systems/DebugSystem.h
+        src/Transform.cpp
+        src/Transform.h
         src/lights/Light.h
         src/lights/Light.cpp
         src/materials/ShaderManager.cpp
-        src/materials/Material.cpp
-        src/materials/MaterialManager.h
-        src/materials/MaterialManager.cpp
-        src/systems/WasdControllerSystem.h
-        src/systems/RenderSystem.h
-        src/systems/DebugSystem.h src/materials/TextureManager.h src/materials/TextureManager.cpp)
+        src/materials/TextureManager.h
+        src/materials/TextureManager.cpp src/components/RobotArmComponents.h src/systems/RobotArmSystem.h src/components/AnimComponents.h src/systems/AnimationSystem.h)
 
 target_compile_features(FinalProject PRIVATE cxx_std_20)
 target_link_libraries(FinalProject PRIVATE CGFramework)

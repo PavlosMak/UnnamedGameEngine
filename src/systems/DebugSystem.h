@@ -2,10 +2,23 @@
 
 #include "framework/entt_imgui/imgui_entt_entity_editor.hpp"
 #include "../scene/Components.h"
+#include "string"
 
 namespace MM {
 
     // Define the "inspectors" of each component here
+    template<>
+    void ComponentEditorWidget<BezierAnimation>(entt::registry &reg, entt::registry::entity_type e) {
+        auto &w = reg.get<BezierAnimation>(e);
+        w.anim.inspectorImGui();
+    }
+
+    template<>
+    void ComponentEditorWidget<SetRotation>(entt::registry &reg, entt::registry::entity_type e) {
+        auto &w = reg.get<SetRotation>(e);
+        ImGui::DragFloat("Rotation", &w.rotation, 1);
+        ImGui::DragInt("Axis", &w.axis, 1, 0, 2);
+    }
 
     template<>
     void ComponentEditorWidget<WasdComponent>(entt::registry &reg, entt::registry::entity_type e) {
@@ -23,9 +36,16 @@ namespace MM {
     void ComponentEditorWidget<TransformComponent>(entt::registry &reg, entt::registry::entity_type e) {
         auto &t = reg.get<TransformComponent>(e);
 
-        ImGui::DragFloat3("Position", &t.localTransform.pos[0], 0.01f);
-        ImGui::DragFloat3("Rotation", &t.localTransform.rotation[0], 1.0f);
-        ImGui::DragFloat3("Scale", &t.localTransform.scale[0], 0.005f);
+
+        ImGui::DragFloat3("Position", &t.transform.pos[0], 0.01f);
+        ImGui::DragFloat3("Rotation", &t.transform.rotation[0], 1.0f);
+        ImGui::DragFloat3("Scale", &t.transform.scale[0], 0.005f);
+
+        if (t.transform.parent != nullptr) {
+            auto parentTransform = t.transform.parent;
+            ImGui::Text("Pos: %f, %f, %f", parentTransform->pos.x, parentTransform->pos.y, parentTransform->pos.z);
+        }
+
     }
 
     template<>

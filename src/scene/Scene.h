@@ -1,5 +1,4 @@
-#ifndef COMPUTERGRAPHICS_SCENE_H
-#define COMPUTERGRAPHICS_SCENE_H
+#pragma once
 
 #include "framework/entt/entt.h"
 #include "unordered_map"
@@ -7,6 +6,7 @@
 #include "../camera.h"
 #include "../materials/ShaderManager.h"
 #include "../lights/Light.h"
+#include "../materials/Material.h"
 
 class Entity;
 
@@ -31,6 +31,7 @@ public:
     SceneStats getSceneStats();
 
 private:
+
     void updateStatistics();
 
     std::vector<Light> lights;
@@ -40,7 +41,9 @@ private:
     SceneStats m_stats;
 
     friend class Entity;
+
+    Entity loadRobotArm(Transform baseTransform, Material *mat);
+
+    Entity loadPedestal(Transform baseTransform, Material* pedestalMat, Material* meshMat, std::string mesh);
 };
 
-
-#endif //COMPUTERGRAPHICS_SCENE_H

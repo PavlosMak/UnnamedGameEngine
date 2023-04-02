@@ -23,27 +23,19 @@ struct TagComponent {
 
 struct TransformComponent {
 
-    Transform localTransform;
-    TransformComponent* parent {};
+    Transform transform;
 
     TransformComponent() = default;
-
     TransformComponent(const TransformComponent &) = default;
 
+    explicit TransformComponent(Transform* parent)
+            : transform(Transform(glm::vec3(0), glm::vec3(0), glm::vec3(1), parent)) {};
+
     explicit TransformComponent(const glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale)
-    : localTransform(Transform(pos, rotation, scale)), parent(nullptr) {};
+    : transform(Transform(pos, rotation, scale)) {};
 
-    explicit TransformComponent(const glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale, TransformComponent* parent)
-    : localTransform(Transform(pos, rotation, scale)), parent(parent) {};
-
-    glm::mat4 worldTransform() const {
-
-        if (parent == nullptr) {
-            return localTransform.transform();
-        } else {
-            return (*parent).worldTransform() * localTransform.transform();
-        }
-    }
+    explicit TransformComponent(const glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale, Transform* parent)
+    : transform(Transform(pos, rotation, scale, parent)) {};
 
 };
 

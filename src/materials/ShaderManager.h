@@ -1,5 +1,4 @@
-#ifndef COMPUTERGRAPHICS_SHADERMANAGER_H
-#define COMPUTERGRAPHICS_SHADERMANAGER_H
+#pragma once
 
 #include "unordered_map"
 #include "framework/shader.h"
@@ -29,4 +28,3 @@ private:
 };
 
 
-#endif //COMPUTERGRAPHICS_SHADERMANAGER_H

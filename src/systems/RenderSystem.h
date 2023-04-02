@@ -80,7 +80,7 @@ private:
             auto &meshTransform = view.template get<TransformComponent>(entity);
             auto &meshRenderer = view.template get<MeshRendererComponent>(entity);
 
-            auto worldTransform = meshTransform.worldTransform();
+            auto worldTransform = meshTransform.transform.worldTransform();
             const glm::mat4 mvpMatrix = m_cameraVP * worldTransform;
 
             const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
@@ -112,7 +112,7 @@ private:
             auto &meshTransform = view.template get<TransformComponent>(entity);
             auto &meshRenderer = view.template get<MeshRendererComponent>(entity);
 
-            auto worldTransform = meshTransform.worldTransform();
+            auto worldTransform = meshTransform.transform.worldTransform();
             const glm::mat4 mvpMatrix = lightVp * worldTransform;
 
             const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
@@ -132,7 +132,7 @@ public:
 
         //We are going to be moving this camera around to mimic light directionality
         for (auto lightEntity: lightView) {
-            Transform &transform = registry.get<TransformComponent>(lightEntity).localTransform;
+            Transform &transform = registry.get<TransformComponent>(lightEntity).transform;
             lights.push_back(lightView.get<LightComponent>(lightEntity).light);
             lightPos.push_back(transform.pos);
             lightTransforms.push_back(transform);
@@ -207,7 +207,7 @@ public:
         //We are going to be moving this camera around to mimic light directionality
         glm::mat4 lightVp;
         for (auto lightEntity: lightView) {
-            Transform &transform = registry.get<TransformComponent>(lightEntity).localTransform;
+            Transform &transform = registry.get<TransformComponent>(lightEntity).transform;
             lights[lightIndex] = lightView.get<LightComponent>(lightEntity).light;
             lightPos[lightIndex] = transform.pos;
             lightTransforms[lightIndex] = transform;
@@ -234,7 +234,7 @@ public:
 
         // compute view projection matrix
         // TODO get world localTransform properly
-        auto &camTransform = camera.getComponent<TransformComponent>().localTransform;
+        auto &camTransform = camera.getComponent<TransformComponent>().transform;
         camera.getComponent<CameraComponent>().camera->getViewProjectionMatrix(m_cameraVP, camTransform);
 
         //Render all surfaces into depth buffer
@@ -265,7 +265,7 @@ public:
             auto &materialComponent = view.get<MaterialComponent>(entity);
             auto tag = registry.get<TagComponent>(entity).name;
 
-            auto worldTransform = transform.worldTransform();
+            auto worldTransform = transform.transform.worldTransform();
 
             //Actual MVP
             const glm::mat4 mvpMatrix = m_cameraVP * worldTransform;
@@ -276,14 +276,14 @@ public:
             Material *material = materialComponent.material;
 
             if (material->getColor().w < 1.0) {
-                float key = -1.0f * glm::distance(camTransform.pos, transform.localTransform.pos);
+                float key = -1.0f * glm::distance(camTransform.pos, glm::vec3(transform.transform.worldTransform()[3]));
                 transparentEntities[key] = entity;
                 continue;
             }
 
             //Bind material only if it's new
             if (prevMaterial != materialComponent.material->ID) {
-                material->bindMaterial(camera.getComponent<TransformComponent>().localTransform.pos, lights, lightPos);
+                material->bindMaterial(camera.getComponent<TransformComponent>().transform.pos, lights, lightPos);
                 texturesUsed = material->textureSlotOccupied;
                 shadowMapBufferOffset = material->lightOffset + 2 * lightCount;
                 mvpBufferOffset = material->lightOffset + 3 * lightCount;
@@ -329,7 +329,7 @@ public:
             auto &materialComponent = view.get<MaterialComponent>(entity);
             auto tag = registry.get<TagComponent>(entity).name;
 
-            auto worldTransform = transform.worldTransform();
+            auto worldTransform = transform.transform.worldTransform();
 
             //Actual MVP
             const glm::mat4 mvpMatrix = m_cameraVP * worldTransform;
@@ -341,7 +341,7 @@ public:
 
             //Bind material only if it's new
             if (prevMaterial != materialComponent.material->ID) {
-                material->bindMaterial(camera.getComponent<TransformComponent>().localTransform.pos, lights, lightPos);
+                material->bindMaterial(camera.getComponent<TransformComponent>().transform.pos, lights, lightPos);
                 texturesUsed = material->textureSlotOccupied;
                 shadowMapBufferOffset = material->lightOffset + 2 * lightCount;
                 mvpBufferOffset = material->lightOffset + 3 * lightCount;
