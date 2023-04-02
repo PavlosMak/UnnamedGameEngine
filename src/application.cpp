@@ -104,7 +104,6 @@ public:
             // update scene
             m_scene.update(timeStep);
 
-            // m_renderSystem.renderMeshes(m_registry, m_scene.getEntityByTag("Camera"), m_window.getWindowSize(), m_window.getAspectRatio());
             m_renderSystem.renderMeshes(m_shadowShader, m_registry, m_scene.getEntityByTag("Camera"),
                                         m_window.getWindowSize(),
                                         m_window.getAspectRatio());

@@ -66,11 +66,11 @@ namespace MM {
     void ComponentEditorWidget<MaterialComponent>(entt::registry &reg, entt::registry::entity_type e) {
         auto &material = reg.get<MaterialComponent>(e).material;
         ImGui::Text("Material");
-        glm::vec3 baseColor = material->getColor();
+        glm::vec4 baseColor = material->getColor();
         float roughness = material->getRoughness();
         float metallic = material->getMetallic();
         float ambient = material->getAmbient();
-        ImGui::ColorPicker3("Albedo", &baseColor[0], 0.001f);
+        ImGui::ColorPicker4("Albedo", &baseColor[0], 0.001f);
         ImGui::DragFloat("Roughness", &roughness, 0.001f, 0.0);
         ImGui::DragFloat("Metallic", &metallic, 0.001f, 0.0);
         ImGui::DragFloat("Ambient", &ambient, 0.001f, 0.0);

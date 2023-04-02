@@ -171,6 +171,5 @@ void main() {
     //Tone mapping and gamma correction
     result = pow(reinhardToneMap(result), vec3(1.1/2.2));
 
-//    fragColor = (1-shadowScale)*vec4(result, 1.0);
     fragColor = vec4(result, 1.0);
 }
