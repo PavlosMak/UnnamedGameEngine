@@ -45,10 +45,13 @@ void Scene::setup(Camera &camera) {
     Material *groundColor = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
                                                                glm::vec4(0.8, 0.8, 0.8, 1.0), 1.0, 0.0, 0.2);
     Material *red = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
-                                                       glm::vec4(0.8, 0.0, 0.0, .5), 1.0, 0.0, 0.2);
+                                                       glm::vec4(0.8, 0.0, 0.0, .4), 1.0, 0.0, 0.2);
     Material *green = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
-                                                         glm::vec4(0.0, 0.8, 0.0, .5), 1.0, 0.0, 0.2);
-
+                                                         glm::vec4(0.0, 0.8, 0.0, .4), 1.0, 0.0, 0.2);
+    Material *blue = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
+                                                         glm::vec4(0.0, 0.0, 0.8, .4), 1.0, 0.0, 0.2);
+    Material *mushuMat = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
+                                                        glm::vec4(1, 1, 0, 1), 1.0, 0.0, 0.2);
     auto light = Light(glm::vec3(10.0f));
 
 //    //Define some lights
@@ -70,19 +73,24 @@ void Scene::setup(Camera &camera) {
     Entity mushu = this->createEntity("Mushu");
     mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
     mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20,0), glm::vec3(1));
-    mushu.addComponent<MaterialComponent>(texturedMaterial);
+    mushu.addComponent<MaterialComponent>(mushuMat);
 
 
     Entity quad2 = this->createEntity("Quad2");
     quad2.addComponent<MeshRendererComponent>("resources/quad.obj");
-    quad2.addComponent<TransformComponent>(glm::vec3(1.350, -0.05, -0.350), glm::vec3(0, 0, 90),
+    quad2.addComponent<TransformComponent>(glm::vec3(1.340, -0.05, -0.120), glm::vec3(0, 0, 90),
                                            glm::vec3(0.2, 1, 0.2));
     quad2.addComponent<MaterialComponent>(green);
 
-    Entity quad = this->createEntity("Quad");
+    Entity quad = this->createEntity("RedQuad");
     quad.addComponent<MeshRendererComponent>("resources/quad.obj");
-    quad.addComponent<TransformComponent>(glm::vec3(1.250, 0.110, -0.450), glm::vec3(0, 0, 90), glm::vec3(0.2, 1, 0.2));
+    quad.addComponent<TransformComponent>(glm::vec3(1.450, 0., -0.350), glm::vec3(0, 0, 90), glm::vec3(0.2, 1, 0.2));
     quad.addComponent<MaterialComponent>(red);
+
+    Entity quad3 = this->createEntity("Quad3");
+    quad3.addComponent<MeshRendererComponent>("resources/quad.obj");
+    quad3.addComponent<TransformComponent>(glm::vec3(1.160, 0.200, -0.270), glm::vec3(0, 0, 90), glm::vec3(0.2, 1, 0.2));
+    quad3.addComponent<MaterialComponent>(blue);
 
 
     Entity ground = this->createEntity("Ground");
