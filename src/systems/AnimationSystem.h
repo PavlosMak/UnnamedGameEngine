@@ -1,5 +1,6 @@
 #pragma once
 
+#include "math.h"
 #include "framework/entt/entt.h"
 #include "../components/AnimComponents.h"
 #include "../scene/Components.h"
@@ -58,8 +59,8 @@ public:
 
                 anim.anim.prevT = t;
             }
-
         }
+
 
     }
 };
