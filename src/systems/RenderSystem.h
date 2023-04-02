@@ -25,6 +25,9 @@ private:
     GLuint m_depthTexture;
     GLuint m_transparentTexture;
 
+    int m_timeCounter = 0;
+
+
     //Dimensions for shadow maps
     const int SHADOWTEX_WIDTH = 1024;
     const int SHADOWTEX_HEIGHT = 1024;
@@ -216,7 +219,6 @@ public:
     }
 
 
-
     void renderMeshes(Shader &shadowShader, entt::registry &registry, Entity camera, glm::ivec2 windowSize,
                       float aspectRatio) {
         clearScreen();
@@ -247,8 +249,6 @@ public:
         int shadowMapBufferOffset;
         int mvpBufferOffset;
 
-
-
         std::map<float, entt::entity> transparentEntities;
 
         // ===== Fully opague pass =====
@@ -276,7 +276,7 @@ public:
             Material *material = materialComponent.material;
 
             if (material->getColor().w < 1.0) {
-                float key = -1.0f*glm::distance(camTransform.pos, transform.localTransform.pos);
+                float key = -1.0f * glm::distance(camTransform.pos, transform.localTransform.pos);
                 transparentEntities[key] = entity;
                 continue;
             }
@@ -294,27 +294,33 @@ public:
             glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(worldTransform));
             glUniformMatrix3fv(2, 1, GL_FALSE, glm::value_ptr(normalModelMatrix));
 
-            //Load shadow map textures and light MVP matrices
-            for (int i = 0; i < shadowMaps.size(); i++) {
-                int offset = texturesUsed + i;
-                glActiveTexture(GL_TEXTURE0 + offset);
-                glBindTexture(GL_TEXTURE_2D, shadowMaps[i]);
-                glUniform1i(shadowMapBufferOffset + i, offset);
-                glUniformMatrix4fv(mvpBufferOffset + i, 1, GL_FALSE, glm::value_ptr(lightVPs[i]));
+
+            if (material->TYPE == SHADER_TYPE::TOON) {
+                //TODO: Currently controlled by time but we change to something else
+                //maybe distance from john carmack???
+                float time = glfwGetTime();
+                glUniform1f(4, (2*std::sin(time)-1));
+                m_timeCounter += 1;
+            } else {
+                //Load shadow map textures and light MVP matrices
+                for (int i = 0; i < shadowMaps.size(); i++) {
+                    int offset = texturesUsed + i;
+                    glActiveTexture(GL_TEXTURE0 + offset);
+                    glBindTexture(GL_TEXTURE_2D, shadowMaps[i]);
+                    glUniform1i(shadowMapBufferOffset + i, offset);
+                    glUniformMatrix4fv(mvpBufferOffset + i, 1, GL_FALSE, glm::value_ptr(lightVPs[i]));
+                }
+//                int depthOffset = texturesUsed + shadowMaps.size();
+//                glActiveTexture(GL_TEXTURE0 + depthOffset);
+//                glBindTexture(GL_TEXTURE_2D, m_depthTexture);
+//                glUniform1i(8 + 4 * lightCount, depthOffset);
             }
-
-            int depthOffset = texturesUsed + shadowMaps.size();
-            glActiveTexture(GL_TEXTURE0 + depthOffset);
-            glBindTexture(GL_TEXTURE_2D, m_depthTexture);
-            glUniform1i(8 + 4*lightCount, depthOffset);
-
-
             meshRenderer.mesh.draw();
         }
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        for(auto keyValue : transparentEntities) {
+        for (auto keyValue: transparentEntities) {
             auto entity = keyValue.second;
             auto &transform = view.get<TransformComponent>(entity);
             auto &meshRenderer = view.get<MeshRendererComponent>(entity);
@@ -356,7 +362,7 @@ public:
             int depthOffset = texturesUsed + shadowMaps.size();
             glActiveTexture(GL_TEXTURE0 + depthOffset);
             glBindTexture(GL_TEXTURE_2D, m_depthTexture);
-            glUniform1i(8 + 4*lightCount, depthOffset);
+            glUniform1i(8 + 4 * lightCount, depthOffset);
 
             meshRenderer.mesh.draw();
         }

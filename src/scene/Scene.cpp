@@ -30,6 +30,7 @@ void Scene::setup(Camera &camera) {
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/phong_frag.glsl", SHADER_TYPE::PHONG);
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/pbr_frag.glsl", SHADER_TYPE::PBR);
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/pbr_textured_frag.glsl", SHADER_TYPE::TEXTURED_PBR);
+    m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/xtoon_frag.glsl", SHADER_TYPE::TOON);
 
     MaterialManager *materialManager = MaterialManager::getInstance();
 
@@ -49,9 +50,12 @@ void Scene::setup(Camera &camera) {
     Material *green = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
                                                          glm::vec4(0.0, 0.8, 0.0, .4), 1.0, 0.0, 0.2);
     Material *blue = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
-                                                         glm::vec4(0.0, 0.0, 0.8, .4), 1.0, 0.0, 0.2);
+                                                        glm::vec4(0.0, 0.0, 0.8, .4), 1.0, 0.0, 0.2);
     Material *mushuMat = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
-                                                        glm::vec4(1, 1, 0, 1), 1.0, 0.0, 0.2);
+                                                            glm::vec4(1, 1, 0, 1), 1.0, 0.0, 0.2);
+    Material *toonMat = materialManager->createXToonMaterial(m_shaderManager.getShader(SHADER_TYPE::TOON),
+                                                             "resources/toon_map.png");
+
     auto light = Light(glm::vec3(10.0f));
 
 //    //Define some lights
@@ -65,15 +69,10 @@ void Scene::setup(Camera &camera) {
     light2.addComponent<TransformComponent>(glm::vec3(2.883, 0.840, -2.128), glm::vec3(0, 163.000, 0),
                                             glm::vec3(1, 1, 1));
 
-//    Entity smaug = this->createEntity("Smaug");
-//    smaug.addComponent<MeshRendererComponent>("resources/dragon.obj");
-//    smaug.addComponent<TransformComponent>(glm::vec3(1.573, 0, 0), glm::vec3(0), glm::vec3(1));
-//    smaug.addComponent<MaterialComponent>(texturedMaterial);
-//
     Entity mushu = this->createEntity("Mushu");
     mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
-    mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20,0), glm::vec3(1));
-    mushu.addComponent<MaterialComponent>(mushuMat);
+    mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20, 0), glm::vec3(1));
+    mushu.addComponent<MaterialComponent>(toonMat);
 
 
     Entity quad2 = this->createEntity("Quad2");
@@ -89,7 +88,8 @@ void Scene::setup(Camera &camera) {
 
     Entity quad3 = this->createEntity("Quad3");
     quad3.addComponent<MeshRendererComponent>("resources/quad.obj");
-    quad3.addComponent<TransformComponent>(glm::vec3(1.160, 0.200, -0.270), glm::vec3(0, 0, 90), glm::vec3(0.2, 1, 0.2));
+    quad3.addComponent<TransformComponent>(glm::vec3(1.160, 0.200, -0.270), glm::vec3(0, 0, 90),
+                                           glm::vec3(0.2, 1, 0.2));
     quad3.addComponent<MaterialComponent>(blue);
 
 

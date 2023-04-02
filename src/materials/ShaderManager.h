@@ -11,7 +11,7 @@ enum SHADER_TYPE {
     PHONG = 3,
     PBR = 4,
     TEXTURED_PBR = 5,
-    TRANSPARENT_COLOR = 6
+    TOON = 6
 };
 
 class ShaderManager {

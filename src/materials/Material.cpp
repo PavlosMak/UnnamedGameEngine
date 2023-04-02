@@ -14,12 +14,13 @@ void Material::setColor(glm::vec4 &color) {
     m_color = glm::vec4(color.x, color.y, color.z, color.w);
 }
 
-void Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions) {
+void
+Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions) {
     m_shader.bind();
 
-    TextureManager* texManager = TextureManager::getInstance();
+    TextureManager *texManager = TextureManager::getInstance();
     int textureSlotOccupied = 0;
-    switch (m_shaderType) {
+    switch (TYPE) {
         case SOLID_COLOR:
             glUniform3fv(3, 1, glm::value_ptr(glm::vec3(m_color)));
             break;
@@ -36,7 +37,7 @@ void Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &light
             glUniform1f(5, m_roughness);
             glUniform1f(6, m_metallic);
             glUniform1f(7, m_ambient);
-            for(int i = 0; i < lights.size(); i++) {
+            for (int i = 0; i < lights.size(); i++) {
                 glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
                 glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
             }
@@ -44,17 +45,25 @@ void Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &light
         case TEXTURED_PBR:
             glUniform3fv(3, 1, glm::value_ptr(cameraPosition));
             glUniform1f(4, m_ambient);
-            texManager->bind(m_normalMapId,GL_TEXTURE0);
-            glUniform1i(5,0);
-            texManager->bind(m_albedoMapId,GL_TEXTURE0+1);
-            glUniform1i(6,1);
-            texManager->bind(m_roughnessMapId,GL_TEXTURE0+2);
-            glUniform1i(7,2);
-            texManager->bind(m_metallicMapId,GL_TEXTURE0+3);
-            glUniform1i(8,3);
-            texManager->bind(m_ambientOcclusionMapId,GL_TEXTURE0+4);
-            glUniform1i(9,4);
-            for(int i = 0; i < lights.size(); i++) {
+            texManager->bind(m_normalMapId, GL_TEXTURE0);
+            glUniform1i(5, 0);
+            texManager->bind(m_albedoMapId, GL_TEXTURE0 + 1);
+            glUniform1i(6, 1);
+            texManager->bind(m_roughnessMapId, GL_TEXTURE0 + 2);
+            glUniform1i(7, 2);
+            texManager->bind(m_metallicMapId, GL_TEXTURE0 + 3);
+            glUniform1i(8, 3);
+            texManager->bind(m_ambientOcclusionMapId, GL_TEXTURE0 + 4);
+            glUniform1i(9, 4);
+            for (int i = 0; i < lights.size(); i++) {
+                glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
+                glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
+            }
+            break;
+        case TOON:
+            texManager->bind(m_toonTextureId, GL_TEXTURE0);
+            glUniform1i(3,0);
+            for (int i = 0; i < lights.size(); i++) {
                 glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
                 glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
             }

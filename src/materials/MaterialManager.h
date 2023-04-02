@@ -33,6 +33,9 @@ public:
             std::filesystem::path albedoPath,
             std::filesystem::path aoPath,
             std::filesystem::path heightMap);
+
+    Material *createXToonMaterial(const Shader &shader, std::filesystem::path toonTexture);
+
 private:
     std::vector<Material> materialPool;
     int lastID{0};

@@ -17,7 +17,7 @@ public:
 
 
     //Return a point to a material
-    int createTexture(std::filesystem::path filePath);
+    int createTexture(std::filesystem::path filePath, GLuint = GL_CLAMP_TO_EDGE);
     void bind(int textId, GLint slot);
 
 private:
