@@ -258,7 +258,7 @@ public:
         glDepthMask(GL_TRUE);
         glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
         glDisable(GL_BLEND);
-        for (auto entity: view) {
+        for (const auto &entity: view) {
 
             auto &transform = view.get<TransformComponent>(entity);
             auto &meshRenderer = view.get<MeshRendererComponent>(entity);
@@ -297,7 +297,7 @@ public:
             if (material->TYPE == SHADER_TYPE::TOON) {
                 //TODO: Currently controlled by time but we change to something else
                 //maybe distance from john carmack???
-                glUniform1f(4, (2*std::sin(glfwGetTime())-1));
+                glUniform1f(4, (2 * std::sin(glfwGetTime()) - 1));
                 m_timeCounter += 1;
             } else {
                 //Load shadow map textures and light MVP matrices
@@ -314,16 +314,16 @@ public:
 //                glUniform1i(8 + 4 * lightCount, depthOffset);
             }
 
-            if(material->TYPE == SHADER_TYPE::OSCILLATING_PBR) {
-                glUniform1f(15, ((std::sin(glfwGetTime())+1.f)*0.5f));
+            if (material->TYPE == SHADER_TYPE::OSCILLATING_PBR) {
+                glUniform1f(15, ((std::sin(glfwGetTime()) + 1.f) * 0.5f));
             }
             meshRenderer.mesh.draw();
         }
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        for (auto keyValue: transparentEntities) {
-            auto entity = keyValue.second;
+        for (const auto &keyValue: transparentEntities) {
+            auto &entity = keyValue.second;
             auto &transform = view.get<TransformComponent>(entity);
             auto &meshRenderer = view.get<MeshRendererComponent>(entity);
             auto &materialComponent = view.get<MaterialComponent>(entity);
