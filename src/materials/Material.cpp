@@ -2,7 +2,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "TextureManager.h"
 
-glm::vec3 Material::getColor() const {
+glm::vec4 Material::getColor() const {
     return m_color;
 }
 
@@ -10,60 +10,96 @@ const Shader &Material::getShader() const {
     return m_shader;
 }
 
-void Material::setColor(glm::vec3 &color) {
-    m_color = glm::vec3(color.x, color.y, color.z);
+void Material::setColor(glm::vec4 &color) {
+    m_color = glm::vec4(color.x, color.y, color.z, color.w);
 }
 
-int Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions) {
+void
+Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions) {
     m_shader.bind();
 
-    TextureManager* texManager = TextureManager::getInstance();
+    TextureManager *texManager = TextureManager::getInstance();
     int textureSlotOccupied = 0;
-    switch (m_shaderType) {
+    switch (TYPE) {
         case SOLID_COLOR:
-            glUniform3fv(3, 1, glm::value_ptr(m_color));
+            glUniform3fv(3, 1, glm::value_ptr(glm::vec3(m_color)));
             break;
         case PHONG:
             glUniform3fv(3, 1, glm::value_ptr(lightPositions[0]));
             glUniform3fv(4, 1, glm::value_ptr(lights[0].getColor()));
             glUniform3fv(5, 1, glm::value_ptr(cameraPosition));
-            glUniform3fv(6, 1, glm::value_ptr(m_color));
+            glUniform3fv(6, 1, glm::value_ptr(glm::vec3(m_color)));
             glUniform1f(7, m_shininess);
             break;
         case PBR:
             glUniform3fv(3, 1, glm::value_ptr(cameraPosition));
-            glUniform3fv(4, 1, glm::value_ptr(m_color));
+            glUniform4fv(4, 1, glm::value_ptr(m_color));
             glUniform1f(5, m_roughness);
             glUniform1f(6, m_metallic);
             glUniform1f(7, m_ambient);
-            for(int i = 0; i < lights.size(); i++) {
-                glUniform3fv(8 + i, 1, glm::value_ptr(lightPositions[i]));
-                glUniform3fv(8 + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
+            for (int i = 0; i < lights.size(); i++) {
+                glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
+                glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
             }
             break;
         case TEXTURED_PBR:
             glUniform3fv(3, 1, glm::value_ptr(cameraPosition));
             glUniform1f(4, m_ambient);
-            texManager->bind(m_normalMapId,GL_TEXTURE0);
-            glUniform1i(5,0);
-            texManager->bind(m_albedoMapId,GL_TEXTURE0+1);
-            glUniform1i(6,1);
-            texManager->bind(m_roughnessMapId,GL_TEXTURE0+2);
-            glUniform1i(7,2);
-            texManager->bind(m_metallicMapId,GL_TEXTURE0+3);
-            glUniform1i(8,3);
-            texManager->bind(m_ambientOcclusionMapId,GL_TEXTURE0+4);
-            glUniform1i(9,4);
-            for(int i = 0; i < lights.size(); i++) {
-                glUniform3fv(10 + i, 1, glm::value_ptr(lightPositions[i]));
-                glUniform3fv(10 + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
+            texManager->bind(m_normalMapId, GL_TEXTURE0);
+            glUniform1i(5, 0);
+            texManager->bind(m_albedoMapId, GL_TEXTURE0 + 1);
+            glUniform1i(6, 1);
+            texManager->bind(m_roughnessMapId, GL_TEXTURE0 + 2);
+            glUniform1i(7, 2);
+            texManager->bind(m_metallicMapId, GL_TEXTURE0 + 3);
+            glUniform1i(8, 3);
+            texManager->bind(m_ambientOcclusionMapId, GL_TEXTURE0 + 4);
+            glUniform1i(9, 4);
+            for (int i = 0; i < lights.size(); i++) {
+                glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
+                glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
             }
-            textureSlotOccupied = 5;
             break;
+        case TOON:
+            texManager->bind(m_toonTextureId, GL_TEXTURE0);
+            glUniform1i(3,0);
+            for (int i = 0; i < lights.size(); i++) {
+                glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
+                glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
+            }
+            break;
+        case OSCILLATING_PBR:
+            glUniform3fv(3, 1, glm::value_ptr(cameraPosition));
+            glUniform1f(4, m_ambient);
+            texManager->bind(m_normalMapId, GL_TEXTURE0);
+            glUniform1i(5, 0);
+            texManager->bind(m_albedoMapId, GL_TEXTURE0 + 1);
+            glUniform1i(6, 1);
+            texManager->bind(m_roughnessMapId, GL_TEXTURE0 + 2);
+            glUniform1i(7, 2);
+            texManager->bind(m_metallicMapId, GL_TEXTURE0 + 3);
+            glUniform1i(8, 3);
+            texManager->bind(m_ambientOcclusionMapId, GL_TEXTURE0 + 4);
+            glUniform1i(9, 4);
+
+            texManager->bind(m_normalMapId2, GL_TEXTURE0 + 5);
+            glUniform1i(10, 5);
+            texManager->bind(m_albedoMapId2, GL_TEXTURE0 + 6);
+            glUniform1i(11, 6);
+            texManager->bind(m_roughnessMapId2, GL_TEXTURE0 + 7);
+            glUniform1i(12, 7);
+            texManager->bind(m_metallicMapId2, GL_TEXTURE0 + 8);
+            glUniform1i(13, 8);
+            texManager->bind(m_ambientOcclusionMapId2, GL_TEXTURE0 + 9);
+            glUniform1i(14, 9);
+
+            for (int i = 0; i < lights.size(); i++) {
+                glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
+                glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
+            }
         case NORMAL_AS_COLOR:
             break;
     }
-    return textureSlotOccupied;
 }
 
 void Material::setShininess(float shininess) {

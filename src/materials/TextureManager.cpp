@@ -9,7 +9,7 @@ TextureManager *TextureManager::getInstance() {
     return instance;
 }
 
-int TextureManager::createTexture(std::filesystem::path filePath) {
+int TextureManager::createTexture(std::filesystem::path filePath, GLuint clampMode) {
     texturePool.push_back(Texture(filePath));
     return texturePool.size();
 }

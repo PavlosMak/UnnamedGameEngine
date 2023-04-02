@@ -14,7 +14,7 @@ struct ImageLoadingException : public std::runtime_error {
 class Texture {
 public:
     Texture();
-    Texture(std::filesystem::path filePath);
+    Texture(std::filesystem::path filePath, GLuint = GL_CLAMP_TO_EDGE);
     Texture(const Texture&) = delete;
     Texture(Texture&&);
     ~Texture();
