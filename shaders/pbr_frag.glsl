@@ -18,6 +18,7 @@ layout(location = 8 + NUM_OF_LIGHTS) uniform vec3 lightColor[NUM_OF_LIGHTS];
 
 layout(location = 8 + 2*NUM_OF_LIGHTS) uniform sampler2D shadowMaps[NUM_OF_LIGHTS];
 layout(location = 8 + 3*NUM_OF_LIGHTS) uniform mat4 lightMVPs[NUM_OF_LIGHTS];
+layout(location = 8 + 4*NUM_OF_LIGHTS) uniform sampler2D depthTexture;
 
 
 in vec3 fragPosition;
@@ -144,6 +145,10 @@ void main() {
 
     //Tone mapping and gamma correction
     result = pow(reinhardToneMap(result), vec3(1.1/2.2));
+
+
+    vec2 fragDepthCoord = fragPosition.xy;
+    float fragDepth = texture(depthTexture, fragDepthCoord).x;
 
     fragColor = vec4(result, alpha_albedo.w);
 }
