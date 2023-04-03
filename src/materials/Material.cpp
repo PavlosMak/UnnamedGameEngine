@@ -15,11 +15,10 @@ void Material::setColor(glm::vec4 &color) {
 }
 
 void
-Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions) {
+Material::bindMaterial(glm::vec3 &cameraPosition,
+                       std::vector<Light> &lights, std::vector<glm::vec3> &lightPositions) {
     m_shader.bind();
-
     TextureManager *texManager = TextureManager::getInstance();
-    int textureSlotOccupied = 0;
     switch (TYPE) {
         case SOLID_COLOR:
             glUniform3fv(3, 1, glm::value_ptr(glm::vec3(m_color)));
@@ -40,6 +39,7 @@ Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, st
             for (int i = 0; i < lights.size(); i++) {
                 glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
                 glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
+                glUniform1i(lightOffset + 4 * lights.size() + i, lights[i].isCone());
             }
             break;
         case TEXTURED_PBR:
@@ -58,11 +58,12 @@ Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, st
             for (int i = 0; i < lights.size(); i++) {
                 glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
                 glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
+                glUniform1i(lightOffset + 4 * lights.size() + i, lights[i].isCone());
             }
             break;
         case TOON:
             texManager->bind(m_toonTextureId, GL_TEXTURE0);
-            glUniform1i(3,0);
+            glUniform1i(3, 0);
             for (int i = 0; i < lights.size(); i++) {
                 glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
                 glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
@@ -92,11 +93,12 @@ Material::bindMaterial(glm::vec3 &cameraPosition, std::vector<Light> &lights, st
             glUniform1i(13, 8);
             texManager->bind(m_ambientOcclusionMapId2, GL_TEXTURE0 + 9);
             glUniform1i(14, 9);
-
             for (int i = 0; i < lights.size(); i++) {
                 glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
                 glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
+                glUniform1i(lightOffset + 4 * lights.size() + i, lights[i].isCone());
             }
+            break;
         case NORMAL_AS_COLOR:
             break;
     }

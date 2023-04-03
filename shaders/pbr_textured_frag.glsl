@@ -3,7 +3,7 @@
 //Constants
 const float PI = 3.14159;
 const float epsilon = 0.000001; //small epsilon to avoid div by 0
-const int NUM_OF_LIGHTS = 2;
+const int NUM_OF_LIGHTS = 1;
 
 //GLOBAL VARS
 float shadowed_by = 0;
@@ -23,6 +23,8 @@ layout(location = 10 + NUM_OF_LIGHTS) uniform vec3 lightColor[NUM_OF_LIGHTS];
 
 layout(location = 10 + 2*NUM_OF_LIGHTS) uniform sampler2D shadowMaps[NUM_OF_LIGHTS];
 layout(location = 10 + 3*NUM_OF_LIGHTS) uniform mat4 lightMVPs[NUM_OF_LIGHTS];
+layout(location = 10 + 4*NUM_OF_LIGHTS) uniform bool isConeLight[NUM_OF_LIGHTS];
+
 
 in vec3 fragPosition;
 in vec3 fragNormal;
@@ -83,6 +85,18 @@ float geometrySmith(vec3 normal, vec3 camVec, vec3 lightVec, float roughness) {
 //using the Schlick approximation
 vec3 fresnelSchlick(float cos, vec3 F0) {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cos, 0.0, 1.0), 5.0);
+}
+
+float getFallOff(vec3 fragPosition, mat4 lightMVP, bool isConeLight) {
+    if (!isConeLight) {
+        return 1.0f;
+    }
+    vec4 fragLightCoord = lightMVP * vec4(fragPosition, 1.0);
+    fragLightCoord.xyz /= fragLightCoord.w;
+    fragLightCoord.xyz = fragLightCoord.xyz * 0.5 + 0.5;
+    vec2 shadowMapCoord = fragLightCoord.xy;
+    float dist = distance(shadowMapCoord, vec2(0.5, 0.5));
+    return max(0.0, 1-dist);
 }
 
 //Calculates how much the point is in shadow
@@ -162,7 +176,7 @@ void main() {
         vec3 diffuse = kd * (albedo / PI);
 
         shadowScale = shadowContribution(fragPosition, normal, shadowMaps[i], lightPos[i], lightMVPs[i]);
-        result += (1 - shadowScale) * (diffuse + specular) * radiance * cosTheta;
+        result += getFallOff(fragPosition, lightMVPs[i], isConeLight[i])*(1 - shadowScale) * (diffuse + specular) * radiance * cosTheta;
     }
 
     //Add ambient

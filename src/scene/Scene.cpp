@@ -38,6 +38,11 @@ void Scene::setup(Camera &camera) {
 
     MaterialManager *materialManager = MaterialManager::getInstance();
 
+    Material *groundColor = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
+                                                               glm::vec4(0.8, 0.8, 0.8, 1.0), 1.0, 0.0, 0.2);
+    Material *blue = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
+                                                        glm::vec4(0.0, 0.0, 0.8, 1), 1.0, 0.0, 0.2);
+
     Material *texturedMaterial = materialManager->createTexturedPBRMaterial(
             m_shaderManager.getShader(SHADER_TYPE::TEXTURED_PBR),
             "resources/dragon-scales/normal.png",
@@ -46,19 +51,6 @@ void Scene::setup(Camera &camera) {
             "resources/dragon-scales/albedo.png",
             "resources/dragon-scales/ao.png",
             "resources/dragon-scales/height.png");
-
-    Material *groundColor = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
-                                                               glm::vec4(0.8, 0.8, 0.8, 1.0), 1.0, 0.0, 0.2);
-    Material *red = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
-                                                       glm::vec4(0.8, 0.0, 0.0, .4), 1.0, 0.0, 0.2);
-    Material *green = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
-                                                         glm::vec4(0.0, 0.8, 0.0, .4), 1.0, 0.0, 0.2);
-    Material *blue = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
-                                                        glm::vec4(0.0, 0.0, 0.8, .4), 1.0, 0.0, 0.2);
-    Material *mushuMat = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
-                                                            glm::vec4(1, 1, 0, 1), 1.0, 0.0, 0.2);
-    Material *toonMat = materialManager->createXToonMaterial(m_shaderManager.getShader(SHADER_TYPE::TOON),
-                                                             "resources/toon_map.png");
 
     Material *oscillating = materialManager->createTexturedOscillatingPBRMaterial(
             m_shaderManager.getShader(SHADER_TYPE::OSCILLATING_PBR),
@@ -76,54 +68,18 @@ void Scene::setup(Camera &camera) {
             "resources/zero_texture.png"
     );
 
-    Material *matRobot = materialManager->createPBRMaterial(
-            m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(1, 0, 0, 1), 0.4, 0.4, 0.01);
-
-     loadRobotArm(Transform(glm::vec3(0.2, -0.5, -0.6), glm::vec3(0), glm::vec3(0.1)), mushuMat);
-
-    loadPedestal(Transform(glm::vec3(0.0, -0.5, -0.6), glm::vec3(0), glm::vec3(1)), mushuMat, toonMat,
-                 "resources/SuzanneSmall.obj");
-    loadPedestal(Transform(glm::vec3(0.3, -0.5, -0.6), glm::vec3(0), glm::vec3(1)), mushuMat, toonMat,
-                 "resources/TeapotSmall.obj");
-    loadPedestal(Transform(glm::vec3(0.6, -0.5, -0.6), glm::vec3(0), glm::vec3(1)), mushuMat, toonMat,
-                 "resources/ArmadilloSmall.obj");
-    loadPedestal(Transform(glm::vec3(0.9, -0.5, -0.6), glm::vec3(0), glm::vec3(1)), mushuMat, toonMat,
-                 "resources/ApeSmall.obj");
-    loadPedestal(Transform(glm::vec3(1.2, -0.5, -0.6), glm::vec3(0), glm::vec3(1)), mushuMat, toonMat,
-                 "resources/House.obj");
 
     auto light = Light(glm::vec3(10.0f));
 
     //Define some lights
     Entity light1 = this->createEntity("Light1");
-    light1.addComponent<TransformComponent>(glm::vec3(0.2, 0.8, -1), glm::vec3(0, 240, 0), glm::vec3(1));
+    light1.addComponent<TransformComponent>(glm::vec3(2.115, 2.500, -0.787), glm::vec3(274.00, 0, 0), glm::vec3(1));
     light1.addComponent<LightComponent>(light);
-
-    Entity light2 = this->createEntity("Light2");
-    light2.addComponent<TransformComponent>(glm::vec3(0.4, 0.8, -1), glm::vec3(0, 240, 0), glm::vec3(1));
-    light2.addComponent<LightComponent>(light);
 
     Entity mushu = this->createEntity("Mushu");
     mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
     mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20, 0), glm::vec3(1));
     mushu.addComponent<MaterialComponent>(oscillating);
-
-    Entity quad2 = this->createEntity("Quad2");
-    quad2.addComponent<MeshRendererComponent>("resources/quad.obj");
-    quad2.addComponent<TransformComponent>(glm::vec3(1.340, -0.05, -0.120), glm::vec3(0, 0, 90),
-                                           glm::vec3(0.2, 1, 0.2));
-    quad2.addComponent<MaterialComponent>(green);
-
-    Entity quad = this->createEntity("RedQuad");
-    quad.addComponent<MeshRendererComponent>("resources/quad.obj");
-    quad.addComponent<TransformComponent>(glm::vec3(1.450, 0., -0.350), glm::vec3(0, 0, 90), glm::vec3(0.2, 1, 0.2));
-    quad.addComponent<MaterialComponent>(red);
-
-    Entity quad3 = this->createEntity("Quad3");
-    quad3.addComponent<MeshRendererComponent>("resources/quad.obj");
-    quad3.addComponent<TransformComponent>(glm::vec3(1.160, 0.200, -0.270), glm::vec3(0, 0, 90),
-                                           glm::vec3(0.2, 1, 0.2));
-    quad3.addComponent<MaterialComponent>(blue);
 
     Entity ground = this->createEntity("Ground");
     ground.addComponent<MeshRendererComponent>("resources/cube.obj");
@@ -255,4 +211,6 @@ Entity Scene::loadPedestal(Transform baseTransform, Material *pedestalMat, Mater
                                              &pedestal.getComponent<TransformComponent>().transform);
     suzanne.addComponent<MeshRendererComponent>(mesh);
     suzanne.addComponent<MaterialComponent>(meshMat);
+
+    return suzanne;
 }
