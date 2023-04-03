@@ -317,6 +317,7 @@ public:
             if (material->TYPE == SHADER_TYPE::OSCILLATING_PBR) {
                 glUniform1f(15, ((std::sin(glfwGetTime()) + 1.f) * 0.5f));
             }
+//            glUniform1i(8 + 4*lightCount, false);
             meshRenderer.mesh.draw();
         }
 

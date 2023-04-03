@@ -58,8 +58,11 @@ namespace MM {
     void ComponentEditorWidget<LightComponent>(entt::registry &reg, entt::registry::entity_type e) {
         auto &light = reg.get<LightComponent>(e);
         glm::vec3 newColor = light.light.getColor();
+        bool isCone = light.light.isCone();
         ImGui::DragFloat3("Color", &newColor[0], 0.001f, 0.0);
+        ImGui::Checkbox("Cone light", &isCone);
         light.light.setColor(newColor);
+        light.light.setIsCone(isCone);
     }
 
     template<>

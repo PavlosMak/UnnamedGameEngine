@@ -3,7 +3,7 @@
 //Constants
 const float PI = 3.14159;
 const float epsilon = 0.000001;//small epsilon to avoid div by 0
-const int NUM_OF_LIGHTS = 2;
+const int NUM_OF_LIGHTS = 1;
 
 //Inputs
 layout(location = 3) uniform vec3 cameraPos;
@@ -18,8 +18,8 @@ layout(location = 8 + NUM_OF_LIGHTS) uniform vec3 lightColor[NUM_OF_LIGHTS];
 
 layout(location = 8 + 2*NUM_OF_LIGHTS) uniform sampler2D shadowMaps[NUM_OF_LIGHTS];
 layout(location = 8 + 3*NUM_OF_LIGHTS) uniform mat4 lightMVPs[NUM_OF_LIGHTS];
-layout(location = 8 + 4*NUM_OF_LIGHTS) uniform sampler2D depthTexture;
-
+//layout(location = 8 + 4*NUM_OF_LIGHTS) uniform sampler2D depthTexture;
+layout(location = 8 + 4*NUM_OF_LIGHTS) uniform bool isConeLight[NUM_OF_LIGHTS];
 
 in vec3 fragPosition;
 in vec3 fragNormal;
@@ -64,8 +64,20 @@ vec3 fresnelSchlick(float cos, vec3 F0) {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cos, 0.0, 1.0), 5.0);
 }
 
+float getFallOff(vec3 fragPosition, mat4 lightMVP, bool isConeLight) {
+    if (!isConeLight) {
+        return 1.0f;
+    }
+    vec4 fragLightCoord = lightMVP * vec4(fragPosition, 1.0);
+    fragLightCoord.xyz /= fragLightCoord.w;
+    fragLightCoord.xyz = fragLightCoord.xyz * 0.5 + 0.5;
+    vec2 shadowMapCoord = fragLightCoord.xy;
+    float dist = distance(shadowMapCoord, vec2(0.5, 0.5));
+    return max(0.0, 1-dist);
+}
+
 //Calculates how much the point is in shadow
-float shadowContribution(vec3 fragPos, vec3 normal, sampler2D texShadow, vec3 lightPosition, mat4 lightMVP) {
+float shadowContribution(vec3 fragPos, vec3 normal, sampler2D texShadow, vec3 lightPosition, mat4 lightMVP, bool isConeLight) {
     vec3 lightDir = normalize(lightPosition - fragPos);
 
     //Change the bias based on the slope of the surface
@@ -136,8 +148,8 @@ void main() {
         kd = kd * (1.0 - metallic);
         vec3 diffuse = kd * (albedo / PI);
 
-        shadowScale = shadowContribution(fragPosition, normal, shadowMaps[i], lightPos[i], lightMVPs[i]);
-        result += (1-shadowScale)*(diffuse + specular) * radiance * cosTheta;
+        shadowScale = shadowContribution(fragPosition, normal, shadowMaps[i], lightPos[i], lightMVPs[i], isConeLight[i]);
+        result += getFallOff(fragPosition, lightMVPs[i], isConeLight[i])*(1-shadowScale)*(diffuse + specular) * radiance * cosTheta;
     }
 
     //Add ambient
@@ -146,9 +158,9 @@ void main() {
     //Tone mapping and gamma correction
     result = pow(reinhardToneMap(result), vec3(1.1/2.2));
 
-
-    vec2 fragDepthCoord = fragPosition.xy;
-    float fragDepth = texture(depthTexture, fragDepthCoord).x;
+    //
+    //    vec2 fragDepthCoord = fragPosition.xy;
+    //    float fragDepth = texture(depthTexture, fragDepthCoord).x;
 
     fragColor = vec4(result, alpha_albedo.w);
 }
