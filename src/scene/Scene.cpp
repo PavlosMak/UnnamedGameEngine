@@ -35,6 +35,8 @@ void Scene::setup(Camera &camera) {
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/xtoon_frag.glsl", SHADER_TYPE::TOON);
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/pbr_oscilating_textured_frag.glsl",
                                SHADER_TYPE::OSCILLATING_PBR);
+    m_shaderManager.loadShader("shaders/shader_height_vert.glsl", "shaders/pbr_heightmapped_textured_frag.glsl",
+                               SHADER_TYPE::HEIGHT_MAPPED);
 
     MaterialManager *materialManager = MaterialManager::getInstance();
 
@@ -51,6 +53,24 @@ void Scene::setup(Camera &camera) {
             "resources/dragon-scales/albedo.png",
             "resources/dragon-scales/ao.png",
             "resources/dragon-scales/height.png");
+
+    Material *heightedBrickMaterial = materialManager->createHeightMappedTexturedPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::HEIGHT_MAPPED),
+            "resources/bricks/normal.png",
+            "resources/bricks/roughness.png",
+            "resources/bricks/metallic.png",
+            "resources/bricks/albedo.png",
+            "resources/bricks/ao.png",
+            "resources/bricks/height.png");
+
+    Material *flatBrickMaterial = materialManager->createTexturedPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::TEXTURED_PBR),
+            "resources/bricks/normal.png",
+            "resources/bricks/roughness.png",
+            "resources/bricks/metallic.png",
+            "resources/bricks/albedo.png",
+            "resources/bricks/ao.png",
+            "resources/bricks/height.png");
 
     Material *oscillating = materialManager->createTexturedOscillatingPBRMaterial(
             m_shaderManager.getShader(SHADER_TYPE::OSCILLATING_PBR),
@@ -73,21 +93,34 @@ void Scene::setup(Camera &camera) {
 
     //Define some lights
     Entity light1 = this->createEntity("Light1");
-    light1.addComponent<TransformComponent>(glm::vec3(2.115, 2.500, -0.787), glm::vec3(274.00, 0, 0), glm::vec3(1));
+    light1.addComponent<TransformComponent>(glm::vec3(0, 2, -0.787), glm::vec3(274.00, 0, 0), glm::vec3(1));
     light1.addComponent<LightComponent>(light);
 
-    Entity mushu = this->createEntity("Mushu");
-    mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
-    mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20, 0), glm::vec3(1));
-    mushu.addComponent<MaterialComponent>(oscillating);
+//    Entity mushu = this->createEntity("Mushu");
+//    mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
+//    mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20, 0), glm::vec3(1));
+//    mushu.addComponent<MaterialComponent>(oscillating);
 
     Entity ground = this->createEntity("Ground");
     ground.addComponent<MeshRendererComponent>("resources/cube.obj");
     ground.addComponent<TransformComponent>(glm::vec3(1.573, -1.270, 0), glm::vec3(0), glm::vec3(5.900, 0.995, 4.840));
     ground.addComponent<MaterialComponent>(groundColor);
 
+
+    Entity quad = this->createEntity("HeightedQuad");
+    quad.addComponent<MeshRendererComponent>("resources/subdividedPlane.obj");
+    quad.addComponent<TransformComponent>(glm::vec3(1.450, 0.5, -0.530), glm::vec3(0, 0, 90), glm::vec3(0.2, 1, 0.2));
+    quad.addComponent<MaterialComponent>(heightedBrickMaterial);
+
+
+    Entity flatQuad = this->createEntity("FlatQuad");
+    flatQuad.addComponent<MeshRendererComponent>("resources/subdividedPlane.obj");
+    flatQuad.addComponent<TransformComponent>(glm::vec3(1.450, 0.5, -0.08), glm::vec3(0, 0, 90), glm::vec3(0.2, 1, 0.2));
+    flatQuad.addComponent<MaterialComponent>(flatBrickMaterial);
+
+
     Entity cameraEntity = this->createEntity("Camera");
-    cameraEntity.addComponent<TransformComponent>(glm::vec3(0, 0, -1), glm::vec3(0, 240, 0), glm::vec3(1));
+    cameraEntity.addComponent<TransformComponent>(glm::vec3(0, 0, -0.54), glm::vec3(0, 240, 0), glm::vec3(1));
     cameraEntity.addComponent<CameraComponent>(&camera);
     cameraEntity.addComponent<WasdComponent>(0.02f);
 

@@ -11,7 +11,8 @@ enum SHADER_TYPE {
     PBR = 4,
     TEXTURED_PBR = 5,
     TOON = 6,
-    OSCILLATING_PBR = 7
+    OSCILLATING_PBR = 7,
+    HEIGHT_MAPPED = 8
 };
 
 class ShaderManager {
