@@ -23,9 +23,9 @@ public:
                                                                                                        TYPE(
                                                                                                                shaderType) {};
 
-    Material(int id, const Shader &shader, int normalMapId, int roughMapId, int metalMapId, int albedoMapId,
+    Material(int id, const Shader &shader, SHADER_TYPE shaderType, int normalMapId, int roughMapId, int metalMapId, int albedoMapId,
              int ambientOcclusionMapId, int heightMapId) : ID(id), m_shader(shader),
-                                                           TYPE(SHADER_TYPE::TEXTURED_PBR),
+                                                           TYPE(shaderType),
                                                            m_normalMapId(normalMapId),
                                                            m_roughnessMapId(roughMapId), m_metallicMapId(metalMapId),
                                                            m_albedoMapId(albedoMapId),
