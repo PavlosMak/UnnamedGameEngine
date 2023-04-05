@@ -43,7 +43,8 @@ Material *MaterialManager::createTexturedPBRMaterial(const Shader &shader,
     int albedoTex = textureManager->createTexture(std::move(albedoPath));
     int ambientTex = textureManager->createTexture(std::move(aoPath));
     int heightTex = textureManager->createTexture(std::move(heightMap));
-    Material mat = Material(lastID, shader, SHADER_TYPE::TEXTURED_PBR,normalTex, roughTex, metalTex, albedoTex, ambientTex, heightTex);
+    Material mat = Material(lastID, shader, SHADER_TYPE::TEXTURED_PBR, normalTex, roughTex, metalTex, albedoTex,
+                            ambientTex, heightTex);
     mat.textureSlotOccupied = 5;
     mat.lightOffset = 10;
     materialPool.push_back(mat);
@@ -53,12 +54,12 @@ Material *MaterialManager::createTexturedPBRMaterial(const Shader &shader,
 
 
 Material *MaterialManager::createHeightMappedTexturedPBRMaterial(const Shader &shader,
-                                                     std::filesystem::path normalMap,
-                                                     std::filesystem::path roughnessMap,
-                                                     std::filesystem::path metallicMap,
-                                                     std::filesystem::path albedoPath,
-                                                     std::filesystem::path aoPath,
-                                                     std::filesystem::path heightMap) {
+                                                                 std::filesystem::path normalMap,
+                                                                 std::filesystem::path roughnessMap,
+                                                                 std::filesystem::path metallicMap,
+                                                                 std::filesystem::path albedoPath,
+                                                                 std::filesystem::path aoPath,
+                                                                 std::filesystem::path heightMap) {
     TextureManager *textureManager = TextureManager::getInstance();
     int normalTex = textureManager->createTexture(std::move(normalMap));
     int roughTex = textureManager->createTexture(std::move(roughnessMap));
@@ -66,7 +67,8 @@ Material *MaterialManager::createHeightMappedTexturedPBRMaterial(const Shader &s
     int albedoTex = textureManager->createTexture(std::move(albedoPath));
     int ambientTex = textureManager->createTexture(std::move(aoPath));
     int heightTex = textureManager->createTexture(std::move(heightMap));
-    Material mat = Material(lastID, shader, SHADER_TYPE::HEIGHT_MAPPED, normalTex, roughTex, metalTex, albedoTex, ambientTex, heightTex);
+    Material mat = Material(lastID, shader, SHADER_TYPE::HEIGHT_MAPPED, normalTex, roughTex, metalTex, albedoTex,
+                            ambientTex, heightTex);
     mat.textureSlotOccupied = 6;
     mat.lightOffset = 11;
     materialPool.push_back(mat);
@@ -74,7 +76,7 @@ Material *MaterialManager::createHeightMappedTexturedPBRMaterial(const Shader &s
     return &(materialPool[materialPool.size() - 1]);
 }
 
-Material* MaterialManager::createTexturedOscillatingPBRMaterial(const Shader &shader, std::filesystem::path normalMap1,
+Material *MaterialManager::createTexturedOscillatingPBRMaterial(const Shader &shader, std::filesystem::path normalMap1,
                                                                 std::filesystem::path roughnessMap1,
                                                                 std::filesystem::path metallicMap1,
                                                                 std::filesystem::path albedoPath1,
@@ -118,5 +120,10 @@ Material *MaterialManager::createXToonMaterial(const Shader &shader, std::filesy
     mat.lightOffset = 5;
     materialPool.push_back(mat);
     lastID += 1;
+    toonMatIndex = materialPool.size() - 1;
     return &(materialPool[materialPool.size() - 1]);
+}
+
+Material *MaterialManager::getToonMaterial() {
+    return &(materialPool[toonMatIndex]);
 }

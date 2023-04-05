@@ -63,7 +63,10 @@ public:
 
     Material *createXToonMaterial(const Shader &shader, std::filesystem::path toonTexture);
 
+    Material *getToonMaterial();
+
 private:
     std::vector<Material> materialPool;
     int lastID{0};
+    int toonMatIndex{0};
 };

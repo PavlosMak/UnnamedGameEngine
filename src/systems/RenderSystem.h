@@ -273,7 +273,18 @@ public:
             // https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
             const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
 
-            Material *material = materialComponent.material;
+            Material *material;
+            //Handle player materials
+            if (tag == "Player") {
+                auto &playerComponent = registry.get<PlayerComponent>(entity);
+                if (playerComponent.isToon) {
+                    material = playerComponent.toonMaterial;
+                } else {
+                    material = playerComponent.basicMaterial;
+                }
+            } else {
+                material = materialComponent.material;
+            }
 
             if (material->getColor().w < 1.0) {
                 float key = -1.0f * glm::distance(camTransform.pos, glm::vec3(transform.transform.worldTransform()[3]));

@@ -8,6 +8,8 @@
 #include "Components.h"
 #include "../components/AnimComponents.h"
 
+#include "iostream"
+
 Scene::Scene(entt::registry &registry) : m_registry(registry), m_shaderManager() {}
 
 SceneStats Scene::getSceneStats() {
@@ -41,58 +43,22 @@ void Scene::setup(Camera &camera) {
     MaterialManager *materialManager = MaterialManager::getInstance();
 
     Material *groundColor = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
-                                                               glm::vec4(0.8, 0.8, 0.8, 1.0), 1.0, 0.0, 0.2);
+                                                               glm::vec4(0.8, 0.8, 0.8, 1.0), 1.0, 0.0, 0.0);
+
+    Material *red = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
+                                                       glm::vec4(0.8, 0.0, 0.0, 1), 1.0, 0.0, 0.2);
+    Material *green = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
+                                                         glm::vec4(0, 0.8, 0, 1), 1.0, 0.0, 0.2);
     Material *blue = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
                                                         glm::vec4(0.0, 0.0, 0.8, 1), 1.0, 0.0, 0.2);
 
-    Material *texturedMaterial = materialManager->createTexturedPBRMaterial(
-            m_shaderManager.getShader(SHADER_TYPE::TEXTURED_PBR),
-            "resources/dragon-scales/normal.png",
-            "resources/dragon-scales/roughness.png",
-            "resources/dragon-scales/metallic.png",
-            "resources/dragon-scales/albedo.png",
-            "resources/dragon-scales/ao.png",
-            "resources/dragon-scales/height.png");
-
-    Material *heightedBrickMaterial = materialManager->createHeightMappedTexturedPBRMaterial(
-            m_shaderManager.getShader(SHADER_TYPE::HEIGHT_MAPPED),
-            "resources/bricks/normal.png",
-            "resources/bricks/roughness.png",
-            "resources/bricks/metallic.png",
-            "resources/bricks/albedo.png",
-            "resources/bricks/ao.png",
-            "resources/bricks/height.png");
-
-    Material *flatBrickMaterial = materialManager->createTexturedPBRMaterial(
-            m_shaderManager.getShader(SHADER_TYPE::TEXTURED_PBR),
-            "resources/bricks/normal.png",
-            "resources/bricks/roughness.png",
-            "resources/bricks/metallic.png",
-            "resources/bricks/albedo.png",
-            "resources/bricks/ao.png",
-            "resources/bricks/height.png");
-
-    Material *oscillating = materialManager->createTexturedOscillatingPBRMaterial(
-            m_shaderManager.getShader(SHADER_TYPE::OSCILLATING_PBR),
-            "resources/dragon-scales/normal.png",
-            "resources/dragon-scales/roughness.png",
-            "resources/dragon-scales/metallic.png",
-            "resources/dragon-scales/albedo.png",
-            "resources/dragon-scales/ao.png",
-            "resources/dragon-scales/height.png",
-            "resources/rustedIron/normal.png",
-            "resources/rustedIron/roughness.png",
-            "resources/rustedIron/metallic.png",
-            "resources/rustedIron/albedo.png",
-            "resources/ones_texture.png",
-            "resources/zero_texture.png"
-    );
-
+    Material *toon = materialManager->createXToonMaterial(m_shaderManager.getShader(SHADER_TYPE::TOON),
+                                                          "resources/toon_map.png");
 
     auto light = Light(glm::vec3(10.0f));
 
     //Define some lights
-    Entity light1 = this->createEntity("Light1");
+    Entity light1 = this->createEntity("Spotlight");
     light1.addComponent<TransformComponent>(glm::vec3(0, 2, -0.787), glm::vec3(274.00, 0, 0), glm::vec3(1));
     light1.addComponent<LightComponent>(light);
 
@@ -101,22 +67,31 @@ void Scene::setup(Camera &camera) {
 //    mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20, 0), glm::vec3(1));
 //    mushu.addComponent<MaterialComponent>(oscillating);
 
+    Entity player = this->createEntity("Player");
+    player.addComponent<MeshRendererComponent>("resources/cube.obj");
+    player.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(0.2));
+    player.addComponent<PlayerComponent>(blue, toon);
+    player.addComponent<MaterialComponent>(blue);
+
+//    auto baseAnim = Anim(true, 3);
+//    auto rotZ = [](Transform trans, float t) {
+//        auto newTransform(trans);
+//        newTransform.rotation = glm::vec3(360 * t, 0, 0);
+//        return newTransform;
+//    };
+
+    Entity puzzle = this->createEntity("Puzzle");
+    puzzle.addComponent<MeshRendererComponent>("resources/cube.obj");
+    puzzle.addComponent<TransformComponent>(glm::vec3(-0.380,0.8,-0.5), glm::vec3(0), glm::vec3(0.05));
+    puzzle.addComponent<MaterialComponent>(red);
+    puzzle.addComponent<PuzzleObjectComponent>(red, green, blue, 2);
+//    puzzle.addComponent<TransformAnimation>(baseAnim, rotZ);
+
+
     Entity ground = this->createEntity("Ground");
     ground.addComponent<MeshRendererComponent>("resources/cube.obj");
     ground.addComponent<TransformComponent>(glm::vec3(1.573, -1.270, 0), glm::vec3(0), glm::vec3(5.900, 0.995, 4.840));
     ground.addComponent<MaterialComponent>(groundColor);
-
-
-    Entity quad = this->createEntity("HeightedQuad");
-    quad.addComponent<MeshRendererComponent>("resources/subdividedPlane.obj");
-    quad.addComponent<TransformComponent>(glm::vec3(1.450, 0.5, -0.530), glm::vec3(0, 0, 90), glm::vec3(0.2, 1, 0.2));
-    quad.addComponent<MaterialComponent>(heightedBrickMaterial);
-
-
-    Entity flatQuad = this->createEntity("FlatQuad");
-    flatQuad.addComponent<MeshRendererComponent>("resources/subdividedPlane.obj");
-    flatQuad.addComponent<TransformComponent>(glm::vec3(1.450, 0.5, -0.08), glm::vec3(0, 0, 90), glm::vec3(0.2, 1, 0.2));
-    flatQuad.addComponent<MaterialComponent>(flatBrickMaterial);
 
 
     Entity cameraEntity = this->createEntity("Camera");
@@ -127,7 +102,20 @@ void Scene::setup(Camera &camera) {
     updateStatistics();
 }
 
-void Scene::update(const long long &timeStep) {}
+void Scene::update(const long long &timeStep) {
+    MaterialManager *materialManager = MaterialManager::getInstance();
+
+    entt::entity player = m_tagToEntity["Player"];
+    PlayerComponent &playerComponent = m_registry.get<PlayerComponent>(player);
+    Transform &playerTransform = m_registry.get<TransformComponent>(player).transform;
+    glm::vec3 &playerPos = playerTransform.pos;
+    if (playerPos.x < 0.0) {
+        //change to toon
+        playerComponent.isToon = true;
+    } else {
+        playerComponent.isToon = false;
+    }
+}
 
 Entity Scene::createEntity(const std::string &name) {
     auto handle = m_registry.create();
