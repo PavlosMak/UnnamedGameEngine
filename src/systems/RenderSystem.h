@@ -112,6 +112,11 @@ private:
             auto &meshTransform = view.template get<TransformComponent>(entity);
             auto &meshRenderer = view.template get<MeshRendererComponent>(entity);
 
+            auto &tag = registry.get<TagComponent>(entity);
+            if(tag.name == "SDF") {
+                continue;
+            }
+
             auto worldTransform = meshTransform.transform.worldTransform();
             const glm::mat4 mvpMatrix = lightVp * worldTransform;
 
@@ -313,7 +318,10 @@ public:
                 //maybe distance from john carmack???
                 glUniform1f(4, toonFactor);
                 m_timeCounter += 1;
-            } else {
+            }else if (material->TYPE == SHADER_TYPE::SDF) {
+                glUniform1f(4, 0.5 - ((glm::sin(glfwGetTime()) + 1.f) * 0.5f)*0.1);
+            }
+            else  {
                 //Load shadow map textures and light MVP matrices
                 for (int i = 0; i < shadowMaps.size(); i++) {
                     int offset = texturesUsed + i;

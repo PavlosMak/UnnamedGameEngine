@@ -43,6 +43,7 @@ public:
             std::filesystem::path aoPath,
             std::filesystem::path heightMap);
 
+    Material *createSDFMaterial(const Shader &shader, std::filesystem::path);
 
     Material *createTexturedOscillatingPBRMaterial(
             const Shader &shader,

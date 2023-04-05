@@ -122,6 +122,11 @@ Material::bindMaterial(glm::vec3 &cameraPosition,
                 glUniform1i(lightOffset + 4 * lights.size() + i, lights[i].isCone());
             }
             break;
+        case SDF:
+            texManager->bind(m_sdfTextureId, GL_TEXTURE0);
+            glUniform1i(3, 0);
+//            glUniform1f(4, 0.5);
+            break;
         case NORMAL_AS_COLOR:
             break;
     }

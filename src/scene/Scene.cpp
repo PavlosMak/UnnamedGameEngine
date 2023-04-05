@@ -37,8 +37,9 @@ void Scene::setup(Camera &camera) {
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/xtoon_frag.glsl", SHADER_TYPE::TOON);
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/pbr_oscilating_textured_frag.glsl",
                                SHADER_TYPE::OSCILLATING_PBR);
-    m_shaderManager.loadShader("shaders/shader_height_vert.glsl", "shaders/pbr_heightmapped_textured_frag.glsl",
+    m_shaderManager.loadShader("shaders/shader_height_vert.glsl", "shaders/pbr_heightmapped_frag.glsl",
                                SHADER_TYPE::HEIGHT_MAPPED);
+    m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/sdf_frag.glsl", SHADER_TYPE::SDF);
 
     MaterialManager *materialManager = MaterialManager::getInstance();
 
@@ -54,6 +55,8 @@ void Scene::setup(Camera &camera) {
 
     Material *toon = materialManager->createXToonMaterial(m_shaderManager.getShader(SHADER_TYPE::TOON),
                                                           "resources/toon_map.png");
+    Material *sdf = materialManager->createSDFMaterial(m_shaderManager.getShader(SHADER_TYPE::SDF),
+                                                       "resources/sdf.png");
 
     Material *johnMaterial = materialManager->createTexturedPBRMaterial(
             m_shaderManager.getShader(SHADER_TYPE::TEXTURED_PBR),
@@ -66,6 +69,30 @@ void Scene::setup(Camera &camera) {
     );
 
 
+    Material *mountainMaterial = materialManager->createHeightMappedTexturedPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::HEIGHT_MAPPED),
+            "resources/ones_texture.png",
+            "resources/ones_texture.png",
+            "resources/zero_texture.png",
+            "resources/height.png",
+            "resources/zero_texture.png",
+            "resources/height.png"
+    );
+
+//
+//
+//    Material *mountainMaterial = materialManager->createHeightMappedTexturedPBRMaterial(
+//            m_shaderManager.getShader(SHADER_TYPE::HEIGHT_MAPPED),
+//            "resources/ones_texture.png",
+//            "resources/ones_texture.png",
+//            "resources/zero_texture.png",
+//            "resources/ones_texture.png",
+//            "resources/ones_texture.png",
+//            "resources/dragon-scales/height.png"
+//    );
+//
+//
+
     auto light = Light(glm::vec3(10.0f));
 
     //Define some lights
@@ -75,13 +102,14 @@ void Scene::setup(Camera &camera) {
 
     //Load the armadillo meshes
     std::vector<std::filesystem::path> paths;
-    for(int i = 1; i <= 20; i++) {
+    for (int i = 1; i <= 20; i++) {
         paths.emplace_back("resources/armadillo/armadillo" + std::to_string(i) + ".obj");
     }
 
     Entity armadillo = this->createEntity("Armadillo");
     armadillo.addComponent<MeshRendererComponent>("resources/armadillo/armadillo1.obj");
-    armadillo.addComponent<TransformComponent>(glm::vec3(1.290,0,-0.9), glm::vec3(0,-94,0), glm::vec3(0.2,0.2,0.2));
+    armadillo.addComponent<TransformComponent>(glm::vec3(1.290, 0, -0.9), glm::vec3(0, -94, 0),
+                                               glm::vec3(0.2, 0.2, 0.2));
     armadillo.addComponent<MaterialComponent>(blue);
     armadillo.addComponent<SkinnedMeshAnimationComponent>(paths);
 
@@ -90,6 +118,7 @@ void Scene::setup(Camera &camera) {
     player.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(0.2));
     player.addComponent<PlayerComponent>(blue, toon);
     player.addComponent<MaterialComponent>(blue);
+
 
     Entity puzzle = this->createEntity("Puzzle");
     puzzle.addComponent<MeshRendererComponent>("resources/cube.obj");
@@ -102,7 +131,14 @@ void Scene::setup(Camera &camera) {
     johny.addComponent<TransformComponent>(glm::vec3(1.400, 0.120, -2.210), glm::vec3(0),
                                            glm::vec3(0.005, 0.320, 0.190));
     johny.addComponent<MaterialComponent>(johnMaterial);
-//    johny.addComponent<PuzzleObjectComponent>(red, green, blue, 2);
+
+
+    Entity sdfQuad = this->createEntity("SDF");
+    sdfQuad.addComponent<MeshRendererComponent>("resources/quad.obj");
+    sdfQuad.addComponent<TransformComponent>(glm::vec3(1.400, 1.120, -2.210), glm::vec3(90, 0, 90),
+                                               glm::vec3(1));
+    sdfQuad.addComponent<MaterialComponent>(sdf);
+
 
     Entity ground = this->createEntity("Ground");
     ground.addComponent<MeshRendererComponent>("resources/cube.obj");

@@ -52,6 +52,17 @@ Material *MaterialManager::createTexturedPBRMaterial(const Shader &shader,
     return &(materialPool[materialPool.size() - 1]);
 }
 
+Material *MaterialManager::createSDFMaterial(const Shader &shader, std::filesystem::path pathToSDF) {
+    TextureManager *textureManager = TextureManager::getInstance();
+    int sdfTex = textureManager->createTexture(pathToSDF);
+    Material mat = Material(lastID, shader, sdfTex, true);
+    mat.textureSlotOccupied = 1;
+    mat.lightOffset = 0;
+    materialPool.push_back(mat);
+    lastID+=1;
+    return &(materialPool[materialPool.size() - 1]);
+}
+
 
 Material *MaterialManager::createHeightMappedTexturedPBRMaterial(const Shader &shader,
                                                                  std::filesystem::path normalMap,
@@ -122,8 +133,4 @@ Material *MaterialManager::createXToonMaterial(const Shader &shader, std::filesy
     lastID += 1;
     toonMatIndex = materialPool.size() - 1;
     return &(materialPool[materialPool.size() - 1]);
-}
-
-Material *MaterialManager::getToonMaterial() {
-    return &(materialPool[toonMatIndex]);
 }
