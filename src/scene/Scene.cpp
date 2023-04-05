@@ -56,7 +56,8 @@ void Scene::setup(Camera &camera) {
     Material *gold = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
                                                         glm::vec4(0.9, 0.82, 0.03, 1), 0.620, 0.793, 0.2);
     Material *blueMesh = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
-                                                            glm::vec4(1.000, 0.766, 0.336, 1), 0.2, 0.8, 0.2);
+                                                            glm::vec4(20.f / 255.f, 149.f / 255.f, 133.f / 255.f, 1),
+                                                            0.717, 0.1, 0.2);
 
 
     Material *oscillating = materialManager->createTexturedOscillatingPBRMaterial(
@@ -119,24 +120,25 @@ void Scene::setup(Camera &camera) {
     auto mainHall = loadScene(matGround, matWalls, matArches);
 
     // robotarm
-//    loadRobotArm(mainHall, Transform(glm::vec3(7.370, 0.160, -1.430), glm::vec3(0, 0, 0), glm::vec3(0.2, 0.2, 0.2)));
+    loadRobotArm(mainHall, Transform(glm::vec3(7.370, 0.160, -1.430), glm::vec3(0, 0, 0), glm::vec3(0.2, 0.2, 0.2)),
+                 matRobot);
 
 
-            // load the pedestals
+    // load the pedestals
     auto pedestalsController = createEntityParented("PedestalsController", mainHall,
-                                               Transform(glm::vec3(0, -1.7, 1.7), glm::vec3(0), glm::vec3(1)));
+                                                    Transform(glm::vec3(0, -1.7, 1.7), glm::vec3(0), glm::vec3(1)));
     pedestalsController.addComponent<MeshRendererComponent>("resources/cube.obj");
     pedestalsController.addComponent<MaterialComponent>(matPedestal);
 
-    loadPedestal(pedestalsController, Transform(glm::vec3(0, 2, 0)), matPedestal, matArches, matArches, gold, 2,
+    loadPedestal(pedestalsController, Transform(glm::vec3(0, 2, 0)), matPedestal, blueMesh, matArches, gold, 2,
                  "resources/TeapotSmall.obj");
-    loadPedestal(pedestalsController, Transform(glm::vec3(0.3, 2, 0)), matPedestal, matArches, matArches, oscillating,
+    loadPedestal(pedestalsController, Transform(glm::vec3(0.3, 2, 0)), matPedestal, matArches, blueMesh, oscillating,
                  2, "resources/DragonSmall.obj");
-    loadPedestal(pedestalsController, Transform(glm::vec3(0.6, 2, 0)), matPedestal, matArches, gold, matArches, 2,
+    loadPedestal(pedestalsController, Transform(glm::vec3(0.6, 2, 0)), matPedestal, matArches, gold, red, 2,
                  "resources/ApeSmall.obj");
-    loadPedestal(pedestalsController, Transform(glm::vec3(0.9, 2, 0)), matPedestal, gold, matArches, matArches, 2,
+    loadPedestal(pedestalsController, Transform(glm::vec3(0.9, 2, 0)), matPedestal, gold, matArches, blueMesh, 2,
                  "resources/House.obj");
-    loadPedestal(pedestalsController, Transform(glm::vec3(1.2, 2, 0)), matPedestal, gold, matArches, armadilloMat, 2,
+    loadPedestal(pedestalsController, Transform(glm::vec3(1.2, 2, 0)), matPedestal, gold, red, armadilloMat, 2,
                  "resources/SuzanneSmall.obj");
 
     // Create transparent planes
@@ -232,29 +234,7 @@ void Scene::setup(Camera &camera) {
 
     bunny.addComponent<BezierAnimation>(bezierAnim, curve);
 
-    Material *mountainMaterial = materialManager->createHeightMappedTexturedPBRMaterial(
-            m_shaderManager.getShader(SHADER_TYPE::HEIGHT_MAPPED),
-            "resources/ones_texture.png",
-            "resources/ones_texture.png",
-            "resources/zero_texture.png",
-            "resources/height.png",
-            "resources/zero_texture.png",
-            "resources/height.png"
-    );
 
-//
-//
-//    Material *mountainMaterial = materialManager->createHeightMappedTexturedPBRMaterial(
-//            m_shaderManager.getShader(SHADER_TYPE::HEIGHT_MAPPED),
-//            "resources/ones_texture.png",
-//            "resources/ones_texture.png",
-//            "resources/zero_texture.png",
-//            "resources/ones_texture.png",
-//            "resources/ones_texture.png",
-//            "resources/dragon-scales/height.png"
-//    );
-//
-//
 
     //Load the armadillo meshes
     std::vector<std::filesystem::path> paths;
@@ -298,8 +278,8 @@ void Scene::setup(Camera &camera) {
     sdfQuad.addComponent<MaterialComponent>(sdf);
 
     //Define some light
-    Entity light1 = this->createEntity("Spotlight");
-    light1.addComponent<TransformComponent>(glm::vec3(0.360, 1.650, 1.593), glm::vec3(274.00, 5, 0), glm::vec3(1));
+    Entity light1 = this->createEntity("MainLight");
+    light1.addComponent<TransformComponent>(glm::vec3(0.360, 2.270, 1.593), glm::vec3(293.00, 5, 0), glm::vec3(1));
     light1.addComponent<LightComponent>(glm::vec3(10.0f));
     light1.addComponent<RoomComponent>(-1);
 
@@ -308,7 +288,7 @@ void Scene::setup(Camera &camera) {
 //    spotlight.addComponent<LightComponent>(glm::vec3(10.0f));
 //    spotlight.addComponent<RoomComponent>(2);
 
-    Entity animationRoomLight = this->createEntity("AnimationRoomLight");
+    Entity animationRoomLight = this->createEntity("Spotlight");
     animationRoomLight.addComponent<TransformComponent>(glm::vec3(7.315, 2.58, -2.220), glm::vec3(32, 178, 0),
                                                         glm::vec3(1));
     animationRoomLight.addComponent<LightComponent>(glm::vec3(1.0f));
