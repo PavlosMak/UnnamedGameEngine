@@ -113,7 +113,7 @@ void Scene::setup(Camera &camera) {
     auto mainHall = loadScene(matGround, matWalls, matArches);
 
     // robotarm
-    // auto robotArm = loadRobotArm(mainHall, Transform(glm::vec3(8.4, 0.1, -1.1), glm::vec3(0, 0, 0), glm::vec3(0.2, 0.2, 0.2)), matRobot);
+     loadRobotArm(mainHall, Transform(glm::vec3(8.4, 0.1, -1.1), glm::vec3(0, 0, 0), glm::vec3(0.2, 0.2, 0.2)), matRobot);
 
     // load the pedestals
     auto pedestalsController = createEntityParented("PedestalsController", mainHall,
@@ -155,57 +155,70 @@ void Scene::setup(Camera &camera) {
     Material *matRed = materialManager->createPBRMaterial(
             m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(1, 0, 0, 1), 0.0, 0.0, 0.01);
 
-    auto adam = createEntity("Adam");
-    adam.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0, 130, 0), glm::vec3(1));
-    adam.addComponent<MeshRendererComponent>("resources/adam/Body.obj");
-    adam.addComponent<MaterialComponent>(matAdam);
+//    auto adam = createEntity("Adam");
+//    adam.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0, 130, 0), glm::vec3(1));
+//    adam.addComponent<MeshRendererComponent>("resources/adam/Body.obj");
+//    adam.addComponent<MaterialComponent>(matAdam);
+//
+//    auto head = createEntityParented("AdamHead", adam, Transform(glm::vec3(0, 0.5, 0)));
+//    head.addComponent<MeshRendererComponent>("resources/adam/Head.obj");
+//    head.addComponent<MaterialComponent>(matAdam);
+//
+//    auto eye = createEntityParented("AdamEye", head, Transform());
+//    eye.addComponent<MeshRendererComponent>("resources/adam/Eye.obj");
+//    eye.addComponent<MaterialComponent>(matEyes);
+//
+//    auto lens = createEntityParented("AdamLens", head, Transform());
+//    lens.addComponent<MeshRendererComponent>("resources/adam/Lens.obj");
+//    lens.addComponent<MaterialComponent>(matLens);
+//    lens.addComponent<FindMe>();
+//
+//    auto antena = createEntityParented("AdamAntena", head, Transform());
+//    antena.addComponent<MeshRendererComponent>("resources/adam/Antena.obj");
+//    antena.addComponent<MaterialComponent>(matEyes);
+//
+//    auto antenaCap = createEntityParented("AdamAntenaCap", head, Transform());
+//    antenaCap.addComponent<MeshRendererComponent>("resources/adam/antenaCap.obj");
+//    antenaCap.addComponent<MaterialComponent>(matRed);
+//
+//    auto smallEye = createEntityParented("AdamSmallEye", head, Transform());
+//    smallEye.addComponent<MeshRendererComponent>("resources/adam/smallEye.obj");
+//    smallEye.addComponent<MaterialComponent>(matEyes);
+//
+//    auto smallRed = createEntityParented("AdamSmallRed", head, Transform());
+//    smallRed.addComponent<MeshRendererComponent>("resources/adam/smallRed.obj");
+//    smallRed.addComponent<MaterialComponent>(matRed);
+//
+//    auto armL = createEntityParented("AdamArmL", adam, Transform(glm::vec3(0, 0, 0.4)));
+//    armL.addComponent<MeshRendererComponent>("resources/adam/Arms.obj");
+//    armL.addComponent<MaterialComponent>(matAdam);
+//
+//    auto armR = createEntityParented("AdamArmL", adam, Transform(glm::vec3(0, 0, -0.4)));
+//    armR.addComponent<MeshRendererComponent>("resources/adam/Arms.obj");
+//    armR.addComponent<MaterialComponent>(matAdam);
 
-    auto head = createEntityParented("AdamHead", adam, Transform(glm::vec3(0, 0.5, 0)));
-    head.addComponent<MeshRendererComponent>("resources/adam/Head.obj");
-    head.addComponent<MaterialComponent>(matAdam);
+    auto bunny = createEntityParented("Bunny", mainHall, Transform());
+    bunny.addComponent<MeshRendererComponent>("resources/Bunny.obj");
+    bunny.addComponent<MaterialComponent>(matPedestal);
 
-    auto eye = createEntityParented("AdamEye", head, Transform());
-    eye.addComponent<MeshRendererComponent>("resources/adam/Eye.obj");
-    eye.addComponent<MaterialComponent>(matEyes);
+    auto bezierAnim = Anim(true, 4);
+    auto curve = CubicBezier(
+            glm::vec3(0, 0, 0),
+            glm::vec3(1, 1, 0),
+            glm::vec3(3, 0, 0),
+            glm::vec3(2, 1, 0)
+    );
 
-    auto lens = createEntityParented("AdamLens", head, Transform());
-    lens.addComponent<MeshRendererComponent>("resources/adam/Lens.obj");
-    lens.addComponent<MaterialComponent>(matLens);
-    lens.addComponent<FindMe>();
+    bunny.addComponent<BezierAnimation>(bezierAnim, curve);
 
-    auto antena = createEntityParented("AdamAntena", head, Transform());
-    antena.addComponent<MeshRendererComponent>("resources/adam/Antena.obj");
-    antena.addComponent<MaterialComponent>(matEyes);
-
-    auto antenaCap = createEntityParented("AdamAntenaCap", head, Transform());
-    antenaCap.addComponent<MeshRendererComponent>("resources/adam/antenaCap.obj");
-    antenaCap.addComponent<MaterialComponent>(matRed);
-
-    auto smallEye = createEntityParented("AdamSmallEye", head, Transform());
-    smallEye.addComponent<MeshRendererComponent>("resources/adam/smallEye.obj");
-    smallEye.addComponent<MaterialComponent>(matEyes);
-
-    auto smallRed = createEntityParented("AdamSmallRed", head, Transform());
-    smallRed.addComponent<MeshRendererComponent>("resources/adam/smallRed.obj");
-    smallRed.addComponent<MaterialComponent>(matRed);
-
-    auto armL = createEntityParented("AdamArmL", adam, Transform(glm::vec3(0, 0, 0.4)));
-    armL.addComponent<MeshRendererComponent>("resources/adam/Arms.obj");
-    armL.addComponent<MaterialComponent>(matAdam);
-
-    auto armR = createEntityParented("AdamArmL", adam, Transform(glm::vec3(0, 0, -0.4)));
-    armR.addComponent<MeshRendererComponent>("resources/adam/Arms.obj");
-    armR.addComponent<MaterialComponent>(matAdam);
-
-    //Define some lights
-    auto light = Light(glm::vec3(10.0f));
+    //Define some light
     Entity light1 = this->createEntity("Light1");
-    light1.addComponent<TransformComponent>(glm::vec3(0, 2, -0.787), glm::vec3(274.00, 0, 0), glm::vec3(1));
-    light1.addComponent<LightComponent>(light);
+    light1.addComponent<TransformComponent>(glm::vec3(0.360, 1.650, 1.593), glm::vec3(274.00, 5, 0), glm::vec3(1));
+    light1.addComponent<LightComponent>(glm::vec3(10.0f));
 
     Entity light2 = this->createEntity("Light2");
-    light2.addComponent<TransformComponent>(glm::vec3(0.4, 0.8, -1), glm::vec3(0, 240, 0), glm::vec3(1));
-    light2.addComponent<LightComponent>(light);
+    light2.addComponent<TransformComponent>(glm::vec3(0.360, 8, -1), glm::vec3(0, 240, 0), glm::vec3(1));
+    light2.addComponent<LightComponent>(glm::vec3(0));
 
 //    Entity mushu = this->createEntity("Mushu");
 //    mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
@@ -254,18 +267,6 @@ Entity Scene::loadRobotArm(Entity &parent, Transform t, Material *mat) {
     base.addComponent<MeshRendererComponent>("resources/robotarm/Base.obj");
     base.addComponent<MaterialComponent>(mat);
 
-//    auto bezierAnim = Anim(true, 4);
-//    auto curve = CubicBezier(
-//            glm::vec3(0, 0, 0),
-//            glm::vec3(1, 1, 0),
-//            glm::vec3(3, 0, 0),
-//            glm::vec3(2, 1, 0)
-//    );
-//
-//    base.addComponent<BezierAnimation>(bezierAnim, curve);
-//    base.addComponent<RotationAnimation>(bezierAnim, [](float t) {
-//        return glm::vec3(500*t*t, 500*t*t, 500*t*t);
-//    });
 
     Entity rBase = this->createEntity("rBase");
     rBase.addComponent<TransformComponent>(glm::vec3(0, 0.89, 0), glm::vec3(0), glm::vec3(1),
@@ -324,7 +325,6 @@ Entity Scene::loadRobotArm(Entity &parent, Transform t, Material *mat) {
                                           &wrist.getComponent<TransformComponent>().transform);
     hand.addComponent<MeshRendererComponent>("resources/robotarm/Hand.obj");
     hand.addComponent<MaterialComponent>(mat);
-    // hand.addComponent<RotationAnimation>(baseAnim, backForthY);
 
     Entity c1 = this->createEntity("Claw1");
     c1.addComponent<TransformComponent>(glm::vec3(0, 0.8, 0.3), glm::vec3(0), glm::vec3(1),
