@@ -10,6 +10,7 @@
 #include "../camera.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "../Transform.h"
+#include "../AnimatedMesh.h"
 
 struct FindMe {
     FindMe() = default;
@@ -31,16 +32,17 @@ struct TransformComponent {
     Transform transform;
 
     TransformComponent() = default;
+
     TransformComponent(const TransformComponent &) = default;
 
-    explicit TransformComponent(Transform* parent)
+    explicit TransformComponent(Transform *parent)
             : transform(Transform(glm::vec3(0), glm::vec3(0), glm::vec3(1), parent)) {};
 
     explicit TransformComponent(const glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale)
-    : transform(Transform(pos, rotation, scale)) {};
+            : transform(Transform(pos, rotation, scale)) {};
 
-    explicit TransformComponent(const glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale, Transform* parent)
-    : transform(Transform(pos, rotation, scale, parent)) {};
+    explicit TransformComponent(const glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale, Transform *parent)
+            : transform(Transform(pos, rotation, scale, parent)) {};
 
 };
 
@@ -60,15 +62,46 @@ struct CameraComponent {
 
     CameraComponent(const CameraComponent &) = default;
 
-    explicit CameraComponent(Camera* camera) : camera(camera) {};
+    explicit CameraComponent(Camera *camera) : camera(camera) {};
 };
 
 struct MaterialComponent {
-    Material* material;
+    Material *material;
 
     MaterialComponent() = default;
 
-    explicit MaterialComponent(Material* material) : material(std::move(material)) {};
+    explicit MaterialComponent(Material *material) : material(std::move(material)) {};
+};
+
+struct PlayerComponent {
+    Material *basicMaterial;
+    Material *toonMaterial;
+    bool isToon = false;
+    float distanceToCarmack;
+
+    PlayerComponent() = default;
+
+    PlayerComponent(Material *basicMaterial, Material *toonMaterial) : basicMaterial(std::move(basicMaterial)),
+                                                                       toonMaterial(std::move(toonMaterial)) {};
+};
+
+struct PuzzleObjectComponent {
+    Material *material0;
+    Material *material1;
+    Material *material2;
+
+    int key = 3;
+    int solved = false;
+    int currentActive = 0;
+
+    PuzzleObjectComponent() = default;
+
+    PuzzleObjectComponent(Material *material0,
+                          Material *material1,
+                          Material *material2, int key) :
+            material0(material0), material1(material1),
+            material2(material2), key(key) {}
+
 };
 
 struct WasdComponent {
@@ -85,5 +118,5 @@ struct LightComponent {
 
     LightComponent() {};
 
-    explicit LightComponent(const Light &light): light(light) {};
+    explicit LightComponent(const Light &light) : light(light) {};
 };

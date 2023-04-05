@@ -12,7 +12,7 @@ public:
     Material(int id, const Shader &shader, glm::vec4 color, SHADER_TYPE shaderType) :
             ID(id), m_shader(shader), m_color(color), TYPE(shaderType) {};
 
-    Material(int id, const Shader &shader, SHADER_TYPE shaderType) : ID(id), m_shader(shader), m_color(),
+    Material(int id, const Shader &shader, SHADER_TYPE shaderType) : ID(id), m_shader(shader),
                                                                      TYPE(shaderType) {};
 
     Material(int id, const Shader &shader, glm::vec4 color, float shininess, SHADER_TYPE shaderType) : ID(id),
@@ -23,7 +23,10 @@ public:
                                                                                                        TYPE(
                                                                                                                shaderType) {};
 
-    Material(int id, const Shader &shader, SHADER_TYPE shaderType, int normalMapId, int roughMapId, int metalMapId, int albedoMapId,
+    Material(int id, const Shader &shader, int sdfId, bool isSDF) : ID(id), m_shader(shader), m_sdfTextureId(sdfId), TYPE(SDF) {};
+
+    Material(int id, const Shader &shader, SHADER_TYPE shaderType, int normalMapId, int roughMapId, int metalMapId,
+             int albedoMapId,
              int ambientOcclusionMapId, int heightMapId) : ID(id), m_shader(shader),
                                                            TYPE(shaderType),
                                                            m_normalMapId(normalMapId),
@@ -34,23 +37,22 @@ public:
     };
 
 
-
     Material(int id, const Shader &shader, int normalMapId, int roughMapId, int metalMapId, int albedoMapId,
              int ambientOcclusionMapId, int heightMapId,
              int normalMapId2, int roughMapId2, int metalMapId2, int albedoMapId2,
              int ambientOcclusionMapId2, int heightMapId2) : ID(id), m_shader(shader),
-                                                           TYPE(SHADER_TYPE::OSCILLATING_PBR),
-                                                           m_normalMapId(normalMapId),
-                                                           m_roughnessMapId(roughMapId), m_metallicMapId(metalMapId),
-                                                           m_albedoMapId(albedoMapId),
-                                                           m_heightMapId(heightMapId),
-                                                           m_ambientOcclusionMapId(ambientOcclusionMapId),
+                                                             TYPE(SHADER_TYPE::OSCILLATING_PBR),
+                                                             m_normalMapId(normalMapId),
+                                                             m_roughnessMapId(roughMapId), m_metallicMapId(metalMapId),
+                                                             m_albedoMapId(albedoMapId),
+                                                             m_heightMapId(heightMapId),
+                                                             m_ambientOcclusionMapId(ambientOcclusionMapId),
                                                              m_normalMapId2(normalMapId2),
-                                                             m_roughnessMapId2(roughMapId2), m_metallicMapId2(metalMapId2),
+                                                             m_roughnessMapId2(roughMapId2),
+                                                             m_metallicMapId2(metalMapId2),
                                                              m_albedoMapId2(albedoMapId2),
                                                              m_heightMapId2(heightMapId2),
-                                                             m_ambientOcclusionMapId2(ambientOcclusionMapId2)
-                                                           {};
+                                                             m_ambientOcclusionMapId2(ambientOcclusionMapId2) {};
 
     Material(int id, const Shader &shader, glm::vec4 albedo, float roughness, float metallic, float ambient) :
             ID(id), m_shader(shader), m_color(albedo), m_roughness(roughness), m_metallic(metallic),
@@ -128,4 +130,6 @@ private:
     int m_heightMapId2;
 
     int m_toonTextureId;
+
+    int m_sdfTextureId;
 };

@@ -43,6 +43,7 @@ public:
             std::filesystem::path aoPath,
             std::filesystem::path heightMap);
 
+    Material *createSDFMaterial(const Shader &shader, std::filesystem::path);
 
     Material *createTexturedOscillatingPBRMaterial(
             const Shader &shader,
@@ -63,7 +64,10 @@ public:
 
     Material *createXToonMaterial(const Shader &shader, std::filesystem::path toonTexture);
 
+    Material *getToonMaterial();
+
 private:
     std::vector<Material> materialPool;
     int lastID{0};
+    int toonMatIndex{0};
 };

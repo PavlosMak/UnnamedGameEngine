@@ -73,6 +73,9 @@ public:
         m_debugSystem.register_component<SetRotation>("SetRotation");
         m_debugSystem.register_component<BezierAnimation>("BezierAnim");
         m_debugSystem.register_component<FindMe>("Find Me!");
+        m_debugSystem.register_component<PlayerComponent>("Player");
+        m_debugSystem.register_component<PuzzleObjectComponent>("Puzzle");
+
     }
 
     void update() {

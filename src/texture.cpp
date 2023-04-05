@@ -13,7 +13,6 @@ Texture::Texture(std::filesystem::path filePath, GLuint clampMode) {
     // Load image from disk to CPU memory.
     // Image class is defined in <framework/image.h>
     Image cpuTexture{filePath};
-
     // Create a texture on the GPU with 3 channels with 8 bits each.
     glCreateTextures(GL_TEXTURE_2D, 1, &m_texture);
     glTextureStorage2D(m_texture, 1, GL_RGB8, cpuTexture.width, cpuTexture.height);
@@ -41,7 +40,7 @@ Texture::~Texture() {
 }
 
 void Texture::bind(GLint textureSlot) {
-    bool t = m_texture != INVALID;
     glActiveTexture(textureSlot);
     glBindTexture(GL_TEXTURE_2D, m_texture);
+
 }

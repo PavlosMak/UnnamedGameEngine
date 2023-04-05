@@ -5,6 +5,7 @@
 #include "../scene/Components.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "GLFW/glfw3.h"
+#include "../components/AnimComponents.h"
 
 class WasdControllerSystem {
 
@@ -14,6 +15,9 @@ class WasdControllerSystem {
     bool dDown = false;
     bool eDown = false;
     bool rDown = false;
+    bool oneDown = false;
+    bool twoDown = false;
+    bool threeDown = false;
 
     void changeKeyState(int key, bool newState) {
         switch (key) {
@@ -35,10 +39,19 @@ class WasdControllerSystem {
             case GLFW_KEY_R:
                 this->rDown = newState;
                 break;
+            case GLFW_KEY_1:
+                this->oneDown = newState;
+                break;
+            case GLFW_KEY_2:
+                this->twoDown = newState;
+                break;
+            case GLFW_KEY_3:
+                this->threeDown = newState;
+                break;
         }
     }
 
-    glm::vec3 translationVec(float movementSpeed, Transform& transform) const {
+    glm::vec3 translationVec(float movementSpeed, Transform &transform) const {
 
         glm::vec3 unitX = transform.right();
         glm::vec3 unitY = transform.up();
@@ -48,19 +61,22 @@ class WasdControllerSystem {
 
         if (aDown) {
             translationVec -= unitX;
-        } if (dDown) {
+        }
+        if (dDown) {
             translationVec += unitX;
         }
 
         if (wDown) {
             translationVec += unitZ;
-        } if (sDown) {
+        }
+        if (sDown) {
             translationVec -= unitZ;
         }
 
         if (eDown) {
             translationVec += unitY;
-        } if (rDown) {
+        }
+        if (rDown) {
             translationVec -= unitY;
         }
 
@@ -78,11 +94,11 @@ public:
         changeKeyState(key, false);
     }
 
-    void update(entt::registry& registry) const {
+    void update(entt::registry &registry) const {
 
         auto view = registry.view<WasdComponent, TransformComponent>();
 
-        for (auto entity : view) {
+        for (auto entity: view) {
             auto &wasdC = view.get<WasdComponent>(entity);
             auto &transformC = view.get<TransformComponent>(entity);
 
@@ -90,5 +106,46 @@ public:
             transformC.transform.pos += translationVec(wasdC.movementSpeed, transformC.transform);
         }
 
+        auto puzzleView = registry.view<PuzzleObjectComponent, MaterialComponent, TransformComponent>();
+
+        auto player = registry.view<PlayerComponent>()[0];
+        auto &playerTransform = registry.get<TransformComponent>(player);
+
+        //That the distance to register input
+        float range = 0.5;
+
+        auto baseAnim = Anim(true, 3);
+        auto rotY = [](Transform trans, float t) {
+            auto newTransform(trans);
+            newTransform.rotation = glm::vec3(0, 360 * t, 0);
+            return newTransform;
+        };
+
+        for (auto entity: puzzleView) {
+            auto &puzzle = puzzleView.get<PuzzleObjectComponent>(entity);
+            auto &mat = puzzleView.get<MaterialComponent>(entity);
+            auto &trans = puzzleView.get<TransformComponent>(entity);
+
+            float distToPlayer = glm::distance(playerTransform.transform.pos, trans.transform.pos);
+//            std::cout << distToPlayer << std::endl;
+            bool inRange = distToPlayer <= range;
+            if (puzzle.solved) {
+                continue;
+            }
+            if (oneDown && inRange) {
+                mat.material = puzzle.material0;
+                puzzle.currentActive = 0;
+            } else if (twoDown && inRange) {
+                mat.material = puzzle.material1;
+                puzzle.currentActive = 1;
+            } else if (threeDown && inRange) {
+                mat.material = puzzle.material2;
+                puzzle.currentActive = 2;
+            }
+            if (puzzle.currentActive == puzzle.key) {
+                puzzle.solved = true;
+                registry.emplace<TransformAnimation>(entity, baseAnim, rotY);
+            }
+        }
     }
 };

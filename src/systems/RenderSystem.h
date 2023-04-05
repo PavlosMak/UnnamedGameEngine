@@ -113,6 +113,11 @@ private:
             auto &meshTransform = view.template get<TransformComponent>(entity);
             auto &meshRenderer = view.template get<MeshRendererComponent>(entity);
 
+            auto &tag = registry.get<TagComponent>(entity);
+            if(tag.name == "SDF") {
+                continue;
+            }
+
             auto worldTransform = meshTransform.transform.worldTransform();
             const glm::mat4 mvpMatrix = lightVp * worldTransform;
 
@@ -273,7 +278,21 @@ public:
             // https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
             const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
 
-            Material *material = materialComponent.material;
+            Material *material;
+            float toonFactor = 0.0;
+            //Handle player materials
+
+            if (tag == "Player") {
+                auto &playerComponent = registry.get<PlayerComponent>(entity);
+                if (playerComponent.isToon) {
+                    material = playerComponent.toonMaterial;
+                    toonFactor = 1 - playerComponent.distanceToCarmack / 2;
+                } else {
+                    material = playerComponent.basicMaterial;
+                }
+            } else {
+                material = materialComponent.material;
+            }
 
             if (material->getColor().w < 1.0) {
                 float key = -1.0f * glm::distance(camTransform.pos, glm::vec3(transform.transform.worldTransform()[3]));
@@ -297,9 +316,12 @@ public:
             if (material->TYPE == SHADER_TYPE::TOON) {
                 //TODO: Currently controlled by time but we change to something else
                 //maybe distance from john carmack???
-                glUniform1f(4, (2 * std::sin(glfwGetTime()) - 1));
+                glUniform1f(4, toonFactor);
                 m_timeCounter += 1;
-            } else {
+            }else if (material->TYPE == SHADER_TYPE::SDF) {
+                glUniform1f(4, 0.5 - ((glm::sin(glfwGetTime()) + 1.f) * 0.5f)*0.1);
+            }
+            else  {
                 //Load shadow map textures and light MVP matrices
                 for (int i = 0; i < shadowMaps.size(); i++) {
                     int offset = texturesUsed + i;
@@ -321,6 +343,8 @@ public:
             meshRenderer.mesh.draw();
         }
 
+
+        // ===== Transparent pass ====
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         for (const auto &keyValue: transparentEntities) {
