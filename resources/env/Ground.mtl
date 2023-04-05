@@ -1,15 +1,10 @@
 # Blender MTL File: 'newmuseum.blend'
 # Material Count: 1
 
-newmtl Material.001
-Ns 885.309918
-Ka 1.000000 1.000000 1.000000
-Kd 0.800000 0.800000 0.800000
-Ks 1.000000 1.000000 1.000000
-Ke 0.000000 0.000000 0.000000
-Ni 1.450000
-d 1.000000
+newmtl None
+Ns 500
+Ka 0.8 0.8 0.8
+Kd 0.8 0.8 0.8
+Ks 0.8 0.8 0.8
+d 1
 illum 2
-map_Bump /home/jorge/cga/3D-CG-Game/resources/wood/WoodFloor051_2K_NormalDX.png
-map_Kd /home/jorge/cga/3D-CG-Game/resources/wood/WoodFloor051_2K_Color.png
-map_Ns /home/jorge/cga/3D-CG-Game/resources/wood/WoodFloor051_2K_Roughness.png
