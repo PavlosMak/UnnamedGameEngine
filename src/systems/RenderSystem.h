@@ -274,11 +274,14 @@ public:
             const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
 
             Material *material;
+            float toonFactor = 0.0;
             //Handle player materials
+
             if (tag == "Player") {
                 auto &playerComponent = registry.get<PlayerComponent>(entity);
                 if (playerComponent.isToon) {
                     material = playerComponent.toonMaterial;
+                    toonFactor = 1 - playerComponent.distanceToCarmack / 2;
                 } else {
                     material = playerComponent.basicMaterial;
                 }
@@ -308,7 +311,7 @@ public:
             if (material->TYPE == SHADER_TYPE::TOON) {
                 //TODO: Currently controlled by time but we change to something else
                 //maybe distance from john carmack???
-                glUniform1f(4, (2 * std::sin(glfwGetTime()) - 1));
+                glUniform1f(4, toonFactor);
                 m_timeCounter += 1;
             } else {
                 //Load shadow map textures and light MVP matrices
