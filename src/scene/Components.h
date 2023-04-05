@@ -11,6 +11,11 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "../Transform.h"
 
+struct FindMe {
+    FindMe() = default;
+    int a = 1;
+};
+
 struct TagComponent {
     std::string name;
 

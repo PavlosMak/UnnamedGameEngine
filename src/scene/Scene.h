@@ -21,6 +21,8 @@ public:
 
     Entity createEntity(const std::string &name);
 
+    Entity createEntityParented(const std::string &name, Entity& parent, Transform t);
+
     //This implies that we use unique tags, we might want to rename this to something like ID.
     Entity getEntityByTag(std::basic_string<char> tag);
 
@@ -42,10 +44,10 @@ private:
 
     friend class Entity;
 
-    Entity loadRobotArm(Transform baseTransform, Material *mat);
+    Entity loadRobotArm(Entity& parent, Transform t, Material *mat);
 
-    Entity loadPedestal(Transform baseTransform, Material* pedestalMat, Material* meshMat, std::string mesh);
+    Entity loadPedestal(Entity& parent, Transform t, Material* pedestalMat, Material* meshMat, std::string mesh);
 
-    void loadScene(Material* matGround, Material* matWalls, Material* matArches);
+    Entity loadScene(Material* matGround, Material* matWalls, Material* matArches);
 };
 

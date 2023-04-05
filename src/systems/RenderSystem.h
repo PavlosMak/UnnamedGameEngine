@@ -106,6 +106,7 @@ private:
         glEnable(GL_DEPTH_TEST);
         glViewport(0, 0, SHADOWTEX_WIDTH, SHADOWTEX_HEIGHT);
 
+
         //We need to render all meshes from the perspective of the light
         //TODO: this can be optimized if each light knows the meshes it affects
         for (auto entity: view) {
@@ -217,7 +218,6 @@ public:
             lightIndex++;
         }
     }
-
 
     void renderMeshes(Shader &shadowShader, entt::registry &registry, Entity camera, glm::ivec2 windowSize,
                       float aspectRatio) {

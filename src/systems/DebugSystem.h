@@ -8,6 +8,11 @@ namespace MM {
 
     // Define the "inspectors" of each component here
     template<>
+    void ComponentEditorWidget<FindMe>(entt::registry &reg, entt::registry::entity_type e) {
+    }
+
+    // Define the "inspectors" of each component here
+    template<>
     void ComponentEditorWidget<BezierAnimation>(entt::registry &reg, entt::registry::entity_type e) {
         auto &w = reg.get<BezierAnimation>(e);
         w.anim.inspectorImGui();

@@ -13,6 +13,8 @@ struct Transform {
     Transform* parent;
 
     Transform();
+    Transform(Transform* parent);
+    Transform(glm::vec3 pos);
     Transform(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale);
     Transform(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale, Transform* parent);
 

@@ -72,6 +72,7 @@ public:
         m_debugSystem.register_component<MaterialComponent>("Material");
         m_debugSystem.register_component<SetRotation>("SetRotation");
         m_debugSystem.register_component<BezierAnimation>("BezierAnim");
+        m_debugSystem.register_component<FindMe>("Find Me!");
     }
 
     void update() {
