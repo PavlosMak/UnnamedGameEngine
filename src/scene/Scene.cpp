@@ -143,9 +143,10 @@ void Scene::setup(Camera &camera) {
 
     // Create transparent planes
     Entity quadR = this->createEntityParented("QuadR", mainHall,
-                                              Transform(glm::vec3(0, 1, 0), glm::vec3(0, 0, 90), glm::vec3(0.3)));
+                                              Transform(glm::vec3(-3.360, 0.660, 0.5), glm::vec3(0, -171, 87), glm::vec3(0.3)));
     quadR.addComponent<MeshRendererComponent>("resources/quad.obj");
     quadR.addComponent<MaterialComponent>(red);
+    quadR.addComponent<FindMe>();
     Entity quadG = this->createEntityParented("QuadG", quadR, Transform(glm::vec3(0, 1, 1)));
     quadG.addComponent<MeshRendererComponent>("resources/quad.obj");
     quadG.addComponent<MaterialComponent>(green);
