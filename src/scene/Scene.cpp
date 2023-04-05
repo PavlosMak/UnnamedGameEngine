@@ -55,6 +55,17 @@ void Scene::setup(Camera &camera) {
     Material *toon = materialManager->createXToonMaterial(m_shaderManager.getShader(SHADER_TYPE::TOON),
                                                           "resources/toon_map.png");
 
+    Material *johnMaterial = materialManager->createTexturedPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::TEXTURED_PBR),
+            "resources/ones_texture.png",
+            "resources/ones_texture.png",
+            "resources/zero_texture.png",
+            "resources/lordAndSaviour/img.png",
+            "resources/zero_texture.png",
+            "resources/zero_texture.png"
+    );
+
+
     auto light = Light(glm::vec3(10.0f));
 
     //Define some lights
@@ -78,6 +89,13 @@ void Scene::setup(Camera &camera) {
     puzzle.addComponent<TransformComponent>(glm::vec3(-0.380, 0.8, -0.5), glm::vec3(0), glm::vec3(0.05));
     puzzle.addComponent<MaterialComponent>(red);
     puzzle.addComponent<PuzzleObjectComponent>(red, green, blue, 2);
+
+    Entity johny = this->createEntity("LordAndSavior");
+    johny.addComponent<MeshRendererComponent>("resources/cube.obj");
+    johny.addComponent<TransformComponent>(glm::vec3(1.400, 0.120, -2.210), glm::vec3(0),
+                                           glm::vec3(0.005, 0.320, 0.190));
+    johny.addComponent<MaterialComponent>(johnMaterial);
+//    johny.addComponent<PuzzleObjectComponent>(red, green, blue, 2);
 
     Entity ground = this->createEntity("Ground");
     ground.addComponent<MeshRendererComponent>("resources/cube.obj");
@@ -111,12 +129,19 @@ void Scene::update(const long long &timeStep) {
     glm::vec4 playerLightPosHom = spotVP * glm::vec4(playerPos, 1);
     glm::vec3 playerLightPos = glm::vec3(playerLightPosHom) / playerLightPosHom.w;
     auto shadowMapPos = glm::vec2(playerLightPos);
-    underSpotlight = glm::distance(shadowMapPos, glm::vec2(0.5,0.5)) < 1;
+    underSpotlight = glm::distance(shadowMapPos, glm::vec2(0.5, 0.5)) < 1;
 
     if (underSpotlight) {
         //change to toon
         playerComponent.isToon = true;
-    } else {
+    }
+
+    //Determine distance to Carmack and update in the player
+    entt::entity carmack = m_tagToEntity["LordAndSavior"];
+    glm::vec3 carmackPos = m_registry.get<TransformComponent>(carmack).transform.pos;
+    float distanceToCarmack = glm::distance(carmackPos, playerPos);
+    playerComponent.distanceToCarmack = distanceToCarmack;
+    if (distanceToCarmack < 0.2) {
         playerComponent.isToon = false;
     }
 }
