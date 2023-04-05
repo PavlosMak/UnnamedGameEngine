@@ -42,6 +42,7 @@ void Scene::setup(Camera &camera) {
 
     Material *groundColor = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
                                                                glm::vec4(0.8, 0.8, 0.8, 1.0), 1.0, 0.0, 0.2);
+
     Material *blue = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
                                                         glm::vec4(0.0, 0.0, 0.8, 1), 1.0, 0.0, 0.2);
 
@@ -89,35 +90,79 @@ void Scene::setup(Camera &camera) {
     );
 
 
-    auto light = Light(glm::vec3(10.0f));
+    Material *matRobot = materialManager->createPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(1, 0, 0, 1), 0.4, 0.4, 0.01);
+
+//     loadRobotArm(Transform(glm::vec3(0.2, -0.5, -0.6), glm::vec3(0), glm::vec3(0.1)), mushuMat);
+
+
+    Material *matGround = materialManager->createPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(0.92, 0.807, 0.46, 1), 0.4, 0.0, 0.01);
+
+    Material *matWalls = materialManager->createPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(0.16, 0.16, 0.16, 1), 0.3, 0.0, 0.01);
+
+    Material *matArches = materialManager->createPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(1, 1, 1, 1), 0.4, 0.01, 0.01);
+
+
+    // load the museum
+    loadScene(matGround, matWalls, matArches);
+
+
+    Material *matPedestal = materialManager->createPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(1, 1, 1, 1), 0.4, 0.01, 0.01);
+
+
+    loadPedestal(Transform(glm::vec3(0.0, -0.5, -0.6), glm::vec3(0), glm::vec3(1)), matPedestal, matArches,
+                 "resources/SuzanneSmall.obj");
+    loadPedestal(Transform(glm::vec3(0.3, -0.5, -0.6), glm::vec3(0), glm::vec3(1)), matPedestal, matArches,
+                 "resources/TeapotSmall.obj");
+    loadPedestal(Transform(glm::vec3(0.6, -0.5, -0.6), glm::vec3(0), glm::vec3(1)), matPedestal, matArches,
+                 "resources/ArmadilloSmall.obj");
+    loadPedestal(Transform(glm::vec3(0.9, -0.5, -0.6), glm::vec3(0), glm::vec3(1)), matPedestal, matArches,
+                 "resources/ApeSmall.obj");
+    loadPedestal(Transform(glm::vec3(1.2, -0.5, -0.6), glm::vec3(0), glm::vec3(1)), matPedestal, matArches,
+                 "resources/House.obj");
+
 
     //Define some lights
+    auto light = Light(glm::vec3(10.0f));
     Entity light1 = this->createEntity("Light1");
     light1.addComponent<TransformComponent>(glm::vec3(0, 2, -0.787), glm::vec3(274.00, 0, 0), glm::vec3(1));
     light1.addComponent<LightComponent>(light);
+
+    Entity light2 = this->createEntity("Light2");
+    light2.addComponent<TransformComponent>(glm::vec3(0.4, 0.8, -1), glm::vec3(0, 240, 0), glm::vec3(1));
+    light2.addComponent<LightComponent>(light);
 
 //    Entity mushu = this->createEntity("Mushu");
 //    mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
 //    mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20, 0), glm::vec3(1));
 //    mushu.addComponent<MaterialComponent>(oscillating);
 
-    Entity ground = this->createEntity("Ground");
-    ground.addComponent<MeshRendererComponent>("resources/cube.obj");
-    ground.addComponent<TransformComponent>(glm::vec3(1.573, -1.270, 0), glm::vec3(0), glm::vec3(5.900, 0.995, 4.840));
-    ground.addComponent<MaterialComponent>(groundColor);
-
-
-    Entity quad = this->createEntity("HeightedQuad");
-    quad.addComponent<MeshRendererComponent>("resources/subdividedPlane.obj");
-    quad.addComponent<TransformComponent>(glm::vec3(1.450, 0.5, -0.530), glm::vec3(0, 0, 90), glm::vec3(0.2, 1, 0.2));
-    quad.addComponent<MaterialComponent>(heightedBrickMaterial);
-
-
-    Entity flatQuad = this->createEntity("FlatQuad");
-    flatQuad.addComponent<MeshRendererComponent>("resources/subdividedPlane.obj");
-    flatQuad.addComponent<TransformComponent>(glm::vec3(1.450, 0.5, -0.08), glm::vec3(0, 0, 90), glm::vec3(0.2, 1, 0.2));
-    flatQuad.addComponent<MaterialComponent>(flatBrickMaterial);
-
+//    Entity ground = this->createEntity("Ground");
+//    ground.addComponent<MeshRendererComponent>("resources/cube.obj");
+//    ground.addComponent<TransformComponent>(glm::vec3(1.573, -1.270, 0), glm::vec3(0), glm::vec3(5.900, 0.995, 4.840));
+//    ground.addComponent<MaterialComponent>(groundColor);
+//
+//    Entity quad2 = this->createEntity("Quad2");
+//    quad2.addComponent<MeshRendererComponent>("resources/quad.obj");
+//    quad2.addComponent<TransformComponent>(glm::vec3(1.340, -0.05, -0.120), glm::vec3(0, 0, 90),
+//                                           glm::vec3(0.2, 1, 0.2));
+//    quad2.addComponent<MaterialComponent>(green);
+//
+//    Entity quad = this->createEntity("RedQuad");
+//    quad.addComponent<MeshRendererComponent>("resources/quad.obj");
+//    quad.addComponent<TransformComponent>(glm::vec3(1.450, 0., -0.350), glm::vec3(0, 0, 90), glm::vec3(0.2, 1, 0.2));
+//    quad.addComponent<MaterialComponent>(red);
+//
+//    Entity quad3 = this->createEntity("Quad3");
+//    quad3.addComponent<MeshRendererComponent>("resources/quad.obj");
+//    quad3.addComponent<TransformComponent>(glm::vec3(1.160, 0.200, -0.270), glm::vec3(0, 0, 90),
+//                                           glm::vec3(0.2, 1, 0.2));
+//    quad3.addComponent<MaterialComponent>(blue);
+//
 
     Entity cameraEntity = this->createEntity("Camera");
     cameraEntity.addComponent<TransformComponent>(glm::vec3(0, 0, -0.54), glm::vec3(0, 240, 0), glm::vec3(1));
@@ -215,7 +260,7 @@ Entity Scene::loadRobotArm(Transform baseTransform, Material *mat) {
                                           &wrist.getComponent<TransformComponent>().transform);
     hand.addComponent<MeshRendererComponent>("resources/robotarm/Hand.obj");
     hand.addComponent<MaterialComponent>(mat);
-//    hand.addComponent<RotationAnimation>(baseAnim, backForthY);
+    // hand.addComponent<RotationAnimation>(baseAnim, backForthY);
 
     Entity c1 = this->createEntity("Claw1");
     c1.addComponent<TransformComponent>(glm::vec3(0, 0.8, 0.3), glm::vec3(0), glm::vec3(1),
@@ -246,4 +291,31 @@ Entity Scene::loadPedestal(Transform baseTransform, Material *pedestalMat, Mater
     suzanne.addComponent<MaterialComponent>(meshMat);
 
     return suzanne;
+}
+
+void Scene::loadScene(Material* matGround, Material* matWalls, Material* matArches) {
+    Entity mainHall = this->createEntity("MainHall");
+    mainHall.addComponent<MeshRendererComponent>("resources/env/MainHall.obj");
+    mainHall.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(1));
+    mainHall.addComponent<MaterialComponent>(matWalls);
+
+    Entity arch = this->createEntity("Arch");
+    arch.addComponent<MeshRendererComponent>("resources/env/Arch.obj");
+    arch.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(1));
+    arch.addComponent<MaterialComponent>(matArches);
+
+    Entity hallway = this->createEntity("Hallway");
+    hallway.addComponent<MeshRendererComponent>("resources/env/Hallway.obj");
+    hallway.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(1));
+    hallway.addComponent<MaterialComponent>(matArches);
+
+    Entity room = this->createEntity("Room");
+    room.addComponent<MeshRendererComponent>("resources/env/Room.obj");
+    room.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(1));
+    room.addComponent<MaterialComponent>(matWalls);
+
+    Entity ground = this->createEntity("Ground");
+    ground.addComponent<MeshRendererComponent>("resources/env/Ground.obj");
+    ground.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(1));
+    ground.addComponent<MaterialComponent>(matGround);
 }

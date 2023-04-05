@@ -45,5 +45,7 @@ private:
     Entity loadRobotArm(Transform baseTransform, Material *mat);
 
     Entity loadPedestal(Transform baseTransform, Material* pedestalMat, Material* meshMat, std::string mesh);
+
+    void loadScene(Material* matGround, Material* matWalls, Material* matArches);
 };
 
