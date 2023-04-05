@@ -80,6 +80,16 @@ struct RotationAnimation {
     Anim anim;
 };
 
+struct SkinnedMeshAnimationComponent {
+    std::vector<std::filesystem::path> paths;
+    int currentFrame = 0;
+    int totalFrames;
+
+    SkinnedMeshAnimationComponent(std::vector<std::filesystem::path> paths) : paths(paths) {
+        totalFrames = paths.size();
+    };
+};
+
 struct TransformAnimation {
 
     TransformAnimation() = default;

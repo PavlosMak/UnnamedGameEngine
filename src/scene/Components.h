@@ -10,6 +10,7 @@
 #include "../camera.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "../Transform.h"
+#include "../AnimatedMesh.h"
 
 struct TagComponent {
     std::string name;

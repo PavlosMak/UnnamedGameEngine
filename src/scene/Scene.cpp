@@ -73,10 +73,17 @@ void Scene::setup(Camera &camera) {
     light1.addComponent<TransformComponent>(glm::vec3(0, 2, -0.787), glm::vec3(274.00, 0, 0), glm::vec3(1));
     light1.addComponent<LightComponent>(light);
 
-//    Entity mushu = this->createEntity("Mushu");
-//    mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
-//    mushu.addComponent<TransformComponent>(glm::vec3(2.103, -0.030, -0.350), glm::vec3(0, -20, 0), glm::vec3(1));
-//    mushu.addComponent<MaterialComponent>(oscillating);
+    //Load the armadillo meshes
+    std::vector<std::filesystem::path> paths;
+    for(int i = 1; i <= 20; i++) {
+        paths.emplace_back("resources/armadillo/armadillo" + std::to_string(i) + ".obj");
+    }
+
+    Entity armadillo = this->createEntity("Armadillo");
+    armadillo.addComponent<MeshRendererComponent>("resources/armadillo/armadillo1.obj");
+    armadillo.addComponent<TransformComponent>(glm::vec3(1.290,0,-0.9), glm::vec3(0,-94,0), glm::vec3(0.2,0.2,0.2));
+    armadillo.addComponent<MaterialComponent>(blue);
+    armadillo.addComponent<SkinnedMeshAnimationComponent>(paths);
 
     Entity player = this->createEntity("Player");
     player.addComponent<MeshRendererComponent>("resources/cube.obj");
