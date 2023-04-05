@@ -143,7 +143,8 @@ void Scene::setup(Camera &camera) {
 
     // Create transparent planes
     Entity quadR = this->createEntityParented("QuadR", mainHall,
-                                              Transform(glm::vec3(-3.360, 0.660, 0.5), glm::vec3(0, -171, 87), glm::vec3(0.3)));
+                                              Transform(glm::vec3(-3.360, 0.660, 0.5), glm::vec3(0, -171, 87),
+                                                        glm::vec3(0.3)));
     quadR.addComponent<MeshRendererComponent>("resources/quad.obj");
     quadR.addComponent<MaterialComponent>(red);
     quadR.addComponent<FindMe>();
@@ -267,10 +268,16 @@ void Scene::setup(Camera &camera) {
 
     Entity johny = this->createEntity("LordAndSavior");
     johny.addComponent<MeshRendererComponent>("resources/cube.obj");
-    johny.addComponent<TransformComponent>(glm::vec3(1.400, 0.120, -2.210), glm::vec3(0),
-                                           glm::vec3(0.005, 0.320, 0.190));
+    johny.addComponent<TransformComponent>(glm::vec3(2.520, 0.920, -4.060), glm::vec3(0, 180., -90),
+                                           glm::vec3(0.700, 0.320, 0.190));
     johny.addComponent<MaterialComponent>(johnMaterial);
+    johny.addComponent<FindMe>();
 
+
+    Entity secretRoom = this->createEntity("SecretRoom");
+    secretRoom.addComponent<MeshRendererComponent>("resources/cube.obj");
+    secretRoom.addComponent<TransformComponent>(glm::vec3(2.490, 0.710, -2.910), glm::vec3(0), glm::vec3(1));
+    secretRoom.addComponent<MaterialComponent>(matArches);
 
     Entity sdfQuad = this->createEntity("SDF");
     sdfQuad.addComponent<MeshRendererComponent>("resources/quad.obj");
@@ -326,6 +333,7 @@ void Scene::update(const long long &timeStep) {
 
     if (underSpotlight) {
         playerComponent.isToon = true;
+        std::cout << underSpotlight << std::endl;
     }
 
     //Determine distance to Carmack and update in the player
