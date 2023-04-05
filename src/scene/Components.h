@@ -14,7 +14,16 @@
 
 struct FindMe {
     FindMe() = default;
+
     int a = 1;
+};
+
+struct RoomComponent {
+    int roomId = 0;
+
+    RoomComponent() = default;
+
+    explicit RoomComponent(int roomId) : roomId(roomId) {};
 };
 
 struct TagComponent {

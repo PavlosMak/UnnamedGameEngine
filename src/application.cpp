@@ -75,6 +75,7 @@ public:
         m_debugSystem.register_component<FindMe>("Find Me!");
         m_debugSystem.register_component<PlayerComponent>("Player");
         m_debugSystem.register_component<PuzzleObjectComponent>("Puzzle");
+        m_debugSystem.register_component<SkinnedMeshAnimationComponent>("Skinned Animation");
 
     }
 
@@ -85,6 +86,9 @@ public:
         long long timeStep = 0l;
 
         m_renderSystem.init(m_shadowShader, m_registry);
+        m_renderSystem.mainRoomEntities = m_scene.mainRoomEntities;
+        m_renderSystem.animationRoomEntities = m_scene.animationRoomEntities;
+        m_renderSystem.spotLightRoom = m_scene.spotLightRoom;
 
         auto lastTick = glfwGetTime();
 

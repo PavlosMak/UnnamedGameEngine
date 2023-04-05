@@ -18,6 +18,10 @@ class WasdControllerSystem {
     bool oneDown = false;
     bool twoDown = false;
     bool threeDown = false;
+    bool rightArrow = false;
+    bool leftArrow = false;
+    bool upArrow = false;
+    bool downArrow = false;
 
     void changeKeyState(int key, bool newState) {
         switch (key) {
@@ -47,6 +51,18 @@ class WasdControllerSystem {
                 break;
             case GLFW_KEY_3:
                 this->threeDown = newState;
+                break;
+            case GLFW_KEY_RIGHT:
+                this->rightArrow = newState;
+                break;
+            case GLFW_KEY_LEFT:
+                this->leftArrow = newState;
+                break;
+            case GLFW_KEY_UP:
+                this->upArrow = newState;
+                break;
+            case GLFW_KEY_DOWN:
+                this->downArrow = newState;
                 break;
         }
     }
@@ -84,6 +100,31 @@ class WasdControllerSystem {
 
     }
 
+    glm::vec3 rotationVec(float movementSpeed, Transform &transform) const {
+
+        glm::vec3 unitX = glm::vec3(1.0, 0, 0);
+        glm::vec3 unitY = glm::vec3(0, 1, 0);
+        glm::vec3 unitZ = transform.forward();
+
+        auto rotationVec = glm::vec3(0, 0, 0);
+
+        if (rightArrow) {
+            rotationVec -= unitY;
+        }
+        if (leftArrow) {
+            rotationVec += unitY;
+        }
+
+        if (upArrow) {
+            rotationVec -= unitX;
+        }
+        if (downArrow) {
+            rotationVec += unitX;
+        }
+
+        return 100.f * rotationVec * movementSpeed;
+    }
+
 public:
 
     void onKeyPressed(int key) {
@@ -102,8 +143,9 @@ public:
             auto &wasdC = view.get<WasdComponent>(entity);
             auto &transformC = view.get<TransformComponent>(entity);
 
-            // update position
+            // update position and rotation
             transformC.transform.pos += translationVec(wasdC.movementSpeed, transformC.transform);
+            transformC.transform.rotation += rotationVec(wasdC.movementSpeed, transformC.transform);
         }
 
         auto puzzleView = registry.view<PuzzleObjectComponent, MaterialComponent, TransformComponent>();
@@ -112,7 +154,7 @@ public:
         auto &playerTransform = registry.get<TransformComponent>(player);
 
         //That the distance to register input
-        float range = 0.5;
+        float range = 0.3;
 
         auto baseAnim = Anim(true, 3);
         auto rotY = [](Transform trans, float t) {
@@ -125,10 +167,11 @@ public:
             auto &puzzle = puzzleView.get<PuzzleObjectComponent>(entity);
             auto &mat = puzzleView.get<MaterialComponent>(entity);
             auto &trans = puzzleView.get<TransformComponent>(entity);
+            auto &tag = registry.get<TagComponent>(entity);
 
             float distToPlayer = glm::distance(playerTransform.transform.pos, trans.transform.pos);
-//            std::cout << distToPlayer << std::endl;
-            bool inRange = distToPlayer <= range;
+            std::cout << tag.name << " " << distToPlayer << std::endl;
+            bool inRange = 1.4 <= distToPlayer && distToPlayer <= 1.7;
             if (puzzle.solved) {
                 continue;
             }

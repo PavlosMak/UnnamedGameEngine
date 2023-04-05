@@ -85,6 +85,8 @@ struct SkinnedMeshAnimationComponent {
     int currentFrame = 0;
     int totalFrames;
 
+    SkinnedMeshAnimationComponent() = default;
+
     SkinnedMeshAnimationComponent(std::vector<std::filesystem::path> paths) : paths(paths) {
         totalFrames = paths.size();
     };

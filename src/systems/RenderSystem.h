@@ -95,7 +95,7 @@ private:
     inline void renderInShadowMap(Shader &shadowShader,
                                   entt::registry &registry,
                                   GLuint &texShadow,
-                                  glm::mat4 &lightVp, auto view) {
+                                  glm::mat4 &lightVp, auto view, int roomId) {
         glNamedFramebufferTexture(m_shadowframebuffer, GL_DEPTH_ATTACHMENT, texShadow, 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_shadowframebuffer);
@@ -109,28 +109,55 @@ private:
 
         //We need to render all meshes from the perspective of the light
         //TODO: this can be optimized if each light knows the meshes it affects
-        for (auto entity: view) {
-            auto &meshTransform = view.template get<TransformComponent>(entity);
-            auto &meshRenderer = view.template get<MeshRendererComponent>(entity);
 
-            auto &tag = registry.get<TagComponent>(entity);
-            if(tag.name == "SDF") {
-                continue;
+        if (roomId == 2) {
+
+        } else if (roomId == 1) {
+            for (const auto &entity: animationRoomEntities) {
+                auto &meshTransform = registry.get<TransformComponent>(entity);
+                auto &meshRenderer = registry.get<MeshRendererComponent>(entity);
+                auto &tag = registry.get<TagComponent>(entity);
+                if (tag.name == "SDF") {
+                    continue;
+                }
+
+                auto worldTransform = meshTransform.transform.worldTransform();
+                const glm::mat4 mvpMatrix = lightVp * worldTransform;
+
+                const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
+
+                glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
+
+                meshRenderer.mesh.draw();
             }
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        } else {
+            for (auto entity: view) {
+                auto &meshTransform = view.template get<TransformComponent>(entity);
+                auto &meshRenderer = view.template get<MeshRendererComponent>(entity);
 
-            auto worldTransform = meshTransform.transform.worldTransform();
-            const glm::mat4 mvpMatrix = lightVp * worldTransform;
+                auto &tag = registry.get<TagComponent>(entity);
+                if (tag.name == "SDF") {
+                    continue;
+                }
 
-            const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
+                auto worldTransform = meshTransform.transform.worldTransform();
+                const glm::mat4 mvpMatrix = lightVp * worldTransform;
 
-            glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
+                const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
 
-            meshRenderer.mesh.draw();
+                glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
+
+                meshRenderer.mesh.draw();
+            }
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
 public:
+    std::vector<entt::entity> animationRoomEntities;
+    std::vector<entt::entity> mainRoomEntities;
+    std::vector<entt::entity> spotLightRoom;
 
     void init(Shader &shadowShader, entt::registry &registry) {
         //Get all lights
@@ -202,7 +229,7 @@ public:
             // access components with a mesh, localTransform and material
             auto view = registry.view<MeshRendererComponent, TransformComponent, MaterialComponent>();
 
-            renderInShadowMap(shadowShader, registry, texShadow, lightVp, view);
+            renderInShadowMap(shadowShader, registry, texShadow, lightVp, view, -1);
             shadowMaps.push_back(texShadow);
         }
     }
@@ -212,14 +239,15 @@ public:
         int lightIndex = 0;
         //We are going to be moving this camera around to mimic light directionality
         glm::mat4 lightVp;
-        for (auto lightEntity: lightView) {
+        for (const auto &lightEntity: lightView) {
             Transform &transform = registry.get<TransformComponent>(lightEntity).transform;
             lights[lightIndex] = lightView.get<LightComponent>(lightEntity).light;
             lightPos[lightIndex] = transform.pos;
             lightTransforms[lightIndex] = transform;
             m_lightCamera.getViewProjectionMatrix(lightVp, transform);
             lightVPs[lightIndex] = lightVp;
-            renderInShadowMap(shadowShader, registry, shadowMaps[lightIndex], lightVp, view);
+            int roomId = registry.get<RoomComponent>(lightEntity).roomId;
+            renderInShadowMap(shadowShader, registry, shadowMaps[lightIndex], lightVp, view, roomId);
             lightIndex++;
         }
     }
@@ -295,7 +323,8 @@ public:
             }
 
             if (material->getColor().w < 1.0) {
-                float key = -1.0f * glm::distance(camTransform.pos, glm::vec3(transform.transform.worldTransform()[3]));
+                float key =
+                        -1.0f * glm::distance(camTransform.pos, glm::vec3(transform.transform.worldTransform()[3]));
                 transparentEntities[key] = entity;
                 continue;
             }
@@ -318,10 +347,9 @@ public:
                 //maybe distance from john carmack???
                 glUniform1f(4, toonFactor);
                 m_timeCounter += 1;
-            }else if (material->TYPE == SHADER_TYPE::SDF) {
-                glUniform1f(4, 0.5 - ((glm::sin(glfwGetTime()) + 1.f) * 0.5f)*0.1);
-            }
-            else  {
+            } else if (material->TYPE == SHADER_TYPE::SDF) {
+                glUniform1f(4, 0.5 - ((glm::sin(glfwGetTime()) + 1.f) * 0.5f) * 0.1);
+            } else {
                 //Load shadow map textures and light MVP matrices
                 for (int i = 0; i < shadowMaps.size(); i++) {
                     int offset = texturesUsed + i;
