@@ -127,7 +127,7 @@ public:
             auto &trans = puzzleView.get<TransformComponent>(entity);
 
             float distToPlayer = glm::distance(playerTransform.transform.pos, trans.transform.pos);
-            std::cout << distToPlayer << std::endl;
+//            std::cout << distToPlayer << std::endl;
             bool inRange = distToPlayer <= range;
             if (puzzle.solved) {
                 continue;

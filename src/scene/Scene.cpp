@@ -73,26 +73,16 @@ void Scene::setup(Camera &camera) {
     player.addComponent<PlayerComponent>(blue, toon);
     player.addComponent<MaterialComponent>(blue);
 
-//    auto baseAnim = Anim(true, 3);
-//    auto rotZ = [](Transform trans, float t) {
-//        auto newTransform(trans);
-//        newTransform.rotation = glm::vec3(360 * t, 0, 0);
-//        return newTransform;
-//    };
-
     Entity puzzle = this->createEntity("Puzzle");
     puzzle.addComponent<MeshRendererComponent>("resources/cube.obj");
-    puzzle.addComponent<TransformComponent>(glm::vec3(-0.380,0.8,-0.5), glm::vec3(0), glm::vec3(0.05));
+    puzzle.addComponent<TransformComponent>(glm::vec3(-0.380, 0.8, -0.5), glm::vec3(0), glm::vec3(0.05));
     puzzle.addComponent<MaterialComponent>(red);
     puzzle.addComponent<PuzzleObjectComponent>(red, green, blue, 2);
-//    puzzle.addComponent<TransformAnimation>(baseAnim, rotZ);
-
 
     Entity ground = this->createEntity("Ground");
     ground.addComponent<MeshRendererComponent>("resources/cube.obj");
     ground.addComponent<TransformComponent>(glm::vec3(1.573, -1.270, 0), glm::vec3(0), glm::vec3(5.900, 0.995, 4.840));
     ground.addComponent<MaterialComponent>(groundColor);
-
 
     Entity cameraEntity = this->createEntity("Camera");
     cameraEntity.addComponent<TransformComponent>(glm::vec3(0, 0, -0.54), glm::vec3(0, 240, 0), glm::vec3(1));
@@ -103,13 +93,27 @@ void Scene::setup(Camera &camera) {
 }
 
 void Scene::update(const long long &timeStep) {
-    MaterialManager *materialManager = MaterialManager::getInstance();
-
+    //Get the player
     entt::entity player = m_tagToEntity["Player"];
     PlayerComponent &playerComponent = m_registry.get<PlayerComponent>(player);
     Transform &playerTransform = m_registry.get<TransformComponent>(player).transform;
     glm::vec3 &playerPos = playerTransform.pos;
-    if (playerPos.x < 0.0) {
+
+    //Determine if the player is under the spotlight by doing
+    //the shadowmapping calculation
+    bool underSpotlight = false;
+    entt::entity spotlight = m_tagToEntity["Spotlight"];
+    Transform &spotlightTrans = m_registry.get<TransformComponent>(spotlight).transform;
+
+    Camera spotCamera = Camera();
+    glm::mat4 spotVP;
+    spotCamera.getViewProjectionMatrix(spotVP, spotlightTrans);
+    glm::vec4 playerLightPosHom = spotVP * glm::vec4(playerPos, 1);
+    glm::vec3 playerLightPos = glm::vec3(playerLightPosHom) / playerLightPosHom.w;
+    auto shadowMapPos = glm::vec2(playerLightPos);
+    underSpotlight = glm::distance(shadowMapPos, glm::vec2(0.5,0.5)) < 1;
+
+    if (underSpotlight) {
         //change to toon
         playerComponent.isToon = true;
     } else {

@@ -73,6 +73,8 @@ struct PlayerComponent {
     bool isToon = false;
     float distanceToCarmack;
 
+    PlayerComponent() = default;
+
     PlayerComponent(Material *basicMaterial, Material *toonMaterial) : basicMaterial(std::move(basicMaterial)),
                                                                        toonMaterial(std::move(toonMaterial)) {};
 };
@@ -85,6 +87,8 @@ struct PuzzleObjectComponent {
     int key = 3;
     int solved = false;
     int currentActive = 0;
+
+    PuzzleObjectComponent() = default;
 
     PuzzleObjectComponent(Material *material0,
                           Material *material1,
