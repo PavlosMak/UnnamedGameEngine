@@ -297,7 +297,7 @@ void Scene::setup(Camera &camera) {
 //    spotlight.addComponent<RoomComponent>(2);
 
     Entity animationRoomLight = this->createEntity("Spotlight");
-    animationRoomLight.addComponent<TransformComponent>(glm::vec3(7.315, 2.58, -2.220), glm::vec3(32, 178, 0),
+    animationRoomLight.addComponent<TransformComponent>(glm::vec3(-7.485, 0.684, 0.018), glm::vec3(264, 180, 0),
                                                         glm::vec3(1));
     animationRoomLight.addComponent<LightComponent>(glm::vec3(1.0f));
     animationRoomLight.addComponent<RoomComponent>(animationRoomId);
