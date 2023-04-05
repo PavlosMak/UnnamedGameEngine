@@ -136,13 +136,66 @@ void Scene::setup(Camera &camera) {
     Entity quadR = this->createEntityParented("QuadR", mainHall, Transform(glm::vec3(0, 1, 0), glm::vec3(0, 0, 90), glm::vec3(0.3)));
     quadR.addComponent<MeshRendererComponent>("resources/quad.obj");
     quadR.addComponent<MaterialComponent>(red);
-    quadR.addComponent<FindMe>();
     Entity quadG = this->createEntityParented("QuadG", quadR, Transform(glm::vec3(0, 1, 1)));
     quadG.addComponent<MeshRendererComponent>("resources/quad.obj");
     quadG.addComponent<MaterialComponent>(green);
     Entity quadB = this->createEntityParented("QuadB", quadR, Transform(glm::vec3(-0.5, 0.5, 0.7)));
     quadB.addComponent<MeshRendererComponent>("resources/quad.obj");
     quadB.addComponent<MaterialComponent>(blue);
+
+    Material *matAdam = materialManager->createPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(1, 1, 1, 1), 0.3, 1.0, 0.01);
+
+    Material *matLens = materialManager->createPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(0.1, 0.1, 0.1, 1), 0.05, 0.0, 0.01);
+
+    Material *matEyes = materialManager->createPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(0.01, 0.01, 0.01, 1), 1, 0, 0.01);
+
+    Material *matRed = materialManager->createPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(1, 0, 0, 1), 0.0, 0.0, 0.01);
+
+    auto adam = createEntity("Adam");
+    adam.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0, 130, 0), glm::vec3(1));
+    adam.addComponent<MeshRendererComponent>("resources/adam/Body.obj");
+    adam.addComponent<MaterialComponent>(matAdam);
+
+    auto head = createEntityParented("AdamHead", adam, Transform(glm::vec3(0, 0.5, 0)));
+    head.addComponent<MeshRendererComponent>("resources/adam/Head.obj");
+    head.addComponent<MaterialComponent>(matAdam);
+
+    auto eye = createEntityParented("AdamEye", head, Transform());
+    eye.addComponent<MeshRendererComponent>("resources/adam/Eye.obj");
+    eye.addComponent<MaterialComponent>(matEyes);
+
+    auto lens = createEntityParented("AdamLens", head, Transform());
+    lens.addComponent<MeshRendererComponent>("resources/adam/Lens.obj");
+    lens.addComponent<MaterialComponent>(matLens);
+    lens.addComponent<FindMe>();
+
+    auto antena = createEntityParented("AdamAntena", head, Transform());
+    antena.addComponent<MeshRendererComponent>("resources/adam/Antena.obj");
+    antena.addComponent<MaterialComponent>(matEyes);
+
+    auto antenaCap = createEntityParented("AdamAntenaCap", head, Transform());
+    antenaCap.addComponent<MeshRendererComponent>("resources/adam/antenaCap.obj");
+    antenaCap.addComponent<MaterialComponent>(matRed);
+
+    auto smallEye = createEntityParented("AdamSmallEye", head, Transform());
+    smallEye.addComponent<MeshRendererComponent>("resources/adam/smallEye.obj");
+    smallEye.addComponent<MaterialComponent>(matEyes);
+
+    auto smallRed = createEntityParented("AdamSmallRed", head, Transform());
+    smallRed.addComponent<MeshRendererComponent>("resources/adam/smallRed.obj");
+    smallRed.addComponent<MaterialComponent>(matRed);
+
+    auto armL = createEntityParented("AdamArmL", adam, Transform(glm::vec3(0, 0, 0.4)));
+    armL.addComponent<MeshRendererComponent>("resources/adam/Arms.obj");
+    armL.addComponent<MaterialComponent>(matAdam);
+
+    auto armR = createEntityParented("AdamArmL", adam, Transform(glm::vec3(0, 0, -0.4)));
+    armR.addComponent<MeshRendererComponent>("resources/adam/Arms.obj");
+    armR.addComponent<MaterialComponent>(matAdam);
 
     //Define some lights
     auto light = Light(glm::vec3(10.0f));
@@ -288,13 +341,11 @@ Entity Scene::loadRobotArm(Entity &parent, Transform t, Material *mat) {
     return base;
 }
 
-Entity
-Scene::loadPedestal(Entity &parent, Transform transform, Material *pedestalMat, Material *meshMat, std::string mesh) {
+Entity Scene::loadPedestal(Entity &parent, Transform transform, Material *pedestalMat, Material *meshMat, std::string mesh) {
 
     Entity pedestal = this->createEntityParented("Pedestal" + mesh, parent, transform);
     pedestal.addComponent<MeshRendererComponent>("resources/Pedestal.obj");
     pedestal.addComponent<MaterialComponent>(pedestalMat);
-    pedestal.addComponent<FindMe>();
 
     Entity suzanne = this->createEntityParented("PedestalMesh", pedestal, Transform(glm::vec3(0, 0.45, 0)));
     suzanne.addComponent<MeshRendererComponent>(mesh);
@@ -310,24 +361,20 @@ Entity Scene::loadScene(Material *matGround, Material *matWalls, Material *matAr
     mainHall.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(1));
     mainHall.addComponent<MaterialComponent>(matWalls);
 
-    Entity arch = this->createEntity("Arch");
+    Entity arch = this->createEntityParented("Arch", mainHall, Transform());
     arch.addComponent<MeshRendererComponent>("resources/env/Arch.obj");
-    arch.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(1));
     arch.addComponent<MaterialComponent>(matArches);
 
-    Entity hallway = this->createEntity("Hallway");
+    Entity hallway = this->createEntityParented("Hallway", mainHall, Transform());
     hallway.addComponent<MeshRendererComponent>("resources/env/Hallway.obj");
-    hallway.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(1));
     hallway.addComponent<MaterialComponent>(matArches);
 
-    Entity room = this->createEntity("Room");
+    Entity room = this->createEntityParented("Room", mainHall, Transform());
     room.addComponent<MeshRendererComponent>("resources/env/Room.obj");
-    room.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(1));
     room.addComponent<MaterialComponent>(matWalls);
 
-    Entity ground = this->createEntity("Ground");
+    Entity ground = this->createEntityParented("Ground", mainHall, Transform());
     ground.addComponent<MeshRendererComponent>("resources/env/Ground.obj");
-    ground.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(1));
     ground.addComponent<MaterialComponent>(matGround);
 
     return mainHall;
