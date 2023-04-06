@@ -115,13 +115,6 @@ class WasdControllerSystem {
             rotationVec += unitY;
         }
 
-        if (upArrow) {
-            rotationVec -= unitX;
-        }
-        if (downArrow) {
-            rotationVec += unitX;
-        }
-
         return 100.f * rotationVec * movementSpeed;
     }
 
@@ -135,12 +128,51 @@ public:
         changeKeyState(key, false);
     }
 
-    void updateCam(entt::registry &registry) {
+    void updateCam(entt::registry &registry) const {
+
+        auto view = registry.view<CamControllerComp, TransformComponent>();
 
 
+        for (auto entity: view) {
+            auto &controller = view.get<CamControllerComp>(entity);
+            auto &transformC = view.get<TransformComponent>(entity);
+
+            if (upArrow) {
+                controller.viewIdx += 1;
+                controller.viewIdx %= 3;
+            }
+
+            if (controller.viewIdx == 1) {
+
+                // fps
+                auto newTransform = *controller.target;
+                newTransform.pos += newTransform.forward() * 0.45f;
+                transformC.transform = newTransform;
+
+            } else if (controller.viewIdx == 0) {
+
+                // back view
+                auto newTransform = *controller.target;
+                newTransform.pos += newTransform.forward() * - 1.f;
+                newTransform.pos.y += 0.3f;
+                transformC.transform = newTransform;
+
+            } else if (controller.viewIdx == 2) {
+
+                // front view
+                auto newTransform = *controller.target;
+                newTransform.rotation.y = 185;
+                newTransform.pos -= newTransform.forward() * 1.f;
+                newTransform.pos.y += 0.3f;
+
+                transformC.transform = newTransform;
+            }
+        }
     }
 
     void update(entt::registry &registry) const {
+
+        updateCam(registry);
 
         auto view = registry.view<WasdComponent, TransformComponent>();
 
@@ -175,8 +207,8 @@ public:
             auto &tag = registry.get<TagComponent>(entity);
 
             float distToPlayer = glm::distance(playerTransform.transform.pos, trans.transform.pos);
-            std::cout << tag.name << " " << distToPlayer << std::endl;
-            bool inRange = 1.4 <= distToPlayer && distToPlayer <= 1.7;
+//            bool inRange = 0.9<= distToPlayer && distToPlayer <= 1.2;
+            bool inRange = true;
             if (puzzle.solved) {
                 continue;
             }

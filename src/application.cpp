@@ -76,6 +76,7 @@ public:
         m_debugSystem.register_component<PlayerComponent>("Player");
         m_debugSystem.register_component<PuzzleObjectComponent>("Puzzle");
         m_debugSystem.register_component<SkinnedMeshAnimationComponent>("Skinned Animation");
+        m_debugSystem.register_component<CamControllerComp>("CamController");
 
     }
 

@@ -122,7 +122,11 @@ struct WasdComponent {
 };
 
 struct CamControllerComp {
+
+    CamControllerComp() = default;
+
     Transform* target;
+    int viewIdx = 0;
 
     explicit CamControllerComp(Transform* target) : target(target) {};
 };

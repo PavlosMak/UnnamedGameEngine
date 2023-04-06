@@ -56,7 +56,8 @@ void Scene::setup(Camera &camera) {
     Material *gold = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
                                                         glm::vec4(0.9, 0.82, 0.03, 1), 0.620, 0.793, 0.2);
     Material *blueMesh = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
-                                                            glm::vec4(1.000, 0.766, 0.336, 1), 0.2, 0.8, 0.2);
+                                                            glm::vec4(20.f / 255.f, 149.f / 255.f, 133.f / 255.f, 1),
+                                                            0.717, 0.1, 0.2);
 
 
     Material *oscillating = materialManager->createTexturedOscillatingPBRMaterial(
@@ -119,31 +120,34 @@ void Scene::setup(Camera &camera) {
     auto mainHall = loadScene(matGround, matWalls, matArches);
 
     // robotarm
-//    loadRobotArm(mainHall, Transform(glm::vec3(7.370, 0.160, -1.430), glm::vec3(0, 0, 0), glm::vec3(0.2, 0.2, 0.2)));
+    loadRobotArm(mainHall, Transform(glm::vec3(7.370, 0.160, -1.430), glm::vec3(0, 0, 0), glm::vec3(0.2, 0.2, 0.2)),
+                 matRobot);
 
 
-            // load the pedestals
+    // load the pedestals
     auto pedestalsController = createEntityParented("PedestalsController", mainHall,
-                                               Transform(glm::vec3(0, -1.7, 1.7), glm::vec3(0), glm::vec3(1)));
+                                                    Transform(glm::vec3(0, -1.7, 1.7), glm::vec3(0), glm::vec3(1)));
     pedestalsController.addComponent<MeshRendererComponent>("resources/cube.obj");
     pedestalsController.addComponent<MaterialComponent>(matPedestal);
 
-    loadPedestal(pedestalsController, Transform(glm::vec3(0, 2, 0)), matPedestal, matArches, matArches, gold, 2,
+    loadPedestal(pedestalsController, Transform(glm::vec3(0, 2, 0)), matPedestal, blueMesh, matArches, gold, 2,
                  "resources/TeapotSmall.obj");
-    loadPedestal(pedestalsController, Transform(glm::vec3(0.3, 2, 0)), matPedestal, matArches, matArches, oscillating,
+    loadPedestal(pedestalsController, Transform(glm::vec3(0.3, 2, 0)), matPedestal, matArches, blueMesh, oscillating,
                  2, "resources/DragonSmall.obj");
-    loadPedestal(pedestalsController, Transform(glm::vec3(0.6, 2, 0)), matPedestal, matArches, gold, matArches, 2,
+    loadPedestal(pedestalsController, Transform(glm::vec3(0.6, 2, 0)), matPedestal, matArches, gold, red, 2,
                  "resources/ApeSmall.obj");
-    loadPedestal(pedestalsController, Transform(glm::vec3(0.9, 2, 0)), matPedestal, gold, matArches, matArches, 2,
+    loadPedestal(pedestalsController, Transform(glm::vec3(0.9, 2, 0)), matPedestal, gold, matArches, blueMesh, 2,
                  "resources/House.obj");
-    loadPedestal(pedestalsController, Transform(glm::vec3(1.2, 2, 0)), matPedestal, gold, matArches, armadilloMat, 2,
+    loadPedestal(pedestalsController, Transform(glm::vec3(1.2, 2, 0)), matPedestal, gold, red, armadilloMat, 2,
                  "resources/SuzanneSmall.obj");
 
     // Create transparent planes
     Entity quadR = this->createEntityParented("QuadR", mainHall,
-                                              Transform(glm::vec3(0, 1, 0), glm::vec3(0, 0, 90), glm::vec3(0.3)));
+                                              Transform(glm::vec3(-3.360, 0.660, 0.5), glm::vec3(0, -171, 87),
+                                                        glm::vec3(0.3)));
     quadR.addComponent<MeshRendererComponent>("resources/quad.obj");
     quadR.addComponent<MaterialComponent>(red);
+    quadR.addComponent<FindMe>();
     Entity quadG = this->createEntityParented("QuadG", quadR, Transform(glm::vec3(0, 1, 1)));
     quadG.addComponent<MeshRendererComponent>("resources/quad.obj");
     quadG.addComponent<MaterialComponent>(green);
@@ -162,7 +166,7 @@ void Scene::setup(Camera &camera) {
             m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(1, 0, 0, 1), 0.0, 0.0, 0.01);
 
     auto adam = createEntity("Player");
-    adam.addComponent<TransformComponent>(glm::vec3(0, 0.5, 0), glm::vec3(0, 0, 0), glm::vec3(1));
+    adam.addComponent<TransformComponent>(glm::vec3(0, 0.5, 0), glm::vec3(0, 0, 0), glm::vec3(0.7));
     adam.addComponent<MeshRendererComponent>("resources/adam/Body.obj");
     adam.addComponent<MaterialComponent>(matAdam);
     adam.addComponent<PlayerComponent>(blue, toon);
@@ -197,13 +201,13 @@ void Scene::setup(Camera &camera) {
     smallRed.addComponent<MeshRendererComponent>("resources/adam/smallRed.obj");
     smallRed.addComponent<MaterialComponent>(matRed);
 
-//    auto armL = createEntityParented("AdamArmL", adam, Transform(glm::vec3(0, 0, 0.4)));
-//    armL.addComponent<MeshRendererComponent>("resources/adam/Arms.obj");
-//    armL.addComponent<MaterialComponent>(matAdam);
-//
-//    auto armR = createEntityParented("AdamArmR", adam, Transform(glm::vec3(0, 0, -0.4)));
-//    armR.addComponent<MeshRendererComponent>("resources/adam/Arms.obj");
-//    armR.addComponent<MaterialComponent>(matAdam);
+    auto armL = createEntityParented("AdamArmL", adam, Transform(glm::vec3(0.4, 0, 0)));
+    armL.addComponent<MeshRendererComponent>("resources/adam/Arms.obj");
+    armL.addComponent<MaterialComponent>(matAdam);
+
+    auto armR = createEntityParented("AdamArmR", adam, Transform(glm::vec3(-0.4, 0, 0)));
+    armR.addComponent<MeshRendererComponent>("resources/adam/Arms.obj");
+    armR.addComponent<MaterialComponent>(matAdam);
 
     auto bunnyController = createEntityParented("BunnyCtrl", mainHall,
                                                 Transform(glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(1)));
@@ -234,18 +238,7 @@ void Scene::setup(Camera &camera) {
 
     bunny.addComponent<BezierAnimation>(bezierAnim, curve);
 
-    Material *mountainMaterial = materialManager->createHeightMappedTexturedPBRMaterial(
-            m_shaderManager.getShader(SHADER_TYPE::HEIGHT_MAPPED),
-            "resources/ones_texture.png",
-            "resources/ones_texture.png",
-            "resources/zero_texture.png",
-            "resources/height.png",
-            "resources/zero_texture.png",
-            "resources/height.png"
-    );
 
-//
-//
 //    Material *mountainMaterial = materialManager->createHeightMappedTexturedPBRMaterial(
 //            m_shaderManager.getShader(SHADER_TYPE::HEIGHT_MAPPED),
 //            "resources/ones_texture.png",
@@ -279,10 +272,16 @@ void Scene::setup(Camera &camera) {
 
     Entity johny = this->createEntity("LordAndSavior");
     johny.addComponent<MeshRendererComponent>("resources/cube.obj");
-    johny.addComponent<TransformComponent>(glm::vec3(1.400, 0.120, -2.210), glm::vec3(0),
-                                           glm::vec3(0.005, 0.320, 0.190));
+    johny.addComponent<TransformComponent>(glm::vec3(2.520, 0.920, -4.060), glm::vec3(0, 180., -90),
+                                           glm::vec3(0.700, 0.320, 0.190));
     johny.addComponent<MaterialComponent>(johnMaterial);
+    johny.addComponent<FindMe>();
 
+
+    Entity secretRoom = this->createEntity("SecretRoom");
+    secretRoom.addComponent<MeshRendererComponent>("resources/cube.obj");
+    secretRoom.addComponent<TransformComponent>(glm::vec3(2.490, 0.710, -2.910), glm::vec3(0), glm::vec3(1));
+    secretRoom.addComponent<MaterialComponent>(matArches);
 
     Entity sdfQuad = this->createEntity("SDF");
     sdfQuad.addComponent<MeshRendererComponent>("resources/quad.obj");
@@ -291,18 +290,13 @@ void Scene::setup(Camera &camera) {
     sdfQuad.addComponent<MaterialComponent>(sdf);
 
     //Define some light
-    Entity light1 = this->createEntity("Spotlight");
-    light1.addComponent<TransformComponent>(glm::vec3(0.360, 1.650, 1.593), glm::vec3(274.00, 5, 0), glm::vec3(1));
+    Entity light1 = this->createEntity("MainLight");
+    light1.addComponent<TransformComponent>(glm::vec3(0.360, 2.270, 1.593), glm::vec3(293.00, 5, 0), glm::vec3(1));
     light1.addComponent<LightComponent>(glm::vec3(10.0f));
     light1.addComponent<RoomComponent>(-1);
 
-//    Entity spotlight = this->createEntity("Spotlight");
-//    spotlight.addComponent<TransformComponent>(glm::vec3(-0.360, 1.650, 1.593), glm::vec3(274.00, 5, 0), glm::vec3(1));
-//    spotlight.addComponent<LightComponent>(glm::vec3(10.0f));
-//    spotlight.addComponent<RoomComponent>(2);
-
-    Entity animationRoomLight = this->createEntity("AnimationRoomLight");
-    animationRoomLight.addComponent<TransformComponent>(glm::vec3(7.315, 2.58, -2.220), glm::vec3(32, 178, 0),
+    Entity animationRoomLight = this->createEntity("Spotlight");
+    animationRoomLight.addComponent<TransformComponent>(glm::vec3(-7.485, 0.684, 0.018), glm::vec3(264, 180, 0),
                                                         glm::vec3(1));
     animationRoomLight.addComponent<LightComponent>(glm::vec3(1.0f));
     animationRoomLight.addComponent<RoomComponent>(animationRoomId);
@@ -334,7 +328,11 @@ void Scene::update(const long long &timeStep) {
     glm::vec4 playerLightPosHom = spotVP * glm::vec4(playerPos, 1);
     glm::vec3 playerLightPos = glm::vec3(playerLightPosHom) / playerLightPosHom.w;
     auto shadowMapPos = glm::vec2(playerLightPos);
-    underSpotlight = glm::distance(shadowMapPos, glm::vec2(0.5, 0.5)) < 1;
+
+    auto dist = glm::distance(shadowMapPos, glm::vec2(0.5, 0.5));
+    underSpotlight = dist < 1;
+
+    std::cout << dist << " " << underSpotlight << std::endl;
 
     if (underSpotlight) {
         playerComponent.isToon = true;
