@@ -23,6 +23,10 @@ class WasdControllerSystem {
     bool upArrow = false;
     bool downArrow = false;
 
+    bool zeroDown = false;
+    bool nineDown = false;
+    bool eightDown = false;
+
     void changeKeyState(int key, bool newState) {
         switch (key) {
             case GLFW_KEY_A:
@@ -63,6 +67,15 @@ class WasdControllerSystem {
                 break;
             case GLFW_KEY_DOWN:
                 this->downArrow = newState;
+                break;
+            case GLFW_KEY_0:
+                this->zeroDown = newState;
+                break;
+            case GLFW_KEY_9:
+                this->nineDown = newState;
+                break;
+            case GLFW_KEY_8:
+                this->eightDown = newState;
                 break;
         }
     }
@@ -126,20 +139,23 @@ public:
 
     void onKeyReleased(int key) {
         changeKeyState(key, false);
+
     }
 
     void updateCam(entt::registry &registry) const {
 
         auto view = registry.view<CamControllerComp, TransformComponent>();
 
-
         for (auto entity: view) {
             auto &controller = view.get<CamControllerComp>(entity);
             auto &transformC = view.get<TransformComponent>(entity);
 
-            if (upArrow) {
-                controller.viewIdx += 1;
-                controller.viewIdx %= 3;
+            if (zeroDown) {
+                controller.viewIdx = 0;
+            } else if (nineDown) {
+                controller.viewIdx = 1;
+            } else if (eightDown) {
+                controller.viewIdx = 2;
             }
 
             if (controller.viewIdx == 1) {
