@@ -2,6 +2,10 @@
 
 Transform::Transform() : pos(glm::vec3(0)), rotation(glm::vec3(0)), scale(glm::vec3(1)), parent(nullptr) {}
 
+Transform::Transform(glm::vec3 pos) : pos(pos), rotation(glm::vec3(0)), scale(glm::vec3(1)), parent(nullptr) {}
+
+Transform::Transform(Transform* parent) : pos(glm::vec3(0)), rotation(glm::vec3(0)), scale(glm::vec3(1)), parent(parent) {}
+
 Transform::Transform(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale) : pos(pos), rotation(rotation), scale(scale), parent(
         nullptr) {}
 
@@ -29,7 +33,7 @@ glm::mat4 Transform::rotationMatrix() const {
 
 glm::mat4 Transform::worldTransform() const {
 
-    if (parent == nullptr) {
+    if (parent == nullptr || parent == this) {
         return this->transform();
     } else {
         return (*parent).worldTransform() * this->transform();

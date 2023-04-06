@@ -1,9 +1,9 @@
 #include "TextureManager.h"
 
-TextureManager* TextureManager::instance = nullptr;
+TextureManager *TextureManager::instance = nullptr;
 
 TextureManager *TextureManager::getInstance() {
-    if(instance == nullptr) {
+    if (instance == nullptr) {
         instance = new TextureManager();
     }
     return instance;
@@ -15,5 +15,5 @@ int TextureManager::createTexture(std::filesystem::path filePath, GLuint clampMo
 }
 
 void TextureManager::bind(int textId, GLint slot) {
-    texturePool[textId-1].bind(slot);
+    texturePool[textId - 1].bind(slot);
 }

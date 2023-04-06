@@ -3,7 +3,7 @@
 //Constants
 const float PI = 3.14159;
 const float epsilon = 0.000001;//small epsilon to avoid div by 0
-const int NUM_OF_LIGHTS = 1;
+const int NUM_OF_LIGHTS = 2;
 
 //Inputs
 layout(location = 3) uniform vec3 cameraPos;
@@ -99,7 +99,7 @@ float shadowContribution(vec3 fragPos, vec3 normal, sampler2D texShadow, vec3 li
         for (int y = -1; y <= 1; y++) {
             vec2 filteredCoord = shadowMapCoord + vec2(x, y)*texelSize;
             float shadowMapDepth = texture(texShadow, filteredCoord).x;
-            if ((shadowMapDepth < fragLightDepth) && fragLightDepth < 1.0) {
+            if ((shadowMapDepth < fragLightDepth) && fragLightDepth < 1.0 && fragLightCoord.x < 1.0 && fragLightCoord.y < 1.0 && fragLightCoord.z < 1.0) {
                 result += 0.111f;// (1 / 9)
             }
         }

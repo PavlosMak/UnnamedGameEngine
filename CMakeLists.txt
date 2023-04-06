@@ -33,7 +33,7 @@ add_executable(FinalProject
         src/lights/Light.cpp
         src/materials/ShaderManager.cpp
         src/materials/TextureManager.h
-        src/materials/TextureManager.cpp src/components/RobotArmComponents.h src/systems/RobotArmSystem.h src/components/AnimComponents.h src/systems/AnimationSystem.h)
+        src/materials/TextureManager.cpp src/components/RobotArmComponents.h src/systems/RobotArmSystem.h src/components/AnimComponents.h src/systems/AnimationSystem.h src/AnimatedMesh.h src/AnimatedMesh.cpp)
 
 target_compile_features(FinalProject PRIVATE cxx_std_20)
 target_link_libraries(FinalProject PRIVATE CGFramework)

@@ -8,18 +8,55 @@ class CubicBezier {
 public:
     glm::vec3 point1;
     glm::vec3 handle1;
-    glm::vec3 point2;
     glm::vec3 handle2;
+    glm::vec3 point2;
 
     CubicBezier() = default;
 
-    CubicBezier(glm::vec3 p0, glm::vec3 h0, glm::vec3(p1), glm::vec3(h1))
-            : point1(p0), handle1(h0), point2(p1), handle2(h1) {}
+    CubicBezier(glm::vec3 p1, glm::vec3 h1, glm::vec3 h2 , glm::vec3 p2)
+            : point1(p1), handle1(h1), point2(p2), handle2(h2) {}
 
     glm::vec3 eval(float t) const {
         float tm = 1 - t;
-        return tm * tm * tm * point1 + 3 * tm * tm * t * handle1 + 3 * tm * t * t * point2 + t * t * t * handle2;
+        return tm * tm * tm * point1 + 3 * tm * tm * t * handle1 + 3 * tm * t * t * handle2 + t * t * t * point2;
     }
+};
+
+class CompositeBezier {
+public:
+    std::vector<CubicBezier> curves;
+    int nCurves;
+    float step;
+
+    CompositeBezier() = default;
+
+    CompositeBezier(std::vector<glm::vec3> points) {
+        this->nCurves = (int) (points.size() - 1) / 3;
+        this->step = 1.0f / (float) this->nCurves;
+
+        for (int i=0; i<nCurves; i++) {
+            int offset = i * 3;
+            auto p1 = points[offset];
+            auto h1 = points[offset+1];
+            auto h2 = points[offset+2];
+            auto p2 = points[offset+3];
+
+            auto curve = CubicBezier(p1, h1, h2, p2);
+
+            this->curves.emplace_back(curve);
+
+        }
+    }
+
+    glm::vec3 eval(float t) {
+        int curveI = std::min((int) std::floor(t / this->step), nCurves - 1);
+        float curveLo = (float) curveI * this->step;
+        float curveHi = (float) (curveI+1) * this->step;
+        float tMapped = (t - curveLo) / (curveHi - curveLo);
+
+        return curves[curveI].eval(tMapped);
+    }
+
 };
 
 
@@ -62,11 +99,11 @@ struct BezierAnimation {
 
     BezierAnimation() = default;
 
-    BezierAnimation(Anim anim, CubicBezier curve) :
-            anim(anim), curve(curve) {}
+    BezierAnimation(Anim anim, CompositeBezier curve) :
+            anim(anim), curve(std::move(curve)) {}
 
     Anim anim;
-    CubicBezier curve;
+    CompositeBezier curve;
 };
 
 struct RotationAnimation {
@@ -78,6 +115,18 @@ struct RotationAnimation {
 
     std::function<glm::vec3(float)> rotationFun;
     Anim anim;
+};
+
+struct SkinnedMeshAnimationComponent {
+    std::vector<std::filesystem::path> paths;
+    int currentFrame = 0;
+    int totalFrames;
+
+    SkinnedMeshAnimationComponent() = default;
+
+    SkinnedMeshAnimationComponent(std::vector<std::filesystem::path> paths) : paths(paths) {
+        totalFrames = paths.size();
+    };
 };
 
 struct TransformAnimation {

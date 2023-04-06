@@ -25,5 +25,5 @@ void main()
 
     //offset by height map
     float offset = texture(heightMap, fragTexCoord).r;
-    fragPosition = fragPosition + fragNormal*offset;
+    fragPosition = vec3(fragPosition.x, fragPosition.y + 3*offset, fragPosition.z);
 }

@@ -95,7 +95,7 @@ private:
     inline void renderInShadowMap(Shader &shadowShader,
                                   entt::registry &registry,
                                   GLuint &texShadow,
-                                  glm::mat4 &lightVp, auto view) {
+                                  glm::mat4 &lightVp, auto view, int roomId) {
         glNamedFramebufferTexture(m_shadowframebuffer, GL_DEPTH_ATTACHMENT, texShadow, 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_shadowframebuffer);
@@ -106,25 +106,58 @@ private:
         glEnable(GL_DEPTH_TEST);
         glViewport(0, 0, SHADOWTEX_WIDTH, SHADOWTEX_HEIGHT);
 
+
         //We need to render all meshes from the perspective of the light
         //TODO: this can be optimized if each light knows the meshes it affects
-        for (auto entity: view) {
-            auto &meshTransform = view.template get<TransformComponent>(entity);
-            auto &meshRenderer = view.template get<MeshRendererComponent>(entity);
 
-            auto worldTransform = meshTransform.transform.worldTransform();
-            const glm::mat4 mvpMatrix = lightVp * worldTransform;
+        if (roomId == 2) {
 
-            const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
+        } else if (roomId == 1) {
+            for (const auto &entity: animationRoomEntities) {
+                auto &meshTransform = registry.get<TransformComponent>(entity);
+                auto &meshRenderer = registry.get<MeshRendererComponent>(entity);
+                auto &tag = registry.get<TagComponent>(entity);
+                if (tag.name == "SDF") {
+                    continue;
+                }
 
-            glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
+                auto worldTransform = meshTransform.transform.worldTransform();
+                const glm::mat4 mvpMatrix = lightVp * worldTransform;
 
-            meshRenderer.mesh.draw();
+                const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
+
+                glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
+
+                meshRenderer.mesh.draw();
+            }
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        } else {
+            for (auto entity: view) {
+                auto &meshTransform = view.template get<TransformComponent>(entity);
+                auto &meshRenderer = view.template get<MeshRendererComponent>(entity);
+
+                auto &tag = registry.get<TagComponent>(entity);
+                if (tag.name == "SDF") {
+                    continue;
+                }
+
+                auto worldTransform = meshTransform.transform.worldTransform();
+                const glm::mat4 mvpMatrix = lightVp * worldTransform;
+
+                const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
+
+                glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
+
+                meshRenderer.mesh.draw();
+            }
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
 public:
+    std::vector<entt::entity> animationRoomEntities;
+    std::vector<entt::entity> mainRoomEntities;
+    std::vector<entt::entity> spotLightRoom;
 
     void init(Shader &shadowShader, entt::registry &registry) {
         //Get all lights
@@ -196,7 +229,7 @@ public:
             // access components with a mesh, localTransform and material
             auto view = registry.view<MeshRendererComponent, TransformComponent, MaterialComponent>();
 
-            renderInShadowMap(shadowShader, registry, texShadow, lightVp, view);
+            renderInShadowMap(shadowShader, registry, texShadow, lightVp, view, -1);
             shadowMaps.push_back(texShadow);
         }
     }
@@ -206,18 +239,18 @@ public:
         int lightIndex = 0;
         //We are going to be moving this camera around to mimic light directionality
         glm::mat4 lightVp;
-        for (auto lightEntity: lightView) {
+        for (const auto &lightEntity: lightView) {
             Transform &transform = registry.get<TransformComponent>(lightEntity).transform;
             lights[lightIndex] = lightView.get<LightComponent>(lightEntity).light;
             lightPos[lightIndex] = transform.pos;
             lightTransforms[lightIndex] = transform;
             m_lightCamera.getViewProjectionMatrix(lightVp, transform);
             lightVPs[lightIndex] = lightVp;
-            renderInShadowMap(shadowShader, registry, shadowMaps[lightIndex], lightVp, view);
+            int roomId = registry.get<RoomComponent>(lightEntity).roomId;
+            renderInShadowMap(shadowShader, registry, shadowMaps[lightIndex], lightVp, view, roomId);
             lightIndex++;
         }
     }
-
 
     void renderMeshes(Shader &shadowShader, entt::registry &registry, Entity camera, glm::ivec2 windowSize,
                       float aspectRatio) {
@@ -258,6 +291,8 @@ public:
         glDepthMask(GL_TRUE);
         glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
         glDisable(GL_BLEND);
+
+
         for (const auto &entity: view) {
 
             auto &transform = view.get<TransformComponent>(entity);
@@ -273,10 +308,28 @@ public:
             // https://paroj.github.io/gltut/Illumination/Tut09%20Normal%20Transformation.html
             const glm::mat3 normalModelMatrix = glm::inverseTranspose(glm::mat3(worldTransform));
 
-            Material *material = materialComponent.material;
+            Material *material;
+            float toonFactor = 0.0;
+            //Handle player materials
+
+            if (tag == "Player") {
+
+                auto &playerComponent = registry.get<PlayerComponent>(entity);
+
+
+                if (playerComponent.isToon) {
+                    material = playerComponent.toonMaterial;
+                    toonFactor = 1 - playerComponent.distanceToCarmack / 2;
+                } else {
+                    material = playerComponent.basicMaterial;
+                }
+            } else {
+                material = materialComponent.material;
+            }
 
             if (material->getColor().w < 1.0) {
-                float key = -1.0f * glm::distance(camTransform.pos, glm::vec3(transform.transform.worldTransform()[3]));
+                float key =
+                        -1.0f * glm::distance(camTransform.pos, glm::vec3(transform.transform.worldTransform()[3]));
                 transparentEntities[key] = entity;
                 continue;
             }
@@ -297,8 +350,13 @@ public:
             if (material->TYPE == SHADER_TYPE::TOON) {
                 //TODO: Currently controlled by time but we change to something else
                 //maybe distance from john carmack???
-                glUniform1f(4, (2 * std::sin(glfwGetTime()) - 1));
+//                toonFactor = 1 - glm::distance(glm::vec3(2.5, 0.9, -4), glm::vec3(transform.transform.worldTransform()[3])) / 2;
+                toonFactor = (1 + glm::sin(glm::distance(glm::vec3(2.5, 0.9, -4), glm::vec3(transform.transform.worldTransform()[3]))))*0.5;
+
+                glUniform1f(4, toonFactor);
                 m_timeCounter += 1;
+            } else if (material->TYPE == SHADER_TYPE::SDF) {
+                glUniform1f(4, 0.5 - ((glm::sin(glfwGetTime()) + 1.f) * 0.5f) * 0.1);
             } else {
                 //Load shadow map textures and light MVP matrices
                 for (int i = 0; i < shadowMaps.size(); i++) {
@@ -321,6 +379,8 @@ public:
             meshRenderer.mesh.draw();
         }
 
+
+        // ===== Transparent pass ====
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         for (const auto &keyValue: transparentEntities) {

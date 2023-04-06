@@ -61,6 +61,14 @@ public:
             }
         }
 
+        auto skinnedAnimations = registry.view<MeshRendererComponent, SkinnedMeshAnimationComponent>();
 
+        for (const auto &entity: skinnedAnimations) {
+            auto &meshRenderer = skinnedAnimations.get<MeshRendererComponent>(entity);
+            auto &animatedMesh = skinnedAnimations.get<SkinnedMeshAnimationComponent>(entity);
+            int frameToLoad = animatedMesh.currentFrame;
+            meshRenderer.mesh = GPUMesh(animatedMesh.paths[frameToLoad]);
+            animatedMesh.currentFrame = (animatedMesh.currentFrame + 1) % animatedMesh.totalFrames;
+        }
     }
 };

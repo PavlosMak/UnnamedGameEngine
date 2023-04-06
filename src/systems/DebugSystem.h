@@ -8,6 +8,20 @@ namespace MM {
 
     // Define the "inspectors" of each component here
     template<>
+    void ComponentEditorWidget<CamControllerComp>(entt::registry &reg, entt::registry::entity_type e) {
+        auto &w = reg.get<CamControllerComp>(e);
+        ImGui::DragInt("FPS", &w.viewIdx, 1, 0, 2);
+//        ImGui::DragFloat3("offset ThirdPerson", &w.offsetTp[0], 0.01f);
+//        ImGui::DragFloat3("offset FirstPerson", &w.offsetFp[0], 0.01f);
+    }
+
+    // Define the "inspectors" of each component here
+    template<>
+    void ComponentEditorWidget<FindMe>(entt::registry &reg, entt::registry::entity_type e) {
+    }
+
+    // Define the "inspectors" of each component here
+    template<>
     void ComponentEditorWidget<BezierAnimation>(entt::registry &reg, entt::registry::entity_type e) {
         auto &w = reg.get<BezierAnimation>(e);
         w.anim.inspectorImGui();
@@ -35,7 +49,6 @@ namespace MM {
     template<>
     void ComponentEditorWidget<TransformComponent>(entt::registry &reg, entt::registry::entity_type e) {
         auto &t = reg.get<TransformComponent>(e);
-
 
         ImGui::DragFloat3("Position", &t.transform.pos[0], 0.01f);
         ImGui::DragFloat3("Rotation", &t.transform.rotation[0], 1.0f);
