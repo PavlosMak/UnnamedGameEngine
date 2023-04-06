@@ -87,6 +87,7 @@ void Scene::setup(Camera &camera) {
 
     Material *toon = materialManager->createXToonMaterial(m_shaderManager.getShader(SHADER_TYPE::TOON),
                                                           "resources/toon_map.png");
+
     Material *sdf = materialManager->createSDFMaterial(m_shaderManager.getShader(SHADER_TYPE::SDF),
                                                        "resources/sdf.png");
 
@@ -100,7 +101,6 @@ void Scene::setup(Camera &camera) {
             "resources/zero_texture.png"
     );
 
-
     Material *matRobot = materialManager->createPBRMaterial(
             m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(1, 0, 0, 1), 0.4, 0.4, 0.01);
 
@@ -113,8 +113,15 @@ void Scene::setup(Camera &camera) {
     Material *matArches = materialManager->createPBRMaterial(
             m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(1, 1, 1, 1), 0.4, 0.01, 0.01);
 
-    Material *matPedestal = materialManager->createPBRMaterial(
-            m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(1, 1, 1, 1), 0.4, 0.01, 0.01);
+    Material *matPedestal = materialManager->createTexturedPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::TEXTURED_PBR),
+            "resources/marble/normal.png",
+            "resources/marble/roughness.png",
+            "resources/zero_texture.png",
+            "resources/marble/albedo.png",
+            "resources/zero_texture.png",
+            "resources/zero_texture.png"
+    );
 
     // load museum
     auto mainHall = loadScene(matGround, matWalls, matArches);
@@ -122,7 +129,6 @@ void Scene::setup(Camera &camera) {
     // robotarm
     loadRobotArm(mainHall, Transform(glm::vec3(7.370, 0.160, -1.430), glm::vec3(0, 0, 0), glm::vec3(0.2, 0.2, 0.2)),
                  matRobot);
-
 
     // load the pedestals
     auto pedestalsController = createEntityParented("PedestalsController", mainHall,
@@ -141,13 +147,17 @@ void Scene::setup(Camera &camera) {
     loadPedestal(pedestalsController, Transform(glm::vec3(1.2, 2, 0)), matPedestal, gold, red, armadilloMat, 2,
                  "resources/SuzanneSmall.obj");
 
+    Entity mushu = createEntityParented("Mushu", mainHall, Transform(glm::vec3(-1.5, 0.5, 1.5), glm::vec3(0, -120, 0), glm::vec3(1.8)));
+    mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
+    mushu.addComponent<MaterialComponent>(oscillating);
+    mushu.addComponent<FindMe>();
+
     // Create transparent planes
     Entity quadR = this->createEntityParented("QuadR", mainHall,
                                               Transform(glm::vec3(-3.360, 0.660, 0.5), glm::vec3(0, -171, 87),
                                                         glm::vec3(0.3)));
     quadR.addComponent<MeshRendererComponent>("resources/quad.obj");
     quadR.addComponent<MaterialComponent>(red);
-    quadR.addComponent<FindMe>();
     Entity quadG = this->createEntityParented("QuadG", quadR, Transform(glm::vec3(0, 1, 1)));
     quadG.addComponent<MeshRendererComponent>("resources/quad.obj");
     quadG.addComponent<MaterialComponent>(green);
@@ -183,7 +193,6 @@ void Scene::setup(Camera &camera) {
     auto lens = createEntityParented("AdamLens", head, Transform());
     lens.addComponent<MeshRendererComponent>("resources/adam/Lens.obj");
     lens.addComponent<MaterialComponent>(matLens);
-    lens.addComponent<FindMe>();
 
     auto antena = createEntityParented("AdamAntena", head, Transform());
     antena.addComponent<MeshRendererComponent>("resources/adam/Antena.obj");
@@ -213,26 +222,32 @@ void Scene::setup(Camera &camera) {
                                                 Transform(glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(1)));
     bunnyController.addComponent<MeshRendererComponent>("resources/Controller.obj");
     bunnyController.addComponent<MaterialComponent>(blue);
-    bunnyController.addComponent<FindMe>();
 
     auto bunny = createEntityParented("Bunny", bunnyController,
                                       Transform(glm::vec3(1), glm::vec3(0, 90, 0), glm::vec3(1)));
 
     bunny.addComponent<MeshRendererComponent>("resources/Bunny.obj");
-    bunny.addComponent<MaterialComponent>(matPedestal);
+    bunny.addComponent<MaterialComponent>(matRobot);
 
     auto bezierAnim = Anim(true, 4);
 
     std::vector points = {
-            glm::vec3(0, 0, 0),
+            glm::vec3(0, 0.12, 0),
+
             glm::vec3(0.1, 1, 0),
             glm::vec3(0.9, 1, 0),
 
-            glm::vec3(1, 0, 0),
+            glm::vec3(1, 0.12, 0),
 
-            glm::vec3(1.1, 1, 0),
-            glm::vec3(1.9, 1, 0),
-            glm::vec3(2, 0, 0),
+            glm::vec3(1.1, 0.8, 0),
+            glm::vec3(1.9, 0.8, 0),
+
+            glm::vec3(2, 0.12, 0),
+
+            glm::vec3(2.1, 0.6, 0),
+            glm::vec3(2.9, 0.6, 0),
+
+            glm::vec3(3, 0.12, 0),
     };
 
     auto curve = CompositeBezier(points);
@@ -276,7 +291,6 @@ void Scene::setup(Camera &camera) {
     johny.addComponent<TransformComponent>(glm::vec3(2.520, 0.920, -4.060), glm::vec3(0, 180, 180),
                                            glm::vec3(0.6, 0.6, 0.6));
     johny.addComponent<MaterialComponent>(johnMaterial);
-    johny.addComponent<FindMe>();
 
     Entity secretRoom = this->createEntity("SecretRoom");
     secretRoom.addComponent<MeshRendererComponent>("resources/cube.obj");
@@ -450,6 +464,7 @@ Entity Scene::loadRobotArm(Entity &parent, Transform t, Material *mat) {
                                           &wrist.getComponent<TransformComponent>().transform);
     hand.addComponent<MeshRendererComponent>("resources/robotarm/Hand.obj");
     hand.addComponent<MaterialComponent>(mat);
+    hand.addComponent<TransformAnimation>(baseAnim, backForthY);
 
     animationRoomEntities.push_back(this->m_tagToEntity["Hand"]);
 
@@ -469,7 +484,6 @@ Entity Scene::loadRobotArm(Entity &parent, Transform t, Material *mat) {
     c2.addComponent<MaterialComponent>(mat);
     animationRoomEntities.push_back(this->m_tagToEntity["Claw2"]);
 
-
     return base;
 }
 
@@ -488,7 +502,6 @@ Entity Scene::loadPedestal(Entity &parent, Transform transform, Material *pedest
     suzanne.addComponent<MeshRendererComponent>(mesh);
     suzanne.addComponent<MaterialComponent>(meshMat);
     suzanne.addComponent<PuzzleObjectComponent>(meshMat, meshMat2, meshMat3, key);
-    suzanne.addComponent<FindMe>();
 
     return suzanne;
 }
