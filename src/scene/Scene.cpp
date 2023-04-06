@@ -217,6 +217,7 @@ void Scene::setup(Camera &camera) {
 
     auto bunny = createEntityParented("Bunny", bunnyController,
                                       Transform(glm::vec3(1), glm::vec3(0, 90, 0), glm::vec3(1)));
+
     bunny.addComponent<MeshRendererComponent>("resources/Bunny.obj");
     bunny.addComponent<MaterialComponent>(matPedestal);
 
@@ -271,12 +272,11 @@ void Scene::setup(Camera &camera) {
 //    puzzle.addComponent<PuzzleObjectComponent>(red, green, blue, 2);
 
     Entity johny = this->createEntity("LordAndSavior");
-    johny.addComponent<MeshRendererComponent>("resources/cube.obj");
-    johny.addComponent<TransformComponent>(glm::vec3(2.520, 0.920, -4.060), glm::vec3(0, 180., -90),
-                                           glm::vec3(0.700, 0.320, 0.190));
+    johny.addComponent<MeshRendererComponent>("resources/carmackCube.obj");
+    johny.addComponent<TransformComponent>(glm::vec3(2.520, 0.920, -4.060), glm::vec3(0, 180, 180),
+                                           glm::vec3(0.6, 0.6, 0.6));
     johny.addComponent<MaterialComponent>(johnMaterial);
     johny.addComponent<FindMe>();
-
 
     Entity secretRoom = this->createEntity("SecretRoom");
     secretRoom.addComponent<MeshRendererComponent>("resources/cube.obj");
