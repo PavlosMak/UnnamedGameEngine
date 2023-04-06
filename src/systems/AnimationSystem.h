@@ -70,7 +70,5 @@ public:
             meshRenderer.mesh = GPUMesh(animatedMesh.paths[frameToLoad]);
             animatedMesh.currentFrame = (animatedMesh.currentFrame + 1) % animatedMesh.totalFrames;
         }
-
-
     }
 };

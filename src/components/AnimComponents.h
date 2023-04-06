@@ -1,7 +1,6 @@
 #pragma once
 
 #include <utility>
-#include "iostream"
 
 #include "glm/vec3.hpp"
 
@@ -35,11 +34,6 @@ public:
         this->nCurves = (int) (points.size() - 1) / 3;
         this->step = 1.0f / (float) this->nCurves;
 
-        for (auto p : points) {
-            std::cout << p.x << " " << p.y << " " << p.z << std::endl;
-        }
-        std::cout << std::endl;
-
         for (int i=0; i<nCurves; i++) {
             int offset = i * 3;
             auto p1 = points[offset];
@@ -48,12 +42,6 @@ public:
             auto p2 = points[offset+3];
 
             auto curve = CubicBezier(p1, h1, h2, p2);
-
-            std::cout << p1.x << " " << p1.y << " " << p1.z << std::endl;
-            std::cout << h1.x << " " << h1.y << " " << h1.z << std::endl;
-            std::cout << h2.x << " " << h2.y << " " << h2.z << std::endl;
-            std::cout << p2.x << " " << p2.y << " " << p2.z << std::endl;
-            std::cout << std::endl;
 
             this->curves.emplace_back(curve);
 

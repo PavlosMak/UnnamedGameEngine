@@ -161,45 +161,47 @@ void Scene::setup(Camera &camera) {
     Material *matRed = materialManager->createPBRMaterial(
             m_shaderManager.getShader(SHADER_TYPE::PBR), glm::vec4(1, 0, 0, 1), 0.0, 0.0, 0.01);
 
-//    auto adam = createEntity("Adam");
-//    adam.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0, 130, 0), glm::vec3(1));
-//    adam.addComponent<MeshRendererComponent>("resources/adam/Body.obj");
-//    adam.addComponent<MaterialComponent>(matAdam);
-//
-//    auto head = createEntityParented("AdamHead", adam, Transform(glm::vec3(0, 0.5, 0)));
-//    head.addComponent<MeshRendererComponent>("resources/adam/Head.obj");
-//    head.addComponent<MaterialComponent>(matAdam);
-//
-//    auto eye = createEntityParented("AdamEye", head, Transform());
-//    eye.addComponent<MeshRendererComponent>("resources/adam/Eye.obj");
-//    eye.addComponent<MaterialComponent>(matEyes);
-//
-//    auto lens = createEntityParented("AdamLens", head, Transform());
-//    lens.addComponent<MeshRendererComponent>("resources/adam/Lens.obj");
-//    lens.addComponent<MaterialComponent>(matLens);
-//    lens.addComponent<FindMe>();
-//
-//    auto antena = createEntityParented("AdamAntena", head, Transform());
-//    antena.addComponent<MeshRendererComponent>("resources/adam/Antena.obj");
-//    antena.addComponent<MaterialComponent>(matEyes);
-//
-//    auto antenaCap = createEntityParented("AdamAntenaCap", head, Transform());
-//    antenaCap.addComponent<MeshRendererComponent>("resources/adam/antenaCap.obj");
-//    antenaCap.addComponent<MaterialComponent>(matRed);
-//
-//    auto smallEye = createEntityParented("AdamSmallEye", head, Transform());
-//    smallEye.addComponent<MeshRendererComponent>("resources/adam/smallEye.obj");
-//    smallEye.addComponent<MaterialComponent>(matEyes);
-//
-//    auto smallRed = createEntityParented("AdamSmallRed", head, Transform());
-//    smallRed.addComponent<MeshRendererComponent>("resources/adam/smallRed.obj");
-//    smallRed.addComponent<MaterialComponent>(matRed);
-//
+    auto adam = createEntity("Player");
+    adam.addComponent<TransformComponent>(glm::vec3(0, 0.5, 0), glm::vec3(0, 0, 0), glm::vec3(1));
+    adam.addComponent<MeshRendererComponent>("resources/adam/Body.obj");
+    adam.addComponent<MaterialComponent>(matAdam);
+    adam.addComponent<PlayerComponent>(blue, toon);
+    adam.addComponent<WasdComponent>(0.02f);
+
+    auto head = createEntityParented("AdamHead", adam, Transform(glm::vec3(0, 0.5, 0)));
+    head.addComponent<MeshRendererComponent>("resources/adam/Head.obj");
+    head.addComponent<MaterialComponent>(matAdam);
+
+    auto eye = createEntityParented("AdamEye", head, Transform());
+    eye.addComponent<MeshRendererComponent>("resources/adam/Eye.obj");
+    eye.addComponent<MaterialComponent>(matEyes);
+
+    auto lens = createEntityParented("AdamLens", head, Transform());
+    lens.addComponent<MeshRendererComponent>("resources/adam/Lens.obj");
+    lens.addComponent<MaterialComponent>(matLens);
+    lens.addComponent<FindMe>();
+
+    auto antena = createEntityParented("AdamAntena", head, Transform());
+    antena.addComponent<MeshRendererComponent>("resources/adam/Antena.obj");
+    antena.addComponent<MaterialComponent>(matEyes);
+
+    auto antenaCap = createEntityParented("AdamAntenaCap", head, Transform());
+    antenaCap.addComponent<MeshRendererComponent>("resources/adam/antenaCap.obj");
+    antenaCap.addComponent<MaterialComponent>(matRed);
+
+    auto smallEye = createEntityParented("AdamSmallEye", head, Transform());
+    smallEye.addComponent<MeshRendererComponent>("resources/adam/smallEye.obj");
+    smallEye.addComponent<MaterialComponent>(matEyes);
+
+    auto smallRed = createEntityParented("AdamSmallRed", head, Transform());
+    smallRed.addComponent<MeshRendererComponent>("resources/adam/smallRed.obj");
+    smallRed.addComponent<MaterialComponent>(matRed);
+
 //    auto armL = createEntityParented("AdamArmL", adam, Transform(glm::vec3(0, 0, 0.4)));
 //    armL.addComponent<MeshRendererComponent>("resources/adam/Arms.obj");
 //    armL.addComponent<MaterialComponent>(matAdam);
 //
-//    auto armR = createEntityParented("AdamArmL", adam, Transform(glm::vec3(0, 0, -0.4)));
+//    auto armR = createEntityParented("AdamArmR", adam, Transform(glm::vec3(0, 0, -0.4)));
 //    armR.addComponent<MeshRendererComponent>("resources/adam/Arms.obj");
 //    armR.addComponent<MaterialComponent>(matAdam);
 
@@ -253,8 +255,6 @@ void Scene::setup(Camera &camera) {
 //            "resources/ones_texture.png",
 //            "resources/dragon-scales/height.png"
 //    );
-//
-//
 
     //Load the armadillo meshes
     std::vector<std::filesystem::path> paths;
@@ -270,13 +270,6 @@ void Scene::setup(Camera &camera) {
     armadillo.addComponent<SkinnedMeshAnimationComponent>(paths);
 
     animationRoomEntities.push_back(this->m_tagToEntity["Armadillo"]);
-
-
-    Entity player = this->createEntity("Player");
-    player.addComponent<MeshRendererComponent>("resources/cube.obj");
-    player.addComponent<TransformComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(0.2));
-    player.addComponent<PlayerComponent>(blue, toon);
-    player.addComponent<MaterialComponent>(blue);
 
 //    Entity puzzle = this->createEntity("Puzzle");
 //    puzzle.addComponent<MeshRendererComponent>("resources/cube.obj");
@@ -317,7 +310,7 @@ void Scene::setup(Camera &camera) {
     Entity cameraEntity = this->createEntity("Camera");
     cameraEntity.addComponent<TransformComponent>(glm::vec3(0, 0.5, 0), glm::vec3(0, 0, 0), glm::vec3(1));
     cameraEntity.addComponent<CameraComponent>(&camera);
-    cameraEntity.addComponent<WasdComponent>(0.02f);
+    cameraEntity.addComponent<CamControllerComp>(&adam.getComponent<TransformComponent>().transform);
 
     updateStatistics();
 }

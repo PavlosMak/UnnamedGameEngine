@@ -32,7 +32,6 @@ public:
 
     SceneStats getSceneStats();
 
-
     std::vector<entt::entity> animationRoomEntities;
     std::vector<entt::entity> mainRoomEntities;
     std::vector<entt::entity> spotLightRoom;
@@ -50,6 +49,8 @@ private:
     friend class Entity;
 
     Entity loadRobotArm(Entity &parent, Transform t, Material *mat);
+
+    Entity decoratePlayer(Entity& adam, Material *matAdam, Material* matEyes, Material* matLens, Material* matRed);
 
     Entity loadPedestal(Entity &parent, Transform t, Material *pedestalMat, Material *meshMat,
                         Material *meshMat2,

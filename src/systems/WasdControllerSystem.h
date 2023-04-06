@@ -135,6 +135,11 @@ public:
         changeKeyState(key, false);
     }
 
+    void updateCam(entt::registry &registry) {
+
+
+    }
+
     void update(entt::registry &registry) const {
 
         auto view = registry.view<WasdComponent, TransformComponent>();

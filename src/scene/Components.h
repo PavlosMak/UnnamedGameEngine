@@ -121,6 +121,12 @@ struct WasdComponent {
     explicit WasdComponent(float movementSpeed) : movementSpeed(movementSpeed) {};
 };
 
+struct CamControllerComp {
+    Transform* target;
+
+    explicit CamControllerComp(Transform* target) : target(target) {};
+};
+
 
 struct LightComponent {
     Light light;
