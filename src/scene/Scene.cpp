@@ -169,8 +169,8 @@ void Scene::setup(Camera &camera) {
     adam.addComponent<TransformComponent>(glm::vec3(0, 0.5, 0), glm::vec3(0, 0, 0), glm::vec3(0.7));
     adam.addComponent<MeshRendererComponent>("resources/adam/Body.obj");
     adam.addComponent<MaterialComponent>(matAdam);
-    adam.addComponent<PlayerComponent>(blue, toon);
     adam.addComponent<WasdComponent>(0.02f);
+    adam.addComponent<PlayerComponent>(matAdam, toon);
 
     auto head = createEntityParented("AdamHead", adam, Transform(glm::vec3(0, 0.5, 0)));
     head.addComponent<MeshRendererComponent>("resources/adam/Head.obj");
@@ -201,11 +201,11 @@ void Scene::setup(Camera &camera) {
     smallRed.addComponent<MeshRendererComponent>("resources/adam/smallRed.obj");
     smallRed.addComponent<MaterialComponent>(matRed);
 
-    auto armL = createEntityParented("AdamArmL", adam, Transform(glm::vec3(0.4, 0, 0)));
+    auto armL = createEntityParented("AdamArmL", adam, Transform(glm::vec3(0.4, 0.25, 0)));
     armL.addComponent<MeshRendererComponent>("resources/adam/Arms.obj");
     armL.addComponent<MaterialComponent>(matAdam);
 
-    auto armR = createEntityParented("AdamArmR", adam, Transform(glm::vec3(-0.4, 0, 0)));
+    auto armR = createEntityParented("AdamArmR", adam, Transform(glm::vec3(-0.4, 0.25, 0)));
     armR.addComponent<MeshRendererComponent>("resources/adam/Arms.obj");
     armR.addComponent<MaterialComponent>(matAdam);
 
@@ -310,11 +310,12 @@ void Scene::setup(Camera &camera) {
 }
 
 void Scene::update(const long long &timeStep) {
+
     //Get the player
     entt::entity player = m_tagToEntity["Player"];
     PlayerComponent &playerComponent = m_registry.get<PlayerComponent>(player);
-    Transform &playerTransform = m_registry.get<TransformComponent>(player).transform;
-    glm::vec3 &playerPos = playerTransform.pos;
+//    Transform &playerTransform = m_registry.get<TransformComponent>(player).transform;
+    glm::vec3 playerPos = glm::vec3(m_registry.get<TransformComponent>(player).transform.worldTransform()[3]);
 
     //Determine if the player is under the spotlight by doing
     //the shadowmapping calculation
@@ -330,12 +331,14 @@ void Scene::update(const long long &timeStep) {
     auto shadowMapPos = glm::vec2(playerLightPos);
 
     auto dist = glm::distance(shadowMapPos, glm::vec2(0.5, 0.5));
-    underSpotlight = dist < 1;
+    underSpotlight = dist < 3.5;
 
     std::cout << dist << " " << underSpotlight << std::endl;
 
     if (underSpotlight) {
         playerComponent.isToon = true;
+        m_registry.get<MaterialComponent>(m_tagToEntity["AdamArmL"]).material = playerComponent.toonMaterial;
+        m_registry.get<TransformComponent>(m_tagToEntity["AdamArmL"]).transform.rotation.x = 90;
     }
 
     //Determine distance to Carmack and update in the player
@@ -343,8 +346,10 @@ void Scene::update(const long long &timeStep) {
     glm::vec3 carmackPos = m_registry.get<TransformComponent>(carmack).transform.pos;
     float distanceToCarmack = glm::distance(carmackPos, playerPos);
     playerComponent.distanceToCarmack = distanceToCarmack;
-    if (distanceToCarmack < 0.2) {
+    if (distanceToCarmack < 1) {
         playerComponent.isToon = false;
+        m_registry.get<MaterialComponent>(m_tagToEntity["AdamArmL"]).material = playerComponent.basicMaterial;
+        m_registry.get<TransformComponent>(m_tagToEntity["AdamArmL"]).transform.rotation.x = 00;
     }
 }
 

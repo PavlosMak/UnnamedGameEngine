@@ -291,6 +291,8 @@ public:
         glDepthMask(GL_TRUE);
         glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
         glDisable(GL_BLEND);
+
+
         for (const auto &entity: view) {
 
             auto &transform = view.get<TransformComponent>(entity);
@@ -311,7 +313,10 @@ public:
             //Handle player materials
 
             if (tag == "Player") {
+
                 auto &playerComponent = registry.get<PlayerComponent>(entity);
+
+
                 if (playerComponent.isToon) {
                     material = playerComponent.toonMaterial;
                     toonFactor = 1 - playerComponent.distanceToCarmack / 2;
@@ -345,6 +350,9 @@ public:
             if (material->TYPE == SHADER_TYPE::TOON) {
                 //TODO: Currently controlled by time but we change to something else
                 //maybe distance from john carmack???
+//                toonFactor = 1 - glm::distance(glm::vec3(2.5, 0.9, -4), glm::vec3(transform.transform.worldTransform()[3])) / 2;
+                toonFactor = (1 + glm::sin(glm::distance(glm::vec3(2.5, 0.9, -4), glm::vec3(transform.transform.worldTransform()[3]))))*0.5;
+
                 glUniform1f(4, toonFactor);
                 m_timeCounter += 1;
             } else if (material->TYPE == SHADER_TYPE::SDF) {
