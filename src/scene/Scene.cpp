@@ -76,6 +76,15 @@ void Scene::setup(Camera &camera) {
             "resources/zero_texture.png"
     );
 
+    Material *dragon = materialManager->createTexturedPBRMaterial(
+            m_shaderManager.getShader(SHADER_TYPE::TEXTURED_PBR),
+            "resources/dragon-scales/normal.png",
+            "resources/dragon-scales/roughness.png",
+            "resources/dragon-scales/metallic.png",
+            "resources/dragon-scales/albedo.png",
+            "resources/dragon-scales/ao.png",
+            "resources/dragon-scales/height.png");
+
     Material *blue = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
                                                         glm::vec4(0.0, 0.0, 0.8, 0.2), 1.0, 0.0, 0.2);
 
@@ -306,11 +315,13 @@ void Scene::setup(Camera &camera) {
     light1.addComponent<LightComponent>(glm::vec3(10.0f));
     light1.addComponent<RoomComponent>(-1);
 
-    Light light = Light(glm::vec3(1), true);
+
+    Light spot = Light(glm::vec3(1.0f), true);
     Entity animationRoomLight = this->createEntity("Spotlight");
     animationRoomLight.addComponent<TransformComponent>(glm::vec3(-7.485, 0.684, 0.018), glm::vec3(264, 180, 0),
                                                         glm::vec3(1));
-    animationRoomLight.addComponent<LightComponent>(light);
+    animationRoomLight.addComponent<LightComponent>(spot);
+
     animationRoomLight.addComponent<RoomComponent>(animationRoomId);
 
     Entity cameraEntity = this->createEntity("Camera");
