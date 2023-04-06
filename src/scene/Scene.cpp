@@ -125,6 +125,7 @@ void Scene::setup(Camera &camera) {
 
     // load museum
     auto mainHall = loadScene(matGround, matWalls, matArches);
+    mainHall.addComponent<FindMe>();
 
     // robotarm
     loadRobotArm(mainHall, Transform(glm::vec3(7.370, 0.160, -1.430), glm::vec3(0, 0, 0), glm::vec3(0.2, 0.2, 0.2)),
@@ -150,7 +151,6 @@ void Scene::setup(Camera &camera) {
     Entity mushu = createEntityParented("Mushu", mainHall, Transform(glm::vec3(-1.5, 0.5, 1.5), glm::vec3(0, -120, 0), glm::vec3(1.8)));
     mushu.addComponent<MeshRendererComponent>("resources/dragon.obj");
     mushu.addComponent<MaterialComponent>(oscillating);
-    mushu.addComponent<FindMe>();
 
     // Create transparent planes
     Entity quadR = this->createEntityParented("QuadR", mainHall,
@@ -271,10 +271,9 @@ void Scene::setup(Camera &camera) {
         paths.emplace_back("resources/armadillo/armadillo" + std::to_string(i) + ".obj");
     }
 
-    Entity armadillo = this->createEntity("Armadillo");
+    Entity armadillo = this->createEntityParented("Armadillo", mainHall, Transform(glm::vec3(7.240, 1.550, 2.820), glm::vec3(-30, 180, 0),
+                                                                                   glm::vec3(0.2, 0.2, 0.2)));
     armadillo.addComponent<MeshRendererComponent>("resources/armadillo/armadillo1.obj");
-    armadillo.addComponent<TransformComponent>(glm::vec3(7.240, 1.550, 2.820), glm::vec3(-30, 180, 0),
-                                               glm::vec3(0.2, 0.2, 0.2));
     armadillo.addComponent<MaterialComponent>(armadilloMat);
     armadillo.addComponent<SkinnedMeshAnimationComponent>(paths);
 
@@ -286,10 +285,9 @@ void Scene::setup(Camera &camera) {
 //    puzzle.addComponent<MaterialComponent>(red);
 //    puzzle.addComponent<PuzzleObjectComponent>(red, green, blue, 2);
 
-    Entity johny = this->createEntity("LordAndSavior");
+    Entity johny = this->createEntityParented("LordAndSavior", mainHall, Transform(glm::vec3(2.520, 0.920, -4.060), glm::vec3(0, 180, 180),
+                                                                         glm::vec3(0.6, 0.6, 0.6)));
     johny.addComponent<MeshRendererComponent>("resources/carmackCube.obj");
-    johny.addComponent<TransformComponent>(glm::vec3(2.520, 0.920, -4.060), glm::vec3(0, 180, 180),
-                                           glm::vec3(0.6, 0.6, 0.6));
     johny.addComponent<MaterialComponent>(johnMaterial);
 
     Entity secretRoom = this->createEntity("SecretRoom");
@@ -297,10 +295,9 @@ void Scene::setup(Camera &camera) {
     secretRoom.addComponent<TransformComponent>(glm::vec3(2.490, 0.710, -2.910), glm::vec3(0), glm::vec3(1));
     secretRoom.addComponent<MaterialComponent>(matArches);
 
-    Entity sdfQuad = this->createEntity("SDF");
+    Entity sdfQuad = this->createEntityParented("SDF", mainHall, Transform(glm::vec3(2.970, 1.190, -1.900), glm::vec3(90, 0, 0),
+                                                                           glm::vec3(1)));
     sdfQuad.addComponent<MeshRendererComponent>("resources/quad.obj");
-    sdfQuad.addComponent<TransformComponent>(glm::vec3(2.970, 1.190, -1.900), glm::vec3(90, 0, 0),
-                                             glm::vec3(1));
     sdfQuad.addComponent<MaterialComponent>(sdf);
 
     //Define some light
@@ -309,10 +306,11 @@ void Scene::setup(Camera &camera) {
     light1.addComponent<LightComponent>(glm::vec3(10.0f));
     light1.addComponent<RoomComponent>(-1);
 
+    Light light = Light(glm::vec3(1), true);
     Entity animationRoomLight = this->createEntity("Spotlight");
     animationRoomLight.addComponent<TransformComponent>(glm::vec3(-7.485, 0.684, 0.018), glm::vec3(264, 180, 0),
                                                         glm::vec3(1));
-    animationRoomLight.addComponent<LightComponent>(glm::vec3(1.0f));
+    animationRoomLight.addComponent<LightComponent>(light);
     animationRoomLight.addComponent<RoomComponent>(animationRoomId);
 
     Entity cameraEntity = this->createEntity("Camera");
