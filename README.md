@@ -6,7 +6,7 @@ At its current state the game engine supports the following features.
 
 ### Physically Based Rendering Materials
 The game engine implements various forms of PBR textures, using the [Cook-Torrance BRDF](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=06788323a219caa856a9f9f3e6f2df9084cc9eb5) and the GGX (as demonstrated by [Burley and Brent, 2012](https://media.disneyanimation.com/uploads/production/publication_asset/48/asset/s2012_pbs_disney_brdf_notes_v3.pdf)) material models. 
-Concretely the engine allows creating and editing PBR materials from scratch. An example using the interactive editor is shown below:
+Concretely the engine allows creating and editing PBR materials from scratch. An example using the interactive inspector is shown below:
 
 ![interactive material editing](/docs/images/teapot_interactive.gif)
 
