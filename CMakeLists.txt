@@ -10,7 +10,7 @@ else ()
     add_subdirectory("../../../framework/" "${CMAKE_BINARY_DIR}/framework/")
 endif ()
 
-add_executable(FinalProject
+add_executable(Game
         src/materials/Material.h
         src/materials/Material.cpp
         src/materials/MaterialManager.h
@@ -35,15 +35,15 @@ add_executable(FinalProject
         src/materials/TextureManager.h
         src/materials/TextureManager.cpp src/components/RobotArmComponents.h src/systems/RobotArmSystem.h src/components/AnimComponents.h src/systems/AnimationSystem.h src/AnimatedMesh.h src/AnimatedMesh.cpp)
 
-target_compile_features(FinalProject PRIVATE cxx_std_20)
-target_link_libraries(FinalProject PRIVATE CGFramework)
-enable_sanitizers(FinalProject)
-set_project_warnings(FinalProject)
+target_compile_features(Game PRIVATE cxx_std_20)
+target_link_libraries(Game PRIVATE CGFramework)
+enable_sanitizers(Game)
+set_project_warnings(Game)
 
 # Copy all files in the resources folder to the build directory after every successful build.
-add_custom_command(TARGET FinalProject POST_BUILD
+add_custom_command(TARGET Game POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_CURRENT_LIST_DIR}/resources/" "$<TARGET_FILE_DIR:FinalProject>/resources/")
+        "${CMAKE_CURRENT_LIST_DIR}/resources/" "$<TARGET_FILE_DIR:Game>/resources/")
 
 # We would like to copy the files when they changed. Even if no *.cpp files were modified (and
 # thus no build is triggered). We tell CMake that the executable depends on the shader files in
@@ -68,5 +68,5 @@ foreach (shader_file IN LISTS shader_sources)
     LIST(APPEND shader_copies "${CMAKE_BINARY_DIR}/shaders/${file_name}")
 endforeach ()
 add_custom_target(copy_shaders DEPENDS ${shader_copies})
-add_dependencies(FinalProject copy_shaders)
+add_dependencies(Game copy_shaders)
 

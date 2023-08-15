@@ -33,7 +33,7 @@ DISABLE_WARNINGS_POP()
 class Application {
 public:
     Application()
-            : m_window("Final Project", glm::ivec2(1024, 1024), OpenGLVersion::GL45), m_scene(m_registry) {
+            : m_window("Game", glm::ivec2(1024, 1024), OpenGLVersion::GL45), m_scene(m_registry) {
 
         m_window.registerKeyCallback([this](int key, int scancode, int action, int mods) {
             if (action == GLFW_PRESS)

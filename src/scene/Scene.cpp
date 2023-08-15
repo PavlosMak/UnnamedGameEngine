@@ -30,9 +30,7 @@ void Scene::updateStatistics() {
 
 void Scene::setup(Camera &camera) {
 
-    int centralRoomId = 0;
     int animationRoomId = 1;
-    int spotLightRoomId = 2;
 
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/solid_color_frag.glsl", SHADER_TYPE::SOLID_COLOR);
     m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/shader_frag.glsl", SHADER_TYPE::NORMAL_AS_COLOR);
@@ -75,15 +73,6 @@ void Scene::setup(Camera &camera) {
             "resources/ones_texture.png",
             "resources/zero_texture.png"
     );
-
-    Material *dragon = materialManager->createTexturedPBRMaterial(
-            m_shaderManager.getShader(SHADER_TYPE::TEXTURED_PBR),
-            "resources/dragon-scales/normal.png",
-            "resources/dragon-scales/roughness.png",
-            "resources/dragon-scales/metallic.png",
-            "resources/dragon-scales/albedo.png",
-            "resources/dragon-scales/ao.png",
-            "resources/dragon-scales/height.png");
 
     Material *blue = materialManager->createPBRMaterial(m_shaderManager.getShader(SHADER_TYPE::PBR),
                                                         glm::vec4(0.0, 0.0, 0.8, 0.2), 1.0, 0.0, 0.2);
@@ -263,17 +252,6 @@ void Scene::setup(Camera &camera) {
 
     bunny.addComponent<BezierAnimation>(bezierAnim, curve);
 
-
-//    Material *mountainMaterial = materialManager->createHeightMappedTexturedPBRMaterial(
-//            m_shaderManager.getShader(SHADER_TYPE::HEIGHT_MAPPED),
-//            "resources/ones_texture.png",
-//            "resources/ones_texture.png",
-//            "resources/zero_texture.png",
-//            "resources/ones_texture.png",
-//            "resources/ones_texture.png",
-//            "resources/dragon-scales/height.png"
-//    );
-
     //Load the armadillo meshes
     std::vector<std::filesystem::path> paths;
     for (int i = 1; i <= 20; i++) {
@@ -287,12 +265,6 @@ void Scene::setup(Camera &camera) {
     armadillo.addComponent<SkinnedMeshAnimationComponent>(paths);
 
     animationRoomEntities.push_back(this->m_tagToEntity["Armadillo"]);
-
-//    Entity puzzle = this->createEntity("Puzzle");
-//    puzzle.addComponent<MeshRendererComponent>("resources/cube.obj");
-//    puzzle.addComponent<TransformComponent>(glm::vec3(-0.380, 0.8, -0.5), glm::vec3(0), glm::vec3(0.05));
-//    puzzle.addComponent<MaterialComponent>(red);
-//    puzzle.addComponent<PuzzleObjectComponent>(red, green, blue, 2);
 
     Entity johny = this->createEntityParented("LordAndSavior", mainHall, Transform(glm::vec3(2.520, 0.920, -4.060), glm::vec3(0, 180, 180),
                                                                          glm::vec3(0.6, 0.6, 0.6)));
@@ -337,7 +309,6 @@ void Scene::update(const long long &timeStep) {
     //Get the player
     entt::entity player = m_tagToEntity["Player"];
     PlayerComponent &playerComponent = m_registry.get<PlayerComponent>(player);
-//    Transform &playerTransform = m_registry.get<TransformComponent>(player).transform;
     glm::vec3 playerPos = glm::vec3(m_registry.get<TransformComponent>(player).transform.worldTransform()[3]);
 
     //Determine if the player is under the spotlight by doing
@@ -355,8 +326,6 @@ void Scene::update(const long long &timeStep) {
 
     auto dist = glm::distance(shadowMapPos, glm::vec2(0.5, 0.5));
     underSpotlight = dist < 3.5;
-
-    std::cout << dist << " " << underSpotlight << std::endl;
 
     if (underSpotlight) {
         playerComponent.isToon = true;
@@ -400,6 +369,7 @@ Entity Scene::loadRobotArm(Entity &parent, Transform t, Material *mat) {
     Entity base = this->createEntityParented("Base", parent, t);
     base.addComponent<MeshRendererComponent>("resources/robotarm/Base.obj");
     base.addComponent<MaterialComponent>(mat);
+    base.addComponent<FindMe>();
 
     animationRoomEntities.push_back(this->m_tagToEntity["Base"]);
 
@@ -506,11 +476,13 @@ Entity Scene::loadPedestal(Entity &parent, Transform transform, Material *pedest
     Entity pedestal = this->createEntityParented("Pedestal" + mesh, parent, transform);
     pedestal.addComponent<MeshRendererComponent>("resources/Pedestal.obj");
     pedestal.addComponent<MaterialComponent>(pedestalMat);
+    pedestal.addComponent<FindMe>();
 
     Entity suzanne = this->createEntityParented("PedestalMesh", pedestal, Transform(glm::vec3(0, 0.45, 0)));
     suzanne.addComponent<MeshRendererComponent>(mesh);
     suzanne.addComponent<MaterialComponent>(meshMat);
     suzanne.addComponent<PuzzleObjectComponent>(meshMat, meshMat2, meshMat3, key);
+    suzanne.addComponent<FindMe>();
 
     return suzanne;
 }
