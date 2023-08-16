@@ -1,9 +1,9 @@
 #pragma once
 #include "glm/glm.hpp"
 #include "glm/ext/matrix_transform.hpp"
-
-struct Transform {
-
+#include "framework/json.hpp"
+class Transform {
+public:
     // local transform
     glm::vec3 rotation;
     glm::vec3 pos;
@@ -17,6 +17,7 @@ struct Transform {
     Transform(glm::vec3 pos);
     Transform(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale);
     Transform(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale, Transform* parent);
+    Transform(nlohmann::json transformData);
 
     glm::mat4 transform() const;
     glm::mat4 worldTransform() const;
@@ -26,4 +27,7 @@ struct Transform {
     glm::vec3 forward() const;
     glm::vec3 up() const;
     glm::vec3 right() const;
+
+private:
+    glm::vec3 parseVector3(nlohmann::json vectorData);
 };

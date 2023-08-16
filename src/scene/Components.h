@@ -125,10 +125,10 @@ struct CamControllerComp {
 
     CamControllerComp() = default;
 
-    Transform* target;
+    Transform *target;
     int viewIdx = 0;
 
-    explicit CamControllerComp(Transform* target) : target(target) {};
+    explicit CamControllerComp(Transform *target) : target(target) {};
 };
 
 

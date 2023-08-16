@@ -246,6 +246,7 @@ public:
             lightTransforms[lightIndex] = transform;
             m_lightCamera.getViewProjectionMatrix(lightVp, transform);
             lightVPs[lightIndex] = lightVp;
+//          TODO: This throws a segfault if the component is missing
             int roomId = registry.get<RoomComponent>(lightEntity).roomId;
             renderInShadowMap(shadowShader, registry, shadowMaps[lightIndex], lightVp, view, roomId);
             lightIndex++;

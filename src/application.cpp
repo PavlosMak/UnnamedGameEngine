@@ -1,4 +1,3 @@
-//#include "Image.h"
 #include "mesh.h"
 #include "texture.h"
 // Always include window first (because it includes glfw, which includes GL which needs to be included AFTER glew).
@@ -14,13 +13,12 @@ DISABLE_WARNINGS_PUSH()
 
 DISABLE_WARNINGS_POP()
 
-#include <framework/entt_imgui/imgui_entt_entity_editor.hpp>
-
 #include <framework/shader.h>
 #include <framework/window.h>
 #include <functional>
 #include <iostream>
 #include "camera.h"
+#include "scene/SceneManager.h"
 #include "scene/Scene.h"
 #include "scene/Entity.h"
 #include "scene/Components.h"
@@ -30,10 +28,13 @@ DISABLE_WARNINGS_POP()
 #include "systems/RenderSystem.h"
 #include "systems/DebugSystem.h"
 
+//TODO: Move to command line argument
+#define PATH_TO_GAME_FILES "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner"
+
 class Application {
 public:
     Application()
-            : m_window("Game", glm::ivec2(1024, 1024), OpenGLVersion::GL45), m_scene(m_registry) {
+            : m_window("Game", glm::ivec2(1024, 1024), OpenGLVersion::GL45), m_sceneManager(PATH_TO_GAME_FILES) {
 
         m_window.registerKeyCallback([this](int key, int scancode, int action, int mods) {
             if (action == GLFW_PRESS)
@@ -81,15 +82,11 @@ public:
     }
 
     void update() {
-        //Create our camera
-        Camera camera = Camera();
-        m_scene.setup(camera);
+        Scene& currentScene = m_sceneManager.getCurrentScene();
+        currentScene.setup();
         long long timeStep = 0l;
 
-        m_renderSystem.init(m_shadowShader, m_registry);
-        m_renderSystem.mainRoomEntities = m_scene.mainRoomEntities;
-        m_renderSystem.animationRoomEntities = m_scene.animationRoomEntities;
-        m_renderSystem.spotLightRoom = m_scene.spotLightRoom;
+        m_renderSystem.init(m_shadowShader, currentScene.m_registry);
 
         auto lastTick = glfwGetTime();
 
@@ -98,22 +95,22 @@ public:
             // update the window state
             m_window.updateInput();
 
-            m_debugSystem.run(m_registry);
+            m_debugSystem.run(currentScene.m_registry);
 
             auto curTick = glfwGetTime();
             auto dt = curTick - lastTick;
-            m_animSystem.stepAnimations(m_registry, dt);
+            m_animSystem.stepAnimations(currentScene.m_registry, dt);
             lastTick = curTick;
 
             // handle input
-            m_wasdSystem.update(m_registry);
+            m_wasdSystem.update(currentScene.m_registry);
 
-            m_roboArmSystem.setRotations(m_registry);
+            m_roboArmSystem.setRotations(currentScene.m_registry);
 
-            // update scene
-            m_scene.update(timeStep);
+            // update currentScene
+            currentScene.update(timeStep);
 
-            m_renderSystem.renderMeshes(m_shadowShader, m_registry, m_scene.getEntityByTag("Camera"),
+            m_renderSystem.renderMeshes(m_shadowShader, currentScene.m_registry, currentScene.getEntityByTag("Camera"),
                                         m_window.getWindowSize(),
                                         m_window.getAspectRatio());
 
@@ -167,10 +164,10 @@ private:
     Shader m_shadowShader;
     Shader m_debugShader;
 
+
     DebugSystem m_debugSystem;
 
-    Scene m_scene;
-    entt::registry m_registry;
+    SceneManager m_sceneManager;
 
     // systems
     WasdControllerSystem m_wasdSystem;

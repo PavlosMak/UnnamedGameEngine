@@ -1,0 +1,30 @@
+{
+  "entities": [
+    {
+      "name": "Camera",
+      "transform": {
+        "position": [0, 0.5, 0],
+        "rotation": [0, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "camera": true,
+      "wasd": 0.02,
+      "player": true
+    },
+    {
+      "name": "Light",
+      "transform": {
+        "position": [0.360, 2.270, 1.593],
+        "rotation": [293.00, 5, 0],
+        "scale": [1, 1, 1]
+      },
+      "light": [10.0, 10.0, 10.0],
+      "room": -1
+    },
+    {
+      "name": "Mushu",
+      "mesh": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/resources/dragon.obj",
+      "material": "oscillating"
+    }
+  ]
+}

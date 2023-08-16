@@ -203,6 +203,7 @@ public:
 
         auto puzzleView = registry.view<PuzzleObjectComponent, MaterialComponent, TransformComponent>();
 
+//        TODO: This throws segfault if there is no player
         auto player = registry.view<PlayerComponent>()[0];
         auto &playerTransform = registry.get<TransformComponent>(player);
 

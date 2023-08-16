@@ -59,7 +59,7 @@ Material *MaterialManager::createSDFMaterial(const Shader &shader, std::filesyst
     mat.textureSlotOccupied = 1;
     mat.lightOffset = 0;
     materialPool.push_back(mat);
-    lastID+=1;
+    lastID += 1;
     return &(materialPool[materialPool.size() - 1]);
 }
 
@@ -87,7 +87,8 @@ Material *MaterialManager::createHeightMappedTexturedPBRMaterial(const Shader &s
     return &(materialPool[materialPool.size() - 1]);
 }
 
-Material *MaterialManager::createTexturedOscillatingPBRMaterial(const Shader &shader, std::filesystem::path normalMap1,
+Material *MaterialManager::createTexturedOscillatingPBRMaterial(const std::string &name, const Shader &shader,
+                                                                std::filesystem::path normalMap1,
                                                                 std::filesystem::path roughnessMap1,
                                                                 std::filesystem::path metallicMap1,
                                                                 std::filesystem::path albedoPath1,
@@ -119,6 +120,7 @@ Material *MaterialManager::createTexturedOscillatingPBRMaterial(const Shader &sh
     mat.textureSlotOccupied = 10;
     mat.lightOffset = 16;
     materialPool.push_back(mat);
+    this->matNameToIndex.emplace(name, materialPool.size()-1);
     lastID += 1;
     return &(materialPool[materialPool.size() - 1]);
 }
@@ -133,4 +135,10 @@ Material *MaterialManager::createXToonMaterial(const Shader &shader, std::filesy
     lastID += 1;
     toonMatIndex = materialPool.size() - 1;
     return &(materialPool[materialPool.size() - 1]);
+}
+
+Material *MaterialManager::getMaterialByName(const std::string &materialName) {
+    assert(this->matNameToIndex.contains(materialName));
+    int index = this->matNameToIndex[materialName];
+    return &this->materialPool[index];
 }

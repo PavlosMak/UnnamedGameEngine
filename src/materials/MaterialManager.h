@@ -3,6 +3,8 @@
 #include "framework/shader.h"
 #include "glm/glm.hpp"
 #include "Material.h"
+#include "string"
+#include "unordered_map"
 
 class MaterialManager {
 protected:
@@ -46,6 +48,7 @@ public:
     Material *createSDFMaterial(const Shader &shader, std::filesystem::path);
 
     Material *createTexturedOscillatingPBRMaterial(
+            const std::string& name,
             const Shader &shader,
             std::filesystem::path normalMap1,
             std::filesystem::path roughnessMap1,
@@ -66,8 +69,10 @@ public:
 
     Material *getToonMaterial();
 
+    Material *getMaterialByName(const std::string& materialName);
 private:
     std::vector<Material> materialPool;
+    std::unordered_map<std::string, int> matNameToIndex;
     int lastID{0};
     int toonMatIndex{0};
 };
