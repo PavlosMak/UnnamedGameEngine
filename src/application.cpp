@@ -1,6 +1,5 @@
-//#include "Image.h"
 #include "mesh.h"
-#include "texture.h"
+#include "materials/Texture.h"
 // Always include window first (because it includes glfw, which includes GL which needs to be included AFTER glew).
 // Can't wait for modules to fix this stuff...
 #include <framework/disable_all_warnings.h>
@@ -10,30 +9,33 @@ DISABLE_WARNINGS_PUSH()
 #include <glad/glad.h>
 // Include glad before glfw3
 #include <GLFW/glfw3.h>
-#include <imgui/imgui.h>
 
 DISABLE_WARNINGS_POP()
-
-#include <framework/entt_imgui/imgui_entt_entity_editor.hpp>
 
 #include <framework/shader.h>
 #include <framework/window.h>
 #include <functional>
 #include <iostream>
 #include "camera.h"
+#include "managers/SceneManager.h"
+#include "managers/MaterialManager.h"
 #include "scene/Scene.h"
-#include "scene/Entity.h"
-#include "scene/Components.h"
+#include "components/Components.h"
+#include "managers/ShaderManager.h"
 #include "systems/WasdControllerSystem.h"
 #include "systems/AnimationSystem.h"
 #include "systems/RobotArmSystem.h"
 #include "systems/RenderSystem.h"
 #include "systems/DebugSystem.h"
 
+//TODO: Move to command line argument
+#define PATH_TO_GAME_FILES "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner"
+#define PATH_TO_MATERIALS "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/materials.json"
+
 class Application {
 public:
     Application()
-            : m_window("Game", glm::ivec2(1024, 1024), OpenGLVersion::GL45), m_scene(m_registry) {
+            : m_window("Game", glm::ivec2(1024, 1024), OpenGLVersion::GL45), m_sceneManager(PATH_TO_GAME_FILES) {
 
         m_window.registerKeyCallback([this](int key, int scancode, int action, int mods) {
             if (action == GLFW_PRESS)
@@ -81,15 +83,25 @@ public:
     }
 
     void update() {
-        //Create our camera
-        Camera camera = Camera();
-        m_scene.setup(camera);
+        //Load shaders
+        ShaderManager *shaderManager = ShaderManager::getInstance();
+        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/shader_frag.glsl", SHADER_TYPE::NORMAL_AS_COLOR);
+        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/pbr_frag.glsl", SHADER_TYPE::PBR);
+        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/pbr_textured_frag.glsl", SHADER_TYPE::TEXTURED_PBR);
+        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/pbr_oscilating_textured_frag.glsl",
+                                  SHADER_TYPE::OSCILLATING_PBR);
+        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/sdf_frag.glsl", SHADER_TYPE::SDF);
+
+        //Load materials
+        MaterialManager *materialManager = MaterialManager::getInstance();
+        materialManager->loadMaterials(PATH_TO_MATERIALS);
+
+        //Setup scene
+        Scene& currentScene = m_sceneManager.getCurrentScene();
+        currentScene.setup();
         long long timeStep = 0l;
 
-        m_renderSystem.init(m_shadowShader, m_registry);
-        m_renderSystem.mainRoomEntities = m_scene.mainRoomEntities;
-        m_renderSystem.animationRoomEntities = m_scene.animationRoomEntities;
-        m_renderSystem.spotLightRoom = m_scene.spotLightRoom;
+        m_renderSystem.init(m_shadowShader, currentScene.m_registry);
 
         auto lastTick = glfwGetTime();
 
@@ -98,22 +110,22 @@ public:
             // update the window state
             m_window.updateInput();
 
-            m_debugSystem.run(m_registry);
+            m_debugSystem.run(currentScene.m_registry);
 
             auto curTick = glfwGetTime();
             auto dt = curTick - lastTick;
-            m_animSystem.stepAnimations(m_registry, dt);
+            m_animSystem.stepAnimations(currentScene.m_registry, dt);
             lastTick = curTick;
 
             // handle input
-            m_wasdSystem.update(m_registry);
+            m_wasdSystem.update(currentScene.m_registry);
 
-            m_roboArmSystem.setRotations(m_registry);
+            m_roboArmSystem.setRotations(currentScene.m_registry);
 
-            // update scene
-            m_scene.update(timeStep);
+            // update currentScene
+            currentScene.update(timeStep);
 
-            m_renderSystem.renderMeshes(m_shadowShader, m_registry, m_scene.getEntityByTag("Camera"),
+            m_renderSystem.renderMeshes(m_shadowShader, currentScene.m_registry, currentScene.getEntityByTag("Camera"),
                                         m_window.getWindowSize(),
                                         m_window.getAspectRatio());
 
@@ -167,10 +179,10 @@ private:
     Shader m_shadowShader;
     Shader m_debugShader;
 
+
     DebugSystem m_debugSystem;
 
-    Scene m_scene;
-    entt::registry m_registry;
+    SceneManager m_sceneManager;
 
     // systems
     WasdControllerSystem m_wasdSystem;

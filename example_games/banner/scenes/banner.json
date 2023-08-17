@@ -1,0 +1,72 @@
+{
+  "entities": [
+    {
+      "name": "Camera",
+      "transform": {
+        "position": [-1.523, 0.660, 0.103],
+        "rotation": [0, -72.0, 0],
+        "scale": [1, 1, 1]
+      },
+      "camera": true,
+      "wasd": 0.02,
+      "player": true
+    },
+    {
+      "name": "Light",
+      "transform": {
+        "position": [-2.320, 0.830, -0.337],
+        "rotation": [0, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "light": [10.0, 10.0, 10.0],
+      "room": -1
+    },
+    {
+      "name": "Mushu",
+      "mesh": "../example_games/banner/assets/dragon.obj",
+      "material": "oscillating",
+      "transform": {
+        "position": [0.080, 0.280, -0.970],
+        "rotation": [0.00, 49.00, 0.00],
+        "scale": [1.0, 1.0, 1.0]
+      }
+    },
+    {
+      "name": "Smaug",
+      "mesh": "../example_games/banner/assets/dragon.obj",
+      "material": "smaugTexture",
+      "transform": {
+        "position": [-0.320, 0.210, 0.240],
+        "rotation": [0, 30.0, 0],
+        "scale": [1, 1, 1]
+      }
+    },
+    {
+      "name": "Mrs. Potts",
+      "mesh": "../example_games/banner/assets/teapot.obj",
+      "material": "teapotMat",
+      "transform":{
+        "position": [-0.380, 0.410, -0.330],
+        "rotation": [0, 116, 0],
+        "scale": [0.05, 0.05, 0.05]
+      }
+    },
+    {
+      "name": "Sponza",
+      "mesh": "../example_games/banner/assets/sponza.obj",
+      "material": "debug",
+      "transform": {
+        "scale": [0.01,0.01,0.01]
+      }
+    },
+    {
+      "name": "SDFQuad",
+      "mesh": "../example_games/banner/assets/quad.obj",
+      "material": "sdf",
+      "transform": {
+        "position": [-0.410,1.120,-2.650],
+        "rotation": [90.0,0,0]
+      }
+    }
+  ]
+}

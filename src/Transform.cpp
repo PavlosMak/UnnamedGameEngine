@@ -11,6 +11,24 @@ Transform::Transform(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale) : pos(p
 
 Transform::Transform(glm::vec3 pos, glm::vec3 rotation, glm::vec3 scale, Transform* parent) : pos(pos), rotation(rotation), scale(scale), parent(parent) {}
 
+Transform::Transform(nlohmann::json transformData) {
+    this->pos = glm::vec3(0);
+    this->rotation = glm::vec3(0);
+    this->scale = glm::vec3(1);
+    if(transformData.contains("position"))
+        this->pos = this->parseVector3(transformData["position"]);
+    if(transformData.contains("rotation"))
+        this->rotation = this->parseVector3(transformData["rotation"]);
+    if(transformData.contains("scale"))
+       this->scale = this->parseVector3(transformData["scale"]);
+}
+
+glm::vec3 Transform::parseVector3(nlohmann::json vectorData) {
+    std::vector<double> entries = vectorData.get<std::vector<double>>();
+    assert(entries.size() == 3);
+    return {entries[0], entries[1], entries[2]};
+}
+
 glm::mat4 Transform::transform() const {
 
     // TODO write as single product, faster?

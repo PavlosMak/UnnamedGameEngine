@@ -2,7 +2,7 @@
 
 #include "framework/entt/entt.h"
 #include "../components/RobotArmComponents.h"
-#include "../scene/Components.h"
+#include "../components/Components.h"
 
 class RobotArmSystem {
 

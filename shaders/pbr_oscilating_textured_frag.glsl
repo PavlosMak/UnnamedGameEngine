@@ -3,7 +3,7 @@
 //Constants
 const float PI = 3.14159;
 const float epsilon = 0.000001; //small epsilon to avoid div by 0
-const int NUM_OF_LIGHTS = 2;
+const int NUM_OF_LIGHTS = 1;
 
 //GLOBAL VARS
 float shadowed_by = 0;

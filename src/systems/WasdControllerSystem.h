@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "framework/entt/entt.h"
-#include "../scene/Components.h"
+#include "../components/Components.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "GLFW/glfw3.h"
 #include "../components/AnimComponents.h"
@@ -203,6 +203,7 @@ public:
 
         auto puzzleView = registry.view<PuzzleObjectComponent, MaterialComponent, TransformComponent>();
 
+//        TODO: This throws segfault if there is no player
         auto player = registry.view<PlayerComponent>()[0];
         auto &playerTransform = registry.get<TransformComponent>(player);
 

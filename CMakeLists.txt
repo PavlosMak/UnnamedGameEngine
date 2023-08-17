@@ -11,19 +11,20 @@ else ()
 endif ()
 
 add_executable(Game
+        src/application.cpp
         src/materials/Material.h
         src/materials/Material.cpp
-        src/materials/MaterialManager.h
-        src/materials/MaterialManager.cpp
-        "src/application.cpp"
-        "src/texture.cpp"
-        "src/mesh.cpp"
-        "src/camera.cpp"
-        "src/camera.h"
-        "src/scene/Scene.cpp"
-        "src/scene/Scene.h"
-        "src/scene/Entity.h"
-        "src/scene/Components.h"
+        src/managers/MaterialManager.h
+        src/managers/MaterialManager.cpp
+        src/materials/Texture.cpp
+        src/materials/Texture.h
+        src/mesh.cpp
+        src/camera.cpp
+        src/camera.h
+        src/scene/Scene.cpp
+        src/scene/Scene.h
+        src/scene/Entity.h
+        src/components/Components.h
         src/systems/WasdControllerSystem.h
         src/systems/RenderSystem.h
         src/systems/DebugSystem.h
@@ -31,19 +32,14 @@ add_executable(Game
         src/Transform.h
         src/lights/Light.h
         src/lights/Light.cpp
-        src/materials/ShaderManager.cpp
-        src/materials/TextureManager.h
-        src/materials/TextureManager.cpp src/components/RobotArmComponents.h src/systems/RobotArmSystem.h src/components/AnimComponents.h src/systems/AnimationSystem.h src/AnimatedMesh.h src/AnimatedMesh.cpp)
+        src/managers/ShaderManager.cpp
+        src/managers/TextureManager.h
+        src/managers/TextureManager.cpp src/components/RobotArmComponents.h src/systems/RobotArmSystem.h src/components/AnimComponents.h src/systems/AnimationSystem.h src/AnimatedMesh.h src/AnimatedMesh.cpp src/managers/SceneManager.cpp src/managers/SceneManager.h)
 
 target_compile_features(Game PRIVATE cxx_std_20)
 target_link_libraries(Game PRIVATE CGFramework)
 enable_sanitizers(Game)
 set_project_warnings(Game)
-
-# Copy all files in the resources folder to the build directory after every successful build.
-add_custom_command(TARGET Game POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_CURRENT_LIST_DIR}/resources/" "$<TARGET_FILE_DIR:Game>/resources/")
 
 # We would like to copy the files when they changed. Even if no *.cpp files were modified (and
 # thus no build is triggered). We tell CMake that the executable depends on the shader files in

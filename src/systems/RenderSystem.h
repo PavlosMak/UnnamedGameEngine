@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../scene/Components.h"
+#include "../components/Components.h"
 #include "framework/entt/entt.h"
 #include "glm/gtc/matrix_inverse.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -246,6 +246,7 @@ public:
             lightTransforms[lightIndex] = transform;
             m_lightCamera.getViewProjectionMatrix(lightVp, transform);
             lightVPs[lightIndex] = lightVp;
+//          TODO: This throws a segfault if the component is missing
             int roomId = registry.get<RoomComponent>(lightEntity).roomId;
             renderInShadowMap(shadowShader, registry, shadowMaps[lightIndex], lightVp, view, roomId);
             lightIndex++;
@@ -347,15 +348,7 @@ public:
             glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(worldTransform));
             glUniformMatrix3fv(2, 1, GL_FALSE, glm::value_ptr(normalModelMatrix));
 
-            if (material->TYPE == SHADER_TYPE::TOON) {
-                //TODO: Currently controlled by time but we change to something else
-                //maybe distance from john carmack???
-//                toonFactor = 1 - glm::distance(glm::vec3(2.5, 0.9, -4), glm::vec3(transform.transform.worldTransform()[3])) / 2;
-                toonFactor = (1 + glm::sin(glm::distance(glm::vec3(2.5, 0.9, -4), glm::vec3(transform.transform.worldTransform()[3]))))*0.5;
-
-                glUniform1f(4, toonFactor);
-                m_timeCounter += 1;
-            } else if (material->TYPE == SHADER_TYPE::SDF) {
+            if (material->TYPE == SHADER_TYPE::SDF) {
                 glUniform1f(4, 0.5 - ((glm::sin(glfwGetTime()) + 1.f) * 0.5f) * 0.1);
             } else {
                 //Load shadow map textures and light MVP matrices
@@ -366,16 +359,11 @@ public:
                     glUniform1i(shadowMapBufferOffset + i, offset);
                     glUniformMatrix4fv(mvpBufferOffset + i, 1, GL_FALSE, glm::value_ptr(lightVPs[i]));
                 }
-//                int depthOffset = texturesUsed + shadowMaps.size();
-//                glActiveTexture(GL_TEXTURE0 + depthOffset);
-//                glBindTexture(GL_TEXTURE_2D, m_depthTexture);
-//                glUniform1i(8 + 4 * lightCount, depthOffset);
             }
 
             if (material->TYPE == SHADER_TYPE::OSCILLATING_PBR) {
                 glUniform1f(15, ((std::sin(glfwGetTime()) + 1.f) * 0.5f));
             }
-//            glUniform1i(8 + 4*lightCount, false);
             meshRenderer.mesh.draw();
         }
 

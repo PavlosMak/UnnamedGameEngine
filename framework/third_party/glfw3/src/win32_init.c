@@ -321,7 +321,7 @@ static void createKeyTables(void)
     }
 }
 
-// Creates a dummy window for behind-the-scenes work
+// Creates a dummy window for behind-the-example_games work
 //
 static GLFWbool createHelperWindow(void)
 {
