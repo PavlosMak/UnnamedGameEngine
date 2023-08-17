@@ -85,16 +85,11 @@ public:
     void update() {
         //Load shaders
         ShaderManager *shaderManager = ShaderManager::getInstance();
-        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/solid_color_frag.glsl", SHADER_TYPE::SOLID_COLOR);
         shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/shader_frag.glsl", SHADER_TYPE::NORMAL_AS_COLOR);
-        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/phong_frag.glsl", SHADER_TYPE::PHONG);
         shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/pbr_frag.glsl", SHADER_TYPE::PBR);
         shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/pbr_textured_frag.glsl", SHADER_TYPE::TEXTURED_PBR);
-        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/xtoon_frag.glsl", SHADER_TYPE::TOON);
         shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/pbr_oscilating_textured_frag.glsl",
                                   SHADER_TYPE::OSCILLATING_PBR);
-        shaderManager->loadShader("shaders/shader_height_vert.glsl", "shaders/pbr_heightmapped_frag.glsl",
-                                  SHADER_TYPE::HEIGHT_MAPPED);
         shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/sdf_frag.glsl", SHADER_TYPE::SDF);
 
         //Load materials

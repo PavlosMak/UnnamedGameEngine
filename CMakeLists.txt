@@ -41,11 +41,6 @@ target_link_libraries(Game PRIVATE CGFramework)
 enable_sanitizers(Game)
 set_project_warnings(Game)
 
-# Copy all files in the resources folder to the build directory after every successful build.
-add_custom_command(TARGET Game POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_CURRENT_LIST_DIR}/resources/" "$<TARGET_FILE_DIR:Game>/resources/")
-
 # We would like to copy the files when they changed. Even if no *.cpp files were modified (and
 # thus no build is triggered). We tell CMake that the executable depends on the shader files in
 # the build directory. We also tell it how to generate those files (by copying them from the

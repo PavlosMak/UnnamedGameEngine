@@ -20,16 +20,6 @@ Material::bindMaterial(glm::vec3 &cameraPosition,
     m_shader.bind();
     TextureManager *texManager = TextureManager::getInstance();
     switch (TYPE) {
-        case SOLID_COLOR:
-            glUniform3fv(3, 1, glm::value_ptr(glm::vec3(m_color)));
-            break;
-        case PHONG:
-            glUniform3fv(3, 1, glm::value_ptr(lightPositions[0]));
-            glUniform3fv(4, 1, glm::value_ptr(lights[0].getColor()));
-            glUniform3fv(5, 1, glm::value_ptr(cameraPosition));
-            glUniform3fv(6, 1, glm::value_ptr(glm::vec3(m_color)));
-            glUniform1f(7, m_shininess);
-            break;
         case PBR:
             glUniform3fv(3, 1, glm::value_ptr(cameraPosition));
             glUniform4fv(4, 1, glm::value_ptr(m_color));
@@ -61,14 +51,6 @@ Material::bindMaterial(glm::vec3 &cameraPosition,
                 glUniform1i(lightOffset + 4 * lights.size() + i, lights[i].isCone());
             }
             break;
-        case TOON:
-            texManager->bind(m_toonTextureId, GL_TEXTURE0);
-            glUniform1i(3, 0);
-            for (int i = 0; i < lights.size(); i++) {
-                glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
-                glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
-            }
-            break;
         case OSCILLATING_PBR:
             glUniform3fv(3, 1, glm::value_ptr(cameraPosition));
             glUniform1f(4, m_ambient);
@@ -93,29 +75,6 @@ Material::bindMaterial(glm::vec3 &cameraPosition,
             glUniform1i(13, 8);
             texManager->bind(m_ambientOcclusionMapId2, GL_TEXTURE0 + 9);
             glUniform1i(14, 9);
-            for (int i = 0; i < lights.size(); i++) {
-                glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
-                glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));
-                glUniform1i(lightOffset + 4 * lights.size() + i, lights[i].isCone());
-            }
-            break;
-        case HEIGHT_MAPPED:
-            texManager->bind(m_heightMapId, GL_TEXTURE0);
-            glUniform1i(3, 0);
-
-            glUniform3fv(4, 1, glm::value_ptr(cameraPosition));
-            glUniform1f(5, m_ambient);
-
-            texManager->bind(m_normalMapId, GL_TEXTURE0 + 1);
-            glUniform1i(6, 1);
-            texManager->bind(m_albedoMapId, GL_TEXTURE0 + 2);
-            glUniform1i(7, 2);
-            texManager->bind(m_roughnessMapId, GL_TEXTURE0 + 3);
-            glUniform1i(8, 3);
-            texManager->bind(m_metallicMapId, GL_TEXTURE0 + 4);
-            glUniform1i(9, 4);
-            texManager->bind(m_ambientOcclusionMapId, GL_TEXTURE0 + 5);
-            glUniform1i(10, 5);
             for (int i = 0; i < lights.size(); i++) {
                 glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
                 glUniform3fv(lightOffset + lights.size() + i, 1, glm::value_ptr(lights[i].getColor()));

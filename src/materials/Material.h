@@ -58,10 +58,6 @@ public:
             ID(id), m_shader(shader), m_color(albedo), m_roughness(roughness), m_metallic(metallic),
             m_ambient(ambient), TYPE(SHADER_TYPE::PBR) {}
 
-    Material(int id, const Shader &shader, int toonTextureId) : ID(id), m_shader(shader),
-                                                                m_toonTextureId(toonTextureId),
-                                                                TYPE(SHADER_TYPE::TOON) {}
-
     [[nodiscard]] const Shader &
     getShader() const;
 

@@ -13,80 +13,99 @@ MaterialManager *MaterialManager::getInstance() {
     return instance;
 }
 
-std::shared_ptr<Material> MaterialManager::createDebugMaterial(Shader &shader) {
+Material *MaterialManager::createDebugMaterial(nlohmann::json debugData) {
+    const Shader &shader = ShaderManager::getInstance()->getShader(SHADER_TYPE::NORMAL_AS_COLOR);
+    std::string name = debugData["name"].get<std::string>();
     Material normalMaterial = Material(lastID, shader,
                                        SHADER_TYPE::NORMAL_AS_COLOR);
     materialPool.push_back(normalMaterial);
-    lastID += 1;
-    return std::shared_ptr<Material>(&materialPool[materialPool.size() - 1]);
-}
-
-Material *MaterialManager::createPBRMaterial(const Shader &shader, glm::vec4 albedo, float roughness, float metallic,
-                                             float ambient) {
-    Material pbrMaterial = Material(lastID, shader, albedo, roughness, metallic, ambient);
-    pbrMaterial.lightOffset = 8;
-    materialPool.push_back(pbrMaterial);
+    this->matNameToIndex.emplace(name, materialPool.size() - 1);
     lastID += 1;
     return &materialPool[materialPool.size() - 1];
 }
 
-Material *MaterialManager::createTexturedPBRMaterial(const Shader &shader,
-                                                     std::filesystem::path normalMap,
-                                                     std::filesystem::path roughnessMap,
-                                                     std::filesystem::path metallicMap,
-                                                     std::filesystem::path albedoPath,
-                                                     std::filesystem::path aoPath,
-                                                     std::filesystem::path heightMap) {
+Material *MaterialManager::createPBRMaterial(nlohmann::json pbrData) {
+    assert(pbrData.contains("name"));
+    std::string name = pbrData["name"].get<std::string>();
+    const Shader &shader = ShaderManager::getInstance()->getShader(SHADER_TYPE::PBR);
+
+    auto albedo = glm::vec4(1);
+    if (pbrData.contains("albedo")) {
+        std::vector<float> albedoData = pbrData["albedo"].get<std::vector<float>>();
+        assert(albedoData.size() == 4);
+        albedo.x = albedoData[0];
+        albedo.y = albedoData[1];
+        albedo.z = albedoData[2];
+        albedo.w = albedoData[3];
+    }
+
+    float roughness = 0.5;
+    if (pbrData.contains("roughness")) {
+        roughness = pbrData["roughness"].get<float>();
+    }
+
+    float metal = 0.5;
+    if (pbrData.contains("metal")) {
+        metal = pbrData["metal"].get<float>();
+    }
+
+    float ambient = 0.2;
+    if (pbrData.contains("ambient")) {
+        ambient = pbrData["ambient"].get<float>();
+    }
+
+    Material pbrMaterial = Material(lastID, shader, albedo, roughness, metal, ambient);
+    pbrMaterial.lightOffset = 8;
+    materialPool.push_back(pbrMaterial);
+    this->matNameToIndex.emplace(name, materialPool.size() - 1);
+    lastID += 1;
+    return &materialPool[materialPool.size() - 1];
+}
+
+Material *MaterialManager::createTexturedPBRMaterial(nlohmann::json textureData) {
+    assert(textureData.contains("name"));
+    std::string name = textureData["name"].get<std::string>();
+
+    nlohmann::json texture = textureData["texture"];
+
     TextureManager *textureManager = TextureManager::getInstance();
-    int normalTex = textureManager->createTexture(std::move(normalMap));
-    int roughTex = textureManager->createTexture(std::move(roughnessMap));
-    int metalTex = textureManager->createTexture(std::move(metallicMap));
-    int albedoTex = textureManager->createTexture(std::move(albedoPath));
-    int ambientTex = textureManager->createTexture(std::move(aoPath));
-    int heightTex = textureManager->createTexture(std::move(heightMap));
+    int normalTex = textureManager->createTexture(texture["normal"].get<std::string>());
+    int roughTex = textureManager->createTexture(texture["roughness"].get<std::string>());
+    int metalTex = textureManager->createTexture(texture["metal"].get<std::string>());
+    int albedoTex = textureManager->createTexture(texture["albedo"].get<std::string>());
+    int ambientTex = textureManager->createTexture(texture["ambient"].get<std::string>());
+    int heightTex = textureManager->createTexture(texture["height"].get<std::string>());
+
+    const Shader &shader = ShaderManager::getInstance()->getShader(SHADER_TYPE::TEXTURED_PBR);
     Material mat = Material(lastID, shader, SHADER_TYPE::TEXTURED_PBR, normalTex, roughTex, metalTex, albedoTex,
                             ambientTex, heightTex);
     mat.textureSlotOccupied = 5;
     mat.lightOffset = 10;
     materialPool.push_back(mat);
+    this->matNameToIndex.emplace(name, materialPool.size() - 1);
     lastID += 1;
     return &(materialPool[materialPool.size() - 1]);
 }
 
-Material *MaterialManager::createSDFMaterial(const Shader &shader, std::filesystem::path pathToSDF) {
+Material *MaterialManager::createSDFMaterial(nlohmann::json sdfData) {
+    assert(sdfData.contains("name"));
+    assert(sdfData.contains("texture"));
+
+    std::string name = sdfData["name"].get<std::string>();
+    std::string pathToSDF = sdfData["texture"].get<std::string>();
+
+    const Shader& shader = ShaderManager::getInstance()->getShader(SHADER_TYPE::SDF);
     TextureManager *textureManager = TextureManager::getInstance();
     int sdfTex = textureManager->createTexture(pathToSDF);
     Material mat = Material(lastID, shader, sdfTex, true);
     mat.textureSlotOccupied = 1;
     mat.lightOffset = 0;
     materialPool.push_back(mat);
+    this->matNameToIndex.emplace(name, materialPool.size() - 1);
     lastID += 1;
     return &(materialPool[materialPool.size() - 1]);
 }
 
-
-Material *MaterialManager::createHeightMappedTexturedPBRMaterial(const Shader &shader,
-                                                                 std::filesystem::path normalMap,
-                                                                 std::filesystem::path roughnessMap,
-                                                                 std::filesystem::path metallicMap,
-                                                                 std::filesystem::path albedoPath,
-                                                                 std::filesystem::path aoPath,
-                                                                 std::filesystem::path heightMap) {
-    TextureManager *textureManager = TextureManager::getInstance();
-    int normalTex = textureManager->createTexture(std::move(normalMap));
-    int roughTex = textureManager->createTexture(std::move(roughnessMap));
-    int metalTex = textureManager->createTexture(std::move(metallicMap));
-    int albedoTex = textureManager->createTexture(std::move(albedoPath));
-    int ambientTex = textureManager->createTexture(std::move(aoPath));
-    int heightTex = textureManager->createTexture(std::move(heightMap));
-    Material mat = Material(lastID, shader, SHADER_TYPE::HEIGHT_MAPPED, normalTex, roughTex, metalTex, albedoTex,
-                            ambientTex, heightTex);
-    mat.textureSlotOccupied = 6;
-    mat.lightOffset = 11;
-    materialPool.push_back(mat);
-    lastID += 1;
-    return &(materialPool[materialPool.size() - 1]);
-}
 
 Material *MaterialManager::createTexturedOscillatingPBRMaterial(nlohmann::json textureData) {
     assert(textureData.contains("name"));
@@ -117,20 +136,8 @@ Material *MaterialManager::createTexturedOscillatingPBRMaterial(nlohmann::json t
     mat.textureSlotOccupied = 10;
     mat.lightOffset = 16;
     materialPool.push_back(mat);
-    this->matNameToIndex.emplace(name, materialPool.size()-1);
+    this->matNameToIndex.emplace(name, materialPool.size() - 1);
     lastID += 1;
-    return &(materialPool[materialPool.size() - 1]);
-}
-
-Material *MaterialManager::createXToonMaterial(const Shader &shader, std::filesystem::path toonTexture) {
-    TextureManager *textureManager = TextureManager::getInstance();
-    int toonId = textureManager->createTexture(std::move(toonTexture));
-    Material mat = Material(lastID, shader, toonId);
-    mat.textureSlotOccupied = 1;
-    mat.lightOffset = 5;
-    materialPool.push_back(mat);
-    lastID += 1;
-    toonMatIndex = materialPool.size() - 1;
     return &(materialPool[materialPool.size() - 1]);
 }
 
@@ -144,30 +151,26 @@ void MaterialManager::loadMaterials(const std::string &materialsPath) {
     std::ifstream file(materialsPath);
     nlohmann::json data = nlohmann::json::parse(file);
     std::vector materialsData = data.get<std::vector<nlohmann::json>>();
-    for (const auto& materialData : materialsData) {
+    for (const auto &materialData: materialsData) {
         assert(materialData.contains("name"));
         assert(materialData.contains("shader"));
         const std::string shader = materialData["shader"].get<std::string>();
         SHADER_TYPE shaderType = ShaderManager::getInstance()->getShaderType(shader);
         switch (shaderType) {
-            case SOLID_COLOR:
-                break;
             case NORMAL_AS_COLOR:
-                break;
-            case PHONG:
+                createDebugMaterial(materialData);
                 break;
             case PBR:
+                createPBRMaterial(materialData);
                 break;
             case TEXTURED_PBR:
-                break;
-            case TOON:
+                createTexturedPBRMaterial(materialData);
                 break;
             case OSCILLATING_PBR:
                 createTexturedOscillatingPBRMaterial(materialData);
                 break;
-            case HEIGHT_MAPPED:
-                break;
             case SDF:
+                createSDFMaterial(materialData);
                 break;
         }
     }

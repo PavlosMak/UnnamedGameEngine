@@ -3,20 +3,49 @@
     "name": "oscillating",
     "shader": "OSCILLATING_PBR",
     "start_texture": {
-      "normal": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/assets/textures/dragon_scales/normal.png",
-      "roughness": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/assets/textures/dragon_scales/roughness.png",
-      "metal": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/assets/textures/dragon_scales/metallic.png",
-      "albedo": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/assets/textures/dragon_scales/albedo.png",
-      "ambient": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/assets/textures/dragon_scales/ao.png",
-      "height": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/assets/textures/dragon_scales/height.png"
+      "normal": "../example_games/banner/assets/textures/dragon_scales/normal.png",
+      "roughness": "../example_games/banner/assets/textures/dragon_scales/roughness.png",
+      "metal": "../example_games/banner/assets/textures/dragon_scales/metallic.png",
+      "albedo": "../example_games/banner/assets/textures/dragon_scales/albedo.png",
+      "ambient": "../example_games/banner/assets/textures/dragon_scales/ao.png",
+      "height": "../example_games/banner/assets/textures/dragon_scales/height.png"
     },
     "end_texture": {
-      "normal": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/assets/textures/rusted_iron/normal.png",
-      "roughness": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/assets/textures/rusted_iron/roughness.png",
-      "metal": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/assets/textures/rusted_iron/metallic.png",
-      "albedo": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/assets/textures/rusted_iron/albedo.png",
-      "ambient": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/assets/textures/rusted_iron/ones_texture.png",
-      "height": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/assets/textures/rusted_iron/zero_texture.png"
+      "normal": "../example_games/banner/assets/textures/rusted_iron/normal.png",
+      "roughness": "../example_games/banner/assets/textures/rusted_iron/roughness.png",
+      "metal": "../example_games/banner/assets/textures/rusted_iron/metallic.png",
+      "albedo": "../example_games/banner/assets/textures/rusted_iron/albedo.png",
+      "ambient": "../example_games/banner/assets/textures/rusted_iron/ones_texture.png",
+      "height": "../example_games/banner/assets/textures/rusted_iron/zero_texture.png"
     }
+  },
+  {
+    "name": "smaugTexture",
+    "shader": "TEXTURED_PBR",
+    "texture": {
+      "normal": "../example_games/banner/assets/textures/dragon_scales/normal.png",
+      "roughness": "../example_games/banner/assets/textures/dragon_scales/roughness.png",
+      "metal": "../example_games/banner/assets/textures/dragon_scales/metallic.png",
+      "albedo": "../example_games/banner/assets/textures/dragon_scales/albedo.png",
+      "ambient": "../example_games/banner/assets/textures/dragon_scales/ao.png",
+      "height": "../example_games/banner/assets/textures/dragon_scales/height.png"
+    }
+  },
+  {
+    "name": "teapotMat",
+    "shader": "PBR",
+    "albedo": [1, 0, 0, 1],
+    "roughness": 0.373,
+    "metal": 0.475,
+    "ambient": 0.0
+  },
+  {
+    "name": "debug",
+    "shader": "DEBUG"
+  },
+  {
+    "name": "sdf",
+    "shader":"SDF",
+    "texture": "../example_games/banner/assets/textures/sdf.png"
   }
 ]

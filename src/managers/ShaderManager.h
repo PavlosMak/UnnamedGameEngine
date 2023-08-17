@@ -6,15 +6,11 @@
 
 
 enum SHADER_TYPE {
-    SOLID_COLOR = 0,
-    NORMAL_AS_COLOR = 1,
-    PHONG = 3,
-    PBR = 4,
-    TEXTURED_PBR = 5,
-    TOON = 6,
-    OSCILLATING_PBR = 7,
-    HEIGHT_MAPPED = 8,
-    SDF
+    NORMAL_AS_COLOR = 0,
+    PBR = 1,
+    TEXTURED_PBR = 2,
+    OSCILLATING_PBR = 3,
+    SDF = 4,
 };
 
 class ShaderManager {
@@ -37,14 +33,10 @@ protected:
 private:
     std::unordered_map<SHADER_TYPE, const Shader> m_typeToShader;
     std::unordered_map<std::string, SHADER_TYPE> m_nameToType = {
-            {"SOLID_COLOR", SOLID_COLOR},
             {"NORMAL_AS_COLOR", NORMAL_AS_COLOR},
-            {"PHONG", PHONG},
             {"PBR", PBR},
             {"TEXTURED_PBR", TEXTURED_PBR},
-            {"TOON", TOON},
             {"OSCILLATING_PBR", OSCILLATING_PBR},
-            {"HEIGHT_MAPPED", HEIGHT_MAPPED},
             {"SDF", SDF}
     };
 };

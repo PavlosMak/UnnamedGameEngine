@@ -22,46 +22,25 @@ public:
 
     static MaterialManager *getInstance();
 
-    void loadMaterials(const std::string& materialsPath);
+    void loadMaterials(const std::string &materialsPath);
 
     //TODO: We might want to add more methods for the other types of materials (as we need them)
 
     //Return a point to a material
-    std::shared_ptr<Material> createDebugMaterial(Shader &shader);
+    Material *createDebugMaterial(nlohmann::json debugData);
 
-    Material *createPBRMaterial(const Shader &shader, glm::vec4 albedo, float roughness, float metallic, float ambient);
+    Material *createPBRMaterial(nlohmann::json pbrData);
 
-    Material *createTexturedPBRMaterial(
-            const Shader &shader,
-            std::filesystem::path normalMap,
-            std::filesystem::path roughnessMap,
-            std::filesystem::path metallicMap,
-            std::filesystem::path albedoPath,
-            std::filesystem::path aoPath,
-            std::filesystem::path heightMap);
-
-    Material *createHeightMappedTexturedPBRMaterial(
-            const Shader &shader,
-            std::filesystem::path normalMap,
-            std::filesystem::path roughnessMap,
-            std::filesystem::path metallicMap,
-            std::filesystem::path albedoPath,
-            std::filesystem::path aoPath,
-            std::filesystem::path heightMap);
-
-    Material *createSDFMaterial(const Shader &shader, std::filesystem::path);
+    Material *createTexturedPBRMaterial(nlohmann::json textureData);
 
     Material *createTexturedOscillatingPBRMaterial(nlohmann::json textureData);
 
+    Material *createSDFMaterial(nlohmann::json sdfData);
 
-    Material *createXToonMaterial(const Shader &shader, std::filesystem::path toonTexture);
+    Material *getMaterialByName(const std::string &materialName);
 
-    Material *getToonMaterial();
-
-    Material *getMaterialByName(const std::string& materialName);
 private:
     std::vector<Material> materialPool;
     std::unordered_map<std::string, int> matNameToIndex;
     int lastID{0};
-    int toonMatIndex{0};
 };
