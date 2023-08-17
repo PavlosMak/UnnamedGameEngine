@@ -1,7 +1,7 @@
 #pragma once
 
 #include "framework/entt_imgui/imgui_entt_entity_editor.hpp"
-#include "../scene/Components.h"
+#include "../components/Components.h"
 #include "string"
 
 namespace MM {

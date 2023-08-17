@@ -2,6 +2,7 @@
 
 #include <utility>
 #include "TextureManager.h"
+#include "fstream"
 
 MaterialManager *MaterialManager::instance = nullptr;
 
@@ -87,34 +88,30 @@ Material *MaterialManager::createHeightMappedTexturedPBRMaterial(const Shader &s
     return &(materialPool[materialPool.size() - 1]);
 }
 
-Material *MaterialManager::createTexturedOscillatingPBRMaterial(const std::string &name, const Shader &shader,
-                                                                std::filesystem::path normalMap1,
-                                                                std::filesystem::path roughnessMap1,
-                                                                std::filesystem::path metallicMap1,
-                                                                std::filesystem::path albedoPath1,
-                                                                std::filesystem::path aoPath1,
-                                                                std::filesystem::path heightMap1,
-                                                                std::filesystem::path normalMap2,
-                                                                std::filesystem::path roughnessMap2,
-                                                                std::filesystem::path metallicMap2,
-                                                                std::filesystem::path albedoPath2,
-                                                                std::filesystem::path aoPath2,
-                                                                std::filesystem::path heightMap2) {
+Material *MaterialManager::createTexturedOscillatingPBRMaterial(nlohmann::json textureData) {
+    assert(textureData.contains("name"));
+    std::string name = textureData["name"].get<std::string>();
+
+    nlohmann::json start_texture = textureData["start_texture"];
+
     TextureManager *textureManager = TextureManager::getInstance();
-    int normalTex = textureManager->createTexture(std::move(normalMap1));
-    int roughTex = textureManager->createTexture(std::move(roughnessMap1));
-    int metalTex = textureManager->createTexture(std::move(metallicMap1));
-    int albedoTex = textureManager->createTexture(std::move(albedoPath1));
-    int ambientTex = textureManager->createTexture(std::move(aoPath1));
-    int heightTex = textureManager->createTexture(std::move(heightMap1));
+    int normalTex = textureManager->createTexture(std::move(start_texture["normal"].get<std::string>()));
+    int roughTex = textureManager->createTexture(std::move(start_texture["roughness"].get<std::string>()));
+    int metalTex = textureManager->createTexture(std::move(start_texture["metal"].get<std::string>()));
+    int albedoTex = textureManager->createTexture(std::move(start_texture["albedo"].get<std::string>()));
+    int ambientTex = textureManager->createTexture(std::move(start_texture["ambient"].get<std::string>()));
+    int heightTex = textureManager->createTexture(std::move(start_texture["height"].get<std::string>()));
 
-    int normalTex2 = textureManager->createTexture(std::move(normalMap2));
-    int roughTex2 = textureManager->createTexture(std::move(roughnessMap2));
-    int metalTex2 = textureManager->createTexture(std::move(metallicMap2));
-    int albedoTex2 = textureManager->createTexture(std::move(albedoPath2));
-    int ambientTex2 = textureManager->createTexture(std::move(aoPath2));
-    int heightTex2 = textureManager->createTexture(std::move(heightMap2));
+    nlohmann::json end_texture = textureData["end_texture"];
 
+    int normalTex2 = textureManager->createTexture(std::move(end_texture["normal"].get<std::string>()));
+    int roughTex2 = textureManager->createTexture(std::move(end_texture["roughness"].get<std::string>()));
+    int metalTex2 = textureManager->createTexture(std::move(end_texture["metal"].get<std::string>()));
+    int albedoTex2 = textureManager->createTexture(std::move(end_texture["albedo"].get<std::string>()));
+    int ambientTex2 = textureManager->createTexture(std::move(end_texture["ambient"].get<std::string>()));
+    int heightTex2 = textureManager->createTexture(std::move(end_texture["height"].get<std::string>()));
+
+    const Shader &shader = ShaderManager::getInstance()->getShader(SHADER_TYPE::OSCILLATING_PBR);
     Material mat = Material(lastID, shader, normalTex, roughTex, metalTex, albedoTex, ambientTex, heightTex,
                             normalTex2, roughTex2, metalTex2, albedoTex2, ambientTex2, heightTex2);
     mat.textureSlotOccupied = 10;
@@ -141,4 +138,37 @@ Material *MaterialManager::getMaterialByName(const std::string &materialName) {
     assert(this->matNameToIndex.contains(materialName));
     int index = this->matNameToIndex[materialName];
     return &this->materialPool[index];
+}
+
+void MaterialManager::loadMaterials(const std::string &materialsPath) {
+    std::ifstream file(materialsPath);
+    nlohmann::json data = nlohmann::json::parse(file);
+    std::vector materialsData = data.get<std::vector<nlohmann::json>>();
+    for (const auto& materialData : materialsData) {
+        assert(materialData.contains("name"));
+        assert(materialData.contains("shader"));
+        const std::string shader = materialData["shader"].get<std::string>();
+        SHADER_TYPE shaderType = ShaderManager::getInstance()->getShaderType(shader);
+        switch (shaderType) {
+            case SOLID_COLOR:
+                break;
+            case NORMAL_AS_COLOR:
+                break;
+            case PHONG:
+                break;
+            case PBR:
+                break;
+            case TEXTURED_PBR:
+                break;
+            case TOON:
+                break;
+            case OSCILLATING_PBR:
+                createTexturedOscillatingPBRMaterial(materialData);
+                break;
+            case HEIGHT_MAPPED:
+                break;
+            case SDF:
+                break;
+        }
+    }
 }

@@ -4,7 +4,7 @@
 #include "unordered_map"
 
 #include "../camera.h"
-#include "../materials/ShaderManager.h"
+#include "../managers/ShaderManager.h"
 #include "../lights/Light.h"
 #include "../materials/Material.h"
 #include "string"
@@ -47,7 +47,6 @@ private:
 
     std::string m_name;
     std::vector<Light> lights;
-    ShaderManager m_shaderManager;
     std::unordered_map<std::string, entt::entity> m_tagToEntity;
     SceneStats m_stats;
 

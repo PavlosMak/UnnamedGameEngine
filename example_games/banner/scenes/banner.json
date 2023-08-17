@@ -23,7 +23,7 @@
     },
     {
       "name": "Mushu",
-      "mesh": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/resources/dragon.obj",
+      "mesh": "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/assets/dragon.obj",
       "material": "oscillating"
     }
   ]

@@ -1,5 +1,5 @@
 #include "mesh.h"
-#include "texture.h"
+#include "materials/Texture.h"
 // Always include window first (because it includes glfw, which includes GL which needs to be included AFTER glew).
 // Can't wait for modules to fix this stuff...
 #include <framework/disable_all_warnings.h>
@@ -9,7 +9,6 @@ DISABLE_WARNINGS_PUSH()
 #include <glad/glad.h>
 // Include glad before glfw3
 #include <GLFW/glfw3.h>
-#include <imgui/imgui.h>
 
 DISABLE_WARNINGS_POP()
 
@@ -18,10 +17,11 @@ DISABLE_WARNINGS_POP()
 #include <functional>
 #include <iostream>
 #include "camera.h"
-#include "scene/SceneManager.h"
+#include "managers/SceneManager.h"
+#include "managers/MaterialManager.h"
 #include "scene/Scene.h"
-#include "scene/Entity.h"
-#include "scene/Components.h"
+#include "components/Components.h"
+#include "managers/ShaderManager.h"
 #include "systems/WasdControllerSystem.h"
 #include "systems/AnimationSystem.h"
 #include "systems/RobotArmSystem.h"
@@ -30,6 +30,7 @@ DISABLE_WARNINGS_POP()
 
 //TODO: Move to command line argument
 #define PATH_TO_GAME_FILES "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner"
+#define PATH_TO_MATERIALS "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/materials.json"
 
 class Application {
 public:
@@ -82,6 +83,25 @@ public:
     }
 
     void update() {
+        //Load shaders
+        ShaderManager *shaderManager = ShaderManager::getInstance();
+        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/solid_color_frag.glsl", SHADER_TYPE::SOLID_COLOR);
+        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/shader_frag.glsl", SHADER_TYPE::NORMAL_AS_COLOR);
+        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/phong_frag.glsl", SHADER_TYPE::PHONG);
+        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/pbr_frag.glsl", SHADER_TYPE::PBR);
+        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/pbr_textured_frag.glsl", SHADER_TYPE::TEXTURED_PBR);
+        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/xtoon_frag.glsl", SHADER_TYPE::TOON);
+        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/pbr_oscilating_textured_frag.glsl",
+                                  SHADER_TYPE::OSCILLATING_PBR);
+        shaderManager->loadShader("shaders/shader_height_vert.glsl", "shaders/pbr_heightmapped_frag.glsl",
+                                  SHADER_TYPE::HEIGHT_MAPPED);
+        shaderManager->loadShader("shaders/shader_vert.glsl", "shaders/sdf_frag.glsl", SHADER_TYPE::SDF);
+
+        //Load materials
+        MaterialManager *materialManager = MaterialManager::getInstance();
+        materialManager->loadMaterials(PATH_TO_MATERIALS);
+
+        //Setup scene
         Scene& currentScene = m_sceneManager.getCurrentScene();
         currentScene.setup();
         long long timeStep = 0l;

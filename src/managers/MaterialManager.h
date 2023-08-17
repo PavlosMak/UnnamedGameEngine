@@ -2,9 +2,11 @@
 
 #include "framework/shader.h"
 #include "glm/glm.hpp"
-#include "Material.h"
+#include "../materials/Material.h"
 #include "string"
 #include "unordered_map"
+#include "framework/json.hpp"
+
 
 class MaterialManager {
 protected:
@@ -19,6 +21,8 @@ public:
     void operator=(const MaterialManager &) = delete;
 
     static MaterialManager *getInstance();
+
+    void loadMaterials(const std::string& materialsPath);
 
     //TODO: We might want to add more methods for the other types of materials (as we need them)
 
@@ -47,22 +51,7 @@ public:
 
     Material *createSDFMaterial(const Shader &shader, std::filesystem::path);
 
-    Material *createTexturedOscillatingPBRMaterial(
-            const std::string& name,
-            const Shader &shader,
-            std::filesystem::path normalMap1,
-            std::filesystem::path roughnessMap1,
-            std::filesystem::path metallicMap1,
-            std::filesystem::path albedoPath1,
-            std::filesystem::path aoPath1,
-            std::filesystem::path heightMap1,
-            std::filesystem::path normalMap2,
-            std::filesystem::path roughnessMap2,
-            std::filesystem::path metallicMap2,
-            std::filesystem::path albedoPath2,
-            std::filesystem::path aoPath2,
-            std::filesystem::path heightMap2
-    );
+    Material *createTexturedOscillatingPBRMaterial(nlohmann::json textureData);
 
 
     Material *createXToonMaterial(const Shader &shader, std::filesystem::path toonTexture);

@@ -2,7 +2,7 @@
 
 #include "string"
 #include "vector"
-#include "Scene.h"
+#include "../scene/Scene.h"
 
 class SceneManager {
 private:

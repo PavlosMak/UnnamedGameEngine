@@ -1,7 +1,7 @@
 #include "Scene.h"
-#include "../materials/MaterialManager.h"
+#include "../managers/MaterialManager.h"
 #include "Entity.h"
-#include "Components.h"
+#include "../components/Components.h"
 #include "../components/AnimComponents.h"
 
 #include "fstream"
@@ -30,38 +30,6 @@ void Scene::updateStatistics() {
 }
 
 void Scene::setup() {
-
-    m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/solid_color_frag.glsl", SHADER_TYPE::SOLID_COLOR);
-    m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/shader_frag.glsl", SHADER_TYPE::NORMAL_AS_COLOR);
-    m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/phong_frag.glsl", SHADER_TYPE::PHONG);
-    m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/pbr_frag.glsl", SHADER_TYPE::PBR);
-    m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/pbr_textured_frag.glsl", SHADER_TYPE::TEXTURED_PBR);
-    m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/xtoon_frag.glsl", SHADER_TYPE::TOON);
-    m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/pbr_oscilating_textured_frag.glsl",
-                               SHADER_TYPE::OSCILLATING_PBR);
-    m_shaderManager.loadShader("shaders/shader_height_vert.glsl", "shaders/pbr_heightmapped_frag.glsl",
-                               SHADER_TYPE::HEIGHT_MAPPED);
-    m_shaderManager.loadShader("shaders/shader_vert.glsl", "shaders/sdf_frag.glsl", SHADER_TYPE::SDF);
-
-    MaterialManager *materialManager = MaterialManager::getInstance();
-
-    Material *oscillating = materialManager->createTexturedOscillatingPBRMaterial(
-            "oscillating",
-            m_shaderManager.getShader(SHADER_TYPE::OSCILLATING_PBR),
-            "resources/dragon-scales/normal.png",
-            "resources/dragon-scales/roughness.png",
-            "resources/dragon-scales/metallic.png",
-            "resources/dragon-scales/albedo.png",
-            "resources/dragon-scales/ao.png",
-            "resources/dragon-scales/height.png",
-            "resources/rustedIron/normal.png",
-            "resources/rustedIron/roughness.png",
-            "resources/rustedIron/metallic.png",
-            "resources/rustedIron/albedo.png",
-            "resources/ones_texture.png",
-            "resources/zero_texture.png"
-    );
-
     std::vector<nlohmann::json> entities = this->m_sceneData["entities"].get<nlohmann::json>();
 
     for(const auto& entityData : entities) {

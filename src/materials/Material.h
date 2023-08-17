@@ -1,10 +1,10 @@
 #pragma once
 
 #include "framework/shader.h"
-#include "ShaderManager.h"
+#include "../managers/ShaderManager.h"
 #include "../scene/Entity.h"
 #include "../lights/Light.h"
-#include "../texture.h"
+#include "Texture.h"
 
 class Material {
 public:

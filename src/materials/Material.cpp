@@ -1,6 +1,6 @@
 #include "Material.h"
 #include "glm/gtc/type_ptr.hpp"
-#include "TextureManager.h"
+#include "../managers/TextureManager.h"
 
 glm::vec4 Material::getColor() const {
     return m_color;

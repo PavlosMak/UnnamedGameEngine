@@ -3,7 +3,7 @@
 #include "math.h"
 #include "framework/entt/entt.h"
 #include "../components/AnimComponents.h"
-#include "../scene/Components.h"
+#include "../components/Components.h"
 
 class AnimationSystem {
 

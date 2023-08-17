@@ -60,8 +60,9 @@ You should now be able to find the `Game` executable which you can use to launch
 This is a non-exhaustive list of features we would like to add to the game engine. Feel free to get in touch if you want to implement any of them (or some other feature).
 
 - [ ] Scene system
+- [ ] Physics system
 - [ ] Audio system
-- [ ] Frustrum Culling 
+- [ ] Frustum Culling 
 - [ ] (Animated) Skyboxes
 
 ## References 

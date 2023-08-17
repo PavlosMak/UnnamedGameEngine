@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "framework/entt/entt.h"
-#include "../scene/Components.h"
+#include "../components/Components.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "GLFW/glfw3.h"
 #include "../components/AnimComponents.h"

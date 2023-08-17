@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../scene/Components.h"
+#include "../components/Components.h"
 #include "framework/entt/entt.h"
 #include "glm/gtc/matrix_inverse.hpp"
 #include "glm/gtc/type_ptr.hpp"

@@ -1,6 +1,8 @@
 #include <iostream>
 #include "ShaderManager.h"
 
+ShaderManager *ShaderManager::instance = nullptr;
+
 void ShaderManager::loadShader(const std::filesystem::path &vertexShaderFile,
                                const std::filesystem::path &fragmentShaderFile, SHADER_TYPE type) {
     try {
@@ -13,7 +15,19 @@ void ShaderManager::loadShader(const std::filesystem::path &vertexShaderFile,
     }
 }
 
+ShaderManager* ShaderManager::getInstance() {
+    if (instance == nullptr) {
+        instance = new ShaderManager();
+    }
+    return instance;
+}
+
 const Shader &ShaderManager::getShader(SHADER_TYPE type) {
-    //Assert shader exists
+    assert(m_typeToShader.contains(type));
     return m_typeToShader[type];
+}
+
+SHADER_TYPE ShaderManager::getShaderType(const std::string &shaderName) {
+    assert(this->m_nameToType.contains(shaderName));
+    return this->m_nameToType[shaderName];
 }

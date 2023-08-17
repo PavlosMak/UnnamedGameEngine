@@ -11,19 +11,20 @@ else ()
 endif ()
 
 add_executable(Game
+        src/application.cpp
         src/materials/Material.h
         src/materials/Material.cpp
-        src/materials/MaterialManager.h
-        src/materials/MaterialManager.cpp
-        "src/application.cpp"
-        "src/texture.cpp"
-        "src/mesh.cpp"
-        "src/camera.cpp"
-        "src/camera.h"
-        "src/scene/Scene.cpp"
-        "src/scene/Scene.h"
-        "src/scene/Entity.h"
-        "src/scene/Components.h"
+        src/managers/MaterialManager.h
+        src/managers/MaterialManager.cpp
+        src/materials/Texture.cpp
+        src/materials/Texture.h
+        src/mesh.cpp
+        src/camera.cpp
+        src/camera.h
+        src/scene/Scene.cpp
+        src/scene/Scene.h
+        src/scene/Entity.h
+        src/components/Components.h
         src/systems/WasdControllerSystem.h
         src/systems/RenderSystem.h
         src/systems/DebugSystem.h
@@ -31,9 +32,9 @@ add_executable(Game
         src/Transform.h
         src/lights/Light.h
         src/lights/Light.cpp
-        src/materials/ShaderManager.cpp
-        src/materials/TextureManager.h
-        src/materials/TextureManager.cpp src/components/RobotArmComponents.h src/systems/RobotArmSystem.h src/components/AnimComponents.h src/systems/AnimationSystem.h src/AnimatedMesh.h src/AnimatedMesh.cpp src/scene/SceneManager.cpp src/scene/SceneManager.cpp src/scene/SceneManager.h)
+        src/managers/ShaderManager.cpp
+        src/managers/TextureManager.h
+        src/managers/TextureManager.cpp src/components/RobotArmComponents.h src/systems/RobotArmSystem.h src/components/AnimComponents.h src/systems/AnimationSystem.h src/AnimatedMesh.h src/AnimatedMesh.cpp src/managers/SceneManager.cpp src/managers/SceneManager.h)
 
 target_compile_features(Game PRIVATE cxx_std_20)
 target_link_libraries(Game PRIVATE CGFramework)

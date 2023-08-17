@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../texture.h"
+#include "../materials/Texture.h"
 
 #include "vector"
 
@@ -16,15 +16,10 @@ public:
 
     static TextureManager *getInstance();
 
-
     //Return a point to a material
-    int createTexture(std::filesystem::path filePath, GLuint = GL_CLAMP_TO_EDGE);
-
-    int createSkybox();
+    int createTexture(const std::filesystem::path& filePath);
 
     void bind(int textId, GLint slot);
-
-    void bindSkybox(int textId, GLint slot);
 
 private:
     std::vector<Texture> texturePool;
