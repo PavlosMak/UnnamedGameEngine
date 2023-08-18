@@ -3,6 +3,8 @@
 
 The Unnamed Game Engine, is a 3D game engine build with OpenGL and using [ENTT](https://github.com/skypjack/entt) as a backbone for its entity component system. A complete list of features (and demonstrations) is given below.
 
+Please note that the engine is still developing and subject to big changes.
+
 ## Feature List 
 At its current state the game engine supports the following features. 
 
