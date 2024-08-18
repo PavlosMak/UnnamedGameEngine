@@ -75,10 +75,10 @@ Material *MaterialManager::createTexturedPBRMaterial(nlohmann::json textureData)
     int albedoTex = textureManager->createTexture(texture["albedo"].get<std::string>());
     int ambientTex = textureManager->createTexture(texture["ambient"].get<std::string>());
     int heightTex = textureManager->createTexture(texture["height"].get<std::string>());
+    PBRTexture tex = {normalTex, roughTex, metalTex, albedoTex, ambientTex, heightTex};
 
     const Shader &shader = ShaderManager::getInstance()->getShader(SHADER_TYPE::TEXTURED_PBR);
-    Material mat = Material(lastID, shader, SHADER_TYPE::TEXTURED_PBR, normalTex, roughTex, metalTex, albedoTex,
-                            ambientTex, heightTex);
+    Material mat = Material(lastID, shader, SHADER_TYPE::TEXTURED_PBR, tex);
     mat.textureSlotOccupied = 5;
     mat.lightOffset = 10;
     materialPool.push_back(mat);
@@ -120,19 +120,20 @@ Material *MaterialManager::createTexturedOscillatingPBRMaterial(nlohmann::json t
     int albedoTex = textureManager->createTexture(std::move(start_texture["albedo"].get<std::string>()));
     int ambientTex = textureManager->createTexture(std::move(start_texture["ambient"].get<std::string>()));
     int heightTex = textureManager->createTexture(std::move(start_texture["height"].get<std::string>()));
+    PBRTexture startTexture = {normalTex, roughTex, metalTex, albedoTex, ambientTex, heightTex};
 
     nlohmann::json end_texture = textureData["end_texture"];
-
     int normalTex2 = textureManager->createTexture(std::move(end_texture["normal"].get<std::string>()));
     int roughTex2 = textureManager->createTexture(std::move(end_texture["roughness"].get<std::string>()));
     int metalTex2 = textureManager->createTexture(std::move(end_texture["metal"].get<std::string>()));
     int albedoTex2 = textureManager->createTexture(std::move(end_texture["albedo"].get<std::string>()));
     int ambientTex2 = textureManager->createTexture(std::move(end_texture["ambient"].get<std::string>()));
     int heightTex2 = textureManager->createTexture(std::move(end_texture["height"].get<std::string>()));
+    PBRTexture endTexture = {normalTex2, roughTex2, metalTex2, albedoTex2, ambientTex2, heightTex2};
+
 
     const Shader &shader = ShaderManager::getInstance()->getShader(SHADER_TYPE::OSCILLATING_PBR);
-    Material mat = Material(lastID, shader, normalTex, roughTex, metalTex, albedoTex, ambientTex, heightTex,
-                            normalTex2, roughTex2, metalTex2, albedoTex2, ambientTex2, heightTex2);
+    Material mat = Material(lastID, shader, startTexture, endTexture);
     mat.textureSlotOccupied = 10;
     mat.lightOffset = 16;
     materialPool.push_back(mat);

@@ -35,15 +35,15 @@ Material::bindMaterial(glm::vec3 &cameraPosition,
         case TEXTURED_PBR:
             glUniform3fv(3, 1, glm::value_ptr(cameraPosition));
             glUniform1f(4, m_ambient);
-            texManager->bind(m_normalMapId, GL_TEXTURE0);
+            texManager->bind(m_pbrTexture1.m_normalMapId, GL_TEXTURE0);
             glUniform1i(5, 0);
-            texManager->bind(m_albedoMapId, GL_TEXTURE0 + 1);
+            texManager->bind(m_pbrTexture1.m_albedoMapId, GL_TEXTURE0 + 1);
             glUniform1i(6, 1);
-            texManager->bind(m_roughnessMapId, GL_TEXTURE0 + 2);
+            texManager->bind(m_pbrTexture1.m_roughnessMapId, GL_TEXTURE0 + 2);
             glUniform1i(7, 2);
-            texManager->bind(m_metallicMapId, GL_TEXTURE0 + 3);
+            texManager->bind(m_pbrTexture1.m_metallicMapId, GL_TEXTURE0 + 3);
             glUniform1i(8, 3);
-            texManager->bind(m_ambientOcclusionMapId, GL_TEXTURE0 + 4);
+            texManager->bind(m_pbrTexture1.m_ambientOcclusionMapId, GL_TEXTURE0 + 4);
             glUniform1i(9, 4);
             for (int i = 0; i < lights.size(); i++) {
                 glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));
@@ -54,26 +54,26 @@ Material::bindMaterial(glm::vec3 &cameraPosition,
         case OSCILLATING_PBR:
             glUniform3fv(3, 1, glm::value_ptr(cameraPosition));
             glUniform1f(4, m_ambient);
-            texManager->bind(m_normalMapId, GL_TEXTURE0);
+            texManager->bind(m_pbrTexture1.m_normalMapId, GL_TEXTURE0);
             glUniform1i(5, 0);
-            texManager->bind(m_albedoMapId, GL_TEXTURE0 + 1);
+            texManager->bind(m_pbrTexture1.m_albedoMapId, GL_TEXTURE0 + 1);
             glUniform1i(6, 1);
-            texManager->bind(m_roughnessMapId, GL_TEXTURE0 + 2);
+            texManager->bind(m_pbrTexture1.m_roughnessMapId, GL_TEXTURE0 + 2);
             glUniform1i(7, 2);
-            texManager->bind(m_metallicMapId, GL_TEXTURE0 + 3);
+            texManager->bind(m_pbrTexture1.m_metallicMapId, GL_TEXTURE0 + 3);
             glUniform1i(8, 3);
-            texManager->bind(m_ambientOcclusionMapId, GL_TEXTURE0 + 4);
+            texManager->bind(m_pbrTexture1.m_ambientOcclusionMapId, GL_TEXTURE0 + 4);
             glUniform1i(9, 4);
 
-            texManager->bind(m_normalMapId2, GL_TEXTURE0 + 5);
+            texManager->bind(m_pbrTexture2.m_normalMapId, GL_TEXTURE0 + 5);
             glUniform1i(10, 5);
-            texManager->bind(m_albedoMapId2, GL_TEXTURE0 + 6);
+            texManager->bind(m_pbrTexture2.m_albedoMapId, GL_TEXTURE0 + 6);
             glUniform1i(11, 6);
-            texManager->bind(m_roughnessMapId2, GL_TEXTURE0 + 7);
+            texManager->bind(m_pbrTexture2.m_roughnessMapId, GL_TEXTURE0 + 7);
             glUniform1i(12, 7);
-            texManager->bind(m_metallicMapId2, GL_TEXTURE0 + 8);
+            texManager->bind(m_pbrTexture2.m_metallicMapId, GL_TEXTURE0 + 8);
             glUniform1i(13, 8);
-            texManager->bind(m_ambientOcclusionMapId2, GL_TEXTURE0 + 9);
+            texManager->bind(m_pbrTexture2.m_ambientOcclusionMapId, GL_TEXTURE0 + 9);
             glUniform1i(14, 9);
             for (int i = 0; i < lights.size(); i++) {
                 glUniform3fv(lightOffset + i, 1, glm::value_ptr(lightPositions[i]));

@@ -29,8 +29,8 @@ DISABLE_WARNINGS_POP()
 #include "systems/DebugSystem.h"
 
 //TODO: Move to command line argument
-#define PATH_TO_GAME_FILES "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner"
-#define PATH_TO_MATERIALS "/home/pavlos/Desktop/stuff/GameEngine/example_games/banner/materials.json"
+#define PATH_TO_GAME_FILES "/home/pavlos/Desktop/stuff/UnnamedGameEngine/example_games/banner"
+#define PATH_TO_MATERIALS "/home/pavlos/Desktop/stuff/UnnamedGameEngine/example_games/banner/materials.json"
 
 class Application {
 public:

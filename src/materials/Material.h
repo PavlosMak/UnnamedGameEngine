@@ -6,6 +6,16 @@
 #include "../lights/Light.h"
 #include "Texture.h"
 
+
+struct PBRTexture {
+    int m_normalMapId;
+    int m_roughnessMapId;
+    int m_metallicMapId;
+    int m_albedoMapId;
+    int m_ambientOcclusionMapId;
+    int m_heightMapId;
+};
+
 class Material {
 public:
 
@@ -23,36 +33,19 @@ public:
                                                                                                        TYPE(
                                                                                                                shaderType) {};
 
-    Material(int id, const Shader &shader, int sdfId, bool isSDF) : ID(id), m_shader(shader), m_sdfTextureId(sdfId), TYPE(SDF) {};
+    Material(int id, const Shader &shader, int sdfId, bool isSDF) : ID(id), m_shader(shader), m_sdfTextureId(sdfId),
+                                                                    TYPE(SDF) {};
 
-    Material(int id, const Shader &shader, SHADER_TYPE shaderType, int normalMapId, int roughMapId, int metalMapId,
-             int albedoMapId,
-             int ambientOcclusionMapId, int heightMapId) : ID(id), m_shader(shader),
-                                                           TYPE(shaderType),
-                                                           m_normalMapId(normalMapId),
-                                                           m_roughnessMapId(roughMapId), m_metallicMapId(metalMapId),
-                                                           m_albedoMapId(albedoMapId),
-                                                           m_heightMapId(heightMapId),
-                                                           m_ambientOcclusionMapId(ambientOcclusionMapId) {
+    Material(int id, const Shader &shader, SHADER_TYPE shaderType, PBRTexture texture) : ID(id), m_shader(shader),
+                                                           TYPE(shaderType), m_pbrTexture1(texture) {
     };
 
 
-    Material(int id, const Shader &shader, int normalMapId, int roughMapId, int metalMapId, int albedoMapId,
-             int ambientOcclusionMapId, int heightMapId,
-             int normalMapId2, int roughMapId2, int metalMapId2, int albedoMapId2,
-             int ambientOcclusionMapId2, int heightMapId2) : ID(id), m_shader(shader),
-                                                             TYPE(SHADER_TYPE::OSCILLATING_PBR),
-                                                             m_normalMapId(normalMapId),
-                                                             m_roughnessMapId(roughMapId), m_metallicMapId(metalMapId),
-                                                             m_albedoMapId(albedoMapId),
-                                                             m_heightMapId(heightMapId),
-                                                             m_ambientOcclusionMapId(ambientOcclusionMapId),
-                                                             m_normalMapId2(normalMapId2),
-                                                             m_roughnessMapId2(roughMapId2),
-                                                             m_metallicMapId2(metalMapId2),
-                                                             m_albedoMapId2(albedoMapId2),
-                                                             m_heightMapId2(heightMapId2),
-                                                             m_ambientOcclusionMapId2(ambientOcclusionMapId2) {};
+    Material(int id, const Shader &shader, PBRTexture startingTexture, PBRTexture endTexture) : ID(id),
+                                                                                                m_shader(shader),
+                                                                                                TYPE(SHADER_TYPE::OSCILLATING_PBR),
+                                                                                                m_pbrTexture1(startingTexture),
+                                                                                                m_pbrTexture2(endTexture) {};
 
     Material(int id, const Shader &shader, glm::vec4 albedo, float roughness, float metallic, float ambient) :
             ID(id), m_shader(shader), m_color(albedo), m_roughness(roughness), m_metallic(metallic),
@@ -108,24 +101,9 @@ private:
     float m_metallic{1.0f};
     float m_ambient{0.0f};
 
-    //Textures (not the nicest way to do it :/)
-    int m_normalMapId;
-    int m_roughnessMapId;
-    int m_metallicMapId;
-    int m_albedoMapId;
-    int m_ambientOcclusionMapId;
-    int m_heightMapId;
-
-    //The second pair is used in case of oscillating material
-    //honestly we should just wrap those in a PBR texture class
-    int m_normalMapId2;
-    int m_roughnessMapId2;
-    int m_metallicMapId2;
-    int m_albedoMapId2;
-    int m_ambientOcclusionMapId2;
-    int m_heightMapId2;
-
-    int m_toonTextureId;
+    //Textures - The second one is used in case of oscillating material
+    PBRTexture m_pbrTexture1;
+    PBRTexture m_pbrTexture2;
 
     int m_sdfTextureId;
 };
